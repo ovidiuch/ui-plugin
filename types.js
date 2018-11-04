@@ -79,4 +79,13 @@ export type CreateMethod<S> = (name: string, fn: Method<S>) => MethodBlock<S>;
 // NOTE: React-specific
 export type CreatePlug<S> = (slotName: string, render: Plug<S>) => PlugBlock<S>;
 
-export type RegisterPlugin<S> = (name: string, blocks: Array<Block<S>>) => void;
+type Blocks<S> = {
+  initialState: InitialState<S>,
+  listeners: Array<ListenerBlock<S>>,
+  subscriptions: Array<SubscriptionBlock<S>>,
+  methods: Array<MethodBlock<S>>,
+  // NOTE: React-specific
+  plugs: Array<PlugBlock<S>>
+};
+
+export type RegisterPlugin<S> = (name: string, blocks: Blocks<S>) => void;
