@@ -1,0 +1,13 @@
+{
+  "name": "ui-plugin",
+  "version": "0.0.0",
+  "description": "API for 3rd party UI plugins",
+  "repository": "https://github.com/skidding/ui-plugin.git",
+  "author": "Ovidiu Cherecheș <skidding@gmail.com>",
+  "license": "MIT",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "flow-bin": "^0.84.0"
+  }
+}
