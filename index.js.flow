@@ -11,8 +11,6 @@ export type PluginApi<S> = {
   emitEvent: (eventName: string, eventParams: {}) => void
 };
 
-// Function signatures
-
 type InitialStateGetter<S> = () => S;
 
 type Listener<S> = (PluginApi<S>, ...userParams: any) => mixed;
@@ -21,53 +19,55 @@ type Subscription<S> = (PluginApi<S>) => () => mixed;
 
 type Method<S> = (PluginApi<S>, ...userParams: any) => any;
 
-// Blocks
-
 type InitialStateBlock<S> = {
-  type: "initialState",
+  type: 'initialState',
   fn: InitialStateGetter<S>
 };
 
 type ListenerBlock<S> = {
-  type: "listener",
+  type: 'listener',
   eventName: string,
   fn: Listener<S>
 };
 
 type SubscriptionBlock<S> = {
-  type: "subscription",
+  type: 'subscription',
   fn: Subscription<S>
 };
 
 type MethodBlock<S> = {
-  type: "method",
+  type: 'method',
   name: string,
   fn: Method<S>
 };
 
-// Block creators
-
-type InitialState<S> = (InitialStateGetter<S>) => InitialStateBlock<S>;
-
-type CreateListener<S> = (
-  eventName: string,
-  fn: Listener<S>
-) => ListenerBlock<S>;
-
-type CreateSubscription<S> = (
-  eventName: string,
-  fn: Subscription<S>
-) => SubscriptionBlock<S>;
-
-type CreateMethod<S> = (name: string, fn: Method<S>) => MethodBlock<S>;
-
-// Public API
-
 export type Blocks<S> = {
-  initialState: InitialState<S>,
+  initialState: InitialStateBlock<S>,
   listeners: Array<ListenerBlock<S>>,
   subscriptions: Array<SubscriptionBlock<S>>,
   methods: Array<MethodBlock<S>>
 };
 
-export type RegisterPlugin<S> = (name: string, blocks: Blocks<S>) => void;
+declare export function createInitialState<S>(
+  InitialStateGetter<S>
+): InitialStateBlock<S>;
+
+declare export function createListener<S>(
+  eventName: string,
+  fn: Listener<S>
+): ListenerBlock<S>;
+
+declare export function createSubscription<S>(
+  eventName: string,
+  fn: Subscription<S>
+): SubscriptionBlock<S>;
+
+declare export function createMethod<S>(
+  name: string,
+  fn: Method<S>
+): MethodBlock<S>;
+
+declare export function registerPlugin<S>(
+  name: string,
+  blocks: Blocks<S>
+): void;

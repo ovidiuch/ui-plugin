@@ -1,6 +1,6 @@
 // @flow
 
-import type { PluginApi, Blocks } from './index.js.flow'
+import type { PluginApi, Blocks } from './index.js.flow';
 
 type Plug<S> = React$ComponentType<{
   pluginApi: PluginApi<S>,
@@ -9,18 +9,21 @@ type Plug<S> = React$ComponentType<{
 }>;
 
 type PlugBlock<S> = {
-  type: "plug",
+  type: 'plug',
   slotName: string,
   render: Plug<S>
 };
-
-type CreatePlug<S> = (slotName: string, render: Plug<S>) => PlugBlock<S>;
 
 type ReactBlocks<S> = Blocks<S> & {
   plugs: Array<PlugBlock<S>>
 };
 
-export type RegisterReactPlugin<S> = (
+declare export function createPlug<S>(
+  slotName: string,
+  render: Plug<S>
+): PlugBlock<S>;
+
+declare export function registerPlugin<S>(
   name: string,
   blocks: ReactBlocks<S>
-) => void;
+): void;
