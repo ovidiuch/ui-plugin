@@ -41,13 +41,6 @@ type MethodBlock<S> = {
   fn: Method<S>
 };
 
-type Block<S> =
-  | InitialStateBlock<S>
-  | ListenerBlock<S>
-  | SubscriptionBlock<S>
-  | MethodBlock<S>
-  | PlugBlock<S>;
-
 type InitialState<S> = (InitialStateGetter<S>) => InitialStateBlock<S>;
 
 type CreateListener<S> = (
