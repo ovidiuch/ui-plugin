@@ -1,6 +1,6 @@
 type StateGet<PluginState> = () => PluginState;
 
-type StateSet<PluginState> = (PluginState) => unknown;
+type StateSet<PluginState> = (pluginState: PluginState) => unknown;
 
 type MethodCall = (methodName: string) => any;
 
@@ -16,19 +16,23 @@ export interface IPluginContext<PluginState> {
   readonly emitEvent: EventEmit;
 }
 
-type Handler = (pluginContext: IPluginContext) => unknown;
+type Handler<PluginState> = (
+  pluginContext: IPluginContext<PluginState>,
+) => unknown;
 
-type UnsubscribeHandler = (pluginContext: IPluginContext) => () => unknown;
+type UnsubscribeHandler<PluginState> = (
+  pluginContext: IPluginContext<PluginState>,
+) => () => unknown;
 
 export interface IPluginDef<PluginState> {
   readonly name: string;
   readonly getInitialState: StateGet<PluginState>;
-  readonly init: UnsubscribeHandler[];
+  readonly init: Array<UnsubscribeHandler<PluginState>>;
   readonly methods: {
-    [name: string]: Handler[];
+    [name: string]: Array<Handler<PluginState>>;
   };
   readonly listeners: {
-    [eventName: string]: Handler[];
+    [eventName: string]: Array<Handler<PluginState>>;
   };
   // readonly plugs;
 }
