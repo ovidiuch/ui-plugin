@@ -1,6 +1,12 @@
 {
   "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "noEmitOnError": true,
     "noImplicitAny": true,
-    "strictNullChecks": true
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "outDir": "dist",
+    "strict": true
   }
 }
