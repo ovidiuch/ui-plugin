@@ -4,19 +4,27 @@ import { IPluginConfig } from './PluginConfig';
 
 export { IPluginContext } from './PluginContext';
 
-export function registerPlugin<PluginState>(
-  pluginConfig: IPluginConfig<PluginState>,
-) {
+// NOTE: Typing this seems very complicated. Consider:
+// 1. Building this project without types
+// 2. Building this project with types but not publish any types
+// 3. Publishing types but not typing this repo
+// Choose what is more important.
+// MOST IMPORTANT: Don't design the API around the limitations of the type system.
+// TODO: Document API to see how it looks
+
+export function registerPlugin<State>(pluginConfig: IPluginConfig<State>) {
   // TODO: Register plugin
 
   return {
     registerPlug: <PlugProps extends any>(
-      plugConfig: IPlugConfig<PluginState, PlugProps>,
+      plugConfig: IPlugConfig<State, PlugProps>,
     ): void => {
       // TODO: Register plug
     },
   };
 }
+
+// Test usage
 
 const { registerPlug } = registerPlugin({
   name: 'test-plugin',

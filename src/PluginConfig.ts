@@ -1,21 +1,19 @@
 import { IPluginContext, StateGet } from './PluginContext';
 
-type Handler<PluginState> = (
-  pluginContext: IPluginContext<PluginState>,
-) => unknown;
+type Handler<State> = (pluginContext: IPluginContext<State>) => unknown;
 
-type UnsubscribeHandler<PluginState> = (
-  pluginContext: IPluginContext<PluginState>,
+type UnsubscribeHandler<State> = (
+  pluginContext: IPluginContext<State>,
 ) => () => unknown;
 
-export interface IPluginConfig<PluginState> {
+export interface IPluginConfig<State> {
   readonly name: string;
-  readonly getInitialState: StateGet<PluginState>;
-  readonly init?: Array<UnsubscribeHandler<PluginState>>;
+  readonly getInitialState: StateGet<State>;
+  readonly init?: Array<UnsubscribeHandler<State>>;
   readonly methods?: {
-    [name: string]: Array<Handler<PluginState>>;
+    [name: string]: Array<Handler<State>>;
   };
   readonly listeners?: {
-    [eventName: string]: Array<Handler<PluginState>>;
+    [eventName: string]: Array<Handler<State>>;
   };
 }
