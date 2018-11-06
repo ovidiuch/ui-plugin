@@ -8,15 +8,14 @@ type UnsubscribeHandler<PluginState> = (
   pluginContext: IPluginContext<PluginState>,
 ) => () => unknown;
 
-export interface IPluginDef<PluginState> {
+export interface IPluginConfig<PluginState> {
   readonly name: string;
   readonly getInitialState: StateGet<PluginState>;
-  readonly init: Array<UnsubscribeHandler<PluginState>>;
-  readonly methods: {
+  readonly init?: Array<UnsubscribeHandler<PluginState>>;
+  readonly methods?: {
     [name: string]: Array<Handler<PluginState>>;
   };
-  readonly listeners: {
+  readonly listeners?: {
     [eventName: string]: Array<Handler<PluginState>>;
   };
-  // readonly plugs;
 }
