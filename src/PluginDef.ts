@@ -1,4 +1,4 @@
-import { IPluginContext, StateGet } from "./PluginContext";
+import { IPluginContext, StateGet } from './PluginContext';
 
 type Handler<PluginState> = (
   pluginContext: IPluginContext<PluginState>,
