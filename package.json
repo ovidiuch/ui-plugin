@@ -9,8 +9,8 @@
   "types": "./dist/index.d.ts",
   "dependencies": {},
   "devDependencies": {
-    "prettier": "^1.14.3",
+    "prettier": "^1.15.3",
     "tslint": "^5.11.0",
-    "typescript": "^3.1.6"
+    "typescript": "^3.2.1"
   }
 }
