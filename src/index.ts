@@ -1,5 +1,6 @@
 import { IPluginApi, IPluginDef, IPluginStore } from './types';
 
+// TODO: Move to pluginStore.js (Abstract global namespace)
 const Store: IPluginStore = {
   defaultConfigs: {},
   initialStates: {},
@@ -8,6 +9,7 @@ const Store: IPluginStore = {
   eventHandlers: {},
 };
 
+// TODO: Move to registerPlugin.js
 export function registerPlugin<PluginConfig extends object, PluginState>(
   pluginDef: IPluginDef<PluginConfig, PluginState>,
 ): IPluginApi<PluginConfig, PluginState> {
