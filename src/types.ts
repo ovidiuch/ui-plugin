@@ -16,9 +16,8 @@ export interface IPluginContext<PluginConfig, PluginState> {
 
 export interface IPluginDef<PluginConfig, PluginState> {
   name: string;
-  // TODO: Make optional
-  defaultConfig: PluginConfig;
-  initialState: PluginState;
+  defaultConfig?: PluginConfig;
+  initialState?: PluginState;
 }
 
 type Init<PluginConfig, PluginState> = (

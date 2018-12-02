@@ -13,7 +13,7 @@ const Store: IPluginStore = {
 export function registerPlugin<PluginConfig extends object, PluginState>(
   pluginDef: IPluginDef<PluginConfig, PluginState>,
 ): IPluginApi<PluginConfig, PluginState> {
-  const { name: pluginName, defaultConfig, initialState } = pluginDef;
+  const { name: pluginName, defaultConfig = {}, initialState } = pluginDef;
 
   Store.defaultConfigs[pluginName] = defaultConfig;
   Store.initialStates[pluginName] = initialState;
@@ -68,3 +68,19 @@ method('doIt', ({ setState }) => {
 on('other-plugin.didSomething', ({ getConfig }) => {
   // console.log(getConfig().enabled);
 });
+
+// Works
+registerPlugin({
+  name: 'test-plugin',
+});
+
+registerPlugin({
+  name: 'test-plugin',
+  initialState: false,
+});
+
+// Doesn't work
+// registerPlugin({
+//   name: 'test-plugin',
+//   defaultConfig: 3,
+// });
