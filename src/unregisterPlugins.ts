@@ -9,7 +9,7 @@ export function unregisterPlugins() {
     eventHandlers,
   } = getPluginStore();
 
-  // unmount all plugins
+  // Unmount plugin scope
 
   // Remove all plugins from store
   Object.keys(defaultConfigs).forEach(pluginName => {

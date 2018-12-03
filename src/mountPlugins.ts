@@ -13,6 +13,8 @@ export function mountPlugins({
   config,
   state,
 }: { config?: IPluginConfigs; state?: IPluginStates } = {}) {
+  // TODO: unmount plugins if mountPlugins is called again
+
   const { defaultConfigs, initialStates, initHandlers } = getPluginStore();
 
   const pluginScope: IPluginScope = {
@@ -34,14 +36,18 @@ export function mountPlugins({
     });
   });
 
-  // Return "unmountPlugins" callback
-  return () => {
+  // TODO: Attach unmountPlugins to store, so it can be called in unregisterPlugins?
+  const unmountPlugins = () => {
     // Mark scope as unmounted
     pluginScope.unmounted = true;
 
     // Run all "init" handler return handlers
     unmountHandlers.forEach(handler => handler());
+
+    // TODO: Remove unmountPlugins reference
   };
+
+  return unmountPlugins;
 }
 
 // TODO: Memoize per pluginScope & pluginName?
