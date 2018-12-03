@@ -8,6 +8,7 @@ export interface IPluginContext<PluginConfig, PluginState> {
   getConfig: () => PluginConfig;
   getConfigOf: (pluginName: string) => object;
   getState: () => PluginState;
+  // TODO: Support multiple plugins (eg. const [{ webUrl }, { urlParams }] = getStateOf("renderer", "router"))
   getStateOf: (pluginName: string) => any;
   setState: (change: StateUpdater<PluginState>, cb?: () => unknown) => void;
   callMethod: (methodName: string, ...args: Array<unknown>) => any;
