@@ -14,7 +14,7 @@ export function mountPlugins({
   config,
   state,
 }: { config?: IPluginConfigs; state?: IPluginStates } = {}) {
-  // TODO: unmount plugins if mountPlugins is called again
+  // TODO: Unmount plugins if mountPlugins is called again?
 
   const { plugins } = getPluginStore();
   const pluginNames = Object.keys(plugins);
@@ -29,12 +29,16 @@ export function mountPlugins({
     initialStates[pluginName] = plugins[pluginName].initialState;
   });
 
+  // TODO: Explain
   // let unmounted = false;
 
+  // TODO: Explain
   const activeConfig = merge({}, defaultConfigs, config);
 
+  // TODO: Explain
   let activeState = merge({}, initialStates, state);
 
+  // TODO: Explain
   let unmountHandlers: Array<() => unknown> = [];
 
   // Run all "init" handlers
@@ -48,24 +52,30 @@ export function mountPlugins({
     });
   });
 
-  // TODO: Attach unmountPlugins to store, so it can be called in unregisterPlugins?
   const unmountPlugins = () => {
     // Mark scope as unmounted
     // unmounted = true;
 
     // Run all "init" handler return handlers
     unmountHandlers.forEach(handler => handler());
-
-    // TODO: Remove unmountPlugins reference
   };
 
   return unmountPlugins;
 
   // TODO: Memoize per pluginName
   function getPluginContext(pluginName: string): IPluginContext<object, any> {
+    function getConfig() {
+      return activeConfig[pluginName];
+    }
+
+    function getConfigOf(otherPluginName: string) {
+      return activeConfig[otherPluginName];
+    }
+
+    // TODO: Move plugin context function outside return object literal
     return {
-      getConfig: () => activeConfig[pluginName],
-      getConfigOf: otherPluginName => activeConfig[otherPluginName],
+      getConfig,
+      getConfigOf,
       getState: () => activeState[pluginName],
       getStateOf: otherPluginName => activeState[otherPluginName],
       setState: (change, cb) => {
@@ -96,7 +106,7 @@ export function mountPlugins({
         );
       },
       emitEvent: (eventName, ...args) => {
-        Object.keys(plugins).forEach(otherPluginName => {
+        pluginNames.forEach(otherPluginName => {
           plugins[otherPluginName].eventHandlers.forEach(eventHandler => {
             const { eventPath, handler } = eventHandler;
             const [curEventPluginName, curEventName] = eventPath.split('.');
