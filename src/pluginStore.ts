@@ -63,13 +63,13 @@ function addMethodHandler({
 
 function addEventHandler({
   pluginName,
-  eventName,
+  eventPath,
   handler,
 }: {
   pluginName: string;
-  eventName: string;
+  eventPath: string;
   handler: EventHandler<any, any>;
 }) {
   // TODO: Throw if plugin doesn't exist
-  plugins[pluginName].eventHandlers.push({ eventName, handler });
+  plugins[pluginName].eventHandlers.push({ eventPath, handler });
 }

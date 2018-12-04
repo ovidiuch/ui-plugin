@@ -8,7 +8,7 @@ it('calls event handler', () => {
   const { on } = registerPlugin({ name: 'testPlugin1' });
 
   const handleEvent = jest.fn();
-  on('testEvent', handleEvent);
+  on('testPlugin2.testEvent', handleEvent);
 
   const { init } = registerPlugin({ name: 'testPlugin2' });
 
@@ -25,7 +25,7 @@ it('calls event handler with params', () => {
 
   const { on } = registerPlugin({ name: 'testPlugin1' });
 
-  on('testEvent', (context, one, two) => {
+  on('testPlugin2.testEvent', (context, one, two) => {
     expect(one).toBe('foo');
     expect(two).toBe('bar');
   });
@@ -44,7 +44,7 @@ it('calls event handler with plugin context', () => {
 
   const { on } = registerPlugin({ name: 'testPlugin1', initialState: 0 });
 
-  on('testEvent', context => {
+  on('testPlugin2.testEvent', context => {
     expect(context.getState()).toBe(0);
   });
 
@@ -64,8 +64,8 @@ it('calls multiple event handlers', () => {
 
   const handleEvent1 = jest.fn();
   const handleEvent2 = jest.fn();
-  on('testEvent', handleEvent1);
-  on('testEvent', handleEvent2);
+  on('testPlugin2.testEvent', handleEvent1);
+  on('testPlugin2.testEvent', handleEvent2);
 
   const { init } = registerPlugin({ name: 'testPlugin2' });
 

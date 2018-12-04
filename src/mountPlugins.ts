@@ -104,9 +104,12 @@ function getPluginContext(
     },
     emitEvent: (eventName, ...args) => {
       Object.keys(plugins).forEach(otherPluginName => {
-        plugins[otherPluginName].eventHandlers.forEach(i => {
-          if (i.eventName === eventName) {
-            i.handler(
+        plugins[otherPluginName].eventHandlers.forEach(eventHandler => {
+          const { eventPath, handler } = eventHandler;
+          const [curEventPluginName, curEventName] = eventPath.split('.');
+
+          if (curEventPluginName === pluginName && curEventName === eventName) {
+            handler(
               getPluginContext(plugins, pluginScope, otherPluginName),
               ...args,
             );

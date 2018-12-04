@@ -9,7 +9,7 @@ export interface IPlugin {
     handler: MethodHandler<any, any>;
   }>;
   eventHandlers: Array<{
-    eventName: string;
+    eventPath: string;
     handler: MethodHandler<any, any>;
   }>;
 }
@@ -36,7 +36,7 @@ export interface IPluginStore {
   addEventHandler: (
     params: {
       pluginName: string;
-      eventName: string;
+      eventPath: string;
       handler: EventHandler<any, any>;
     },
   ) => void;

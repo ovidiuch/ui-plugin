@@ -17,11 +17,11 @@ export type EventHandler<PluginConfig extends object, PluginState> = (
 export interface IPluginApi<PluginConfig extends object, PluginState> {
   init: (handler: InitHandler<PluginConfig, PluginState>) => void;
   method: (
-    eventName: string,
+    methodName: string,
     handler: MethodHandler<PluginConfig, PluginState>,
   ) => void;
   on: (
-    eventName: string,
+    eventPath: string,
     handler: EventHandler<PluginConfig, PluginState>,
   ) => void;
   // TODO: onStateChange

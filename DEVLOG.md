@@ -1,3 +1,9 @@
+Q: Should event names be bound to plugins or not?
+
+Event names should be bound to plugins to keep event management clear and concise. But it's a bit counterintuitive which plugin they bind to. Methods bind to the plugin they are registered in. Events bind to the plugin that emits them. So event handlers contain the full `pluginName.eventName` path, while emit calls only contain the event name.
+
+---
+
 Q: Should plugins names be camelCase or kebab-case?
 
 > Note: Both work, but one style should be promoted in examples and tests for consistency.

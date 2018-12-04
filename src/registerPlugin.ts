@@ -32,8 +32,8 @@ export function registerPlugin<PluginConfig extends object, PluginState>(
     method: (methodName, handler) => {
       addMethodHandler({ pluginName: name, methodName, handler });
     },
-    on: (eventName, handler) => {
-      addEventHandler({ pluginName: name, eventName, handler });
+    on: (eventPath, handler) => {
+      addEventHandler({ pluginName: name, eventPath, handler });
     },
   };
 }
