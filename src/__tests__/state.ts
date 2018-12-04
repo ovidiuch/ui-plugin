@@ -6,7 +6,7 @@ it('gets initial state from context', () => {
   expect.hasAssertions();
 
   const { init } = registerPlugin({
-    name: 'test-plugin',
+    name: 'testPlugin',
     initialState: { counter: 0 },
   });
 
@@ -21,7 +21,7 @@ it('gets custom state from context', () => {
   expect.hasAssertions();
 
   const { init } = registerPlugin({
-    name: 'test-plugin',
+    name: 'testPlugin',
     initialState: { counter: 0 },
   });
 
@@ -31,7 +31,7 @@ it('gets custom state from context', () => {
 
   mountPlugins({
     state: {
-      'test-plugin': { counter: 5 },
+      testPlugin: { counter: 5 },
     },
   });
 });
@@ -40,13 +40,13 @@ it('gets state of other plugin from context', () => {
   expect.hasAssertions();
 
   registerPlugin({
-    name: 'test-plugin1',
+    name: 'testPlugin1',
     initialState: { counter: 0 },
   });
-  const { init } = registerPlugin({ name: 'test-plugin2' });
+  const { init } = registerPlugin({ name: 'testPlugin2' });
 
   init(({ getStateOf }) => {
-    expect(getStateOf('test-plugin1').counter).toBe(0);
+    expect(getStateOf('testPlugin1').counter).toBe(0);
   });
 
   mountPlugins();
@@ -56,7 +56,7 @@ it('sets state', () => {
   expect.hasAssertions();
 
   const { init } = registerPlugin({
-    name: 'test-plugin',
+    name: 'testPlugin',
     initialState: { counter: 1 },
   });
 
@@ -73,7 +73,7 @@ it('sets state using updater function', () => {
   expect.hasAssertions();
 
   const { init } = registerPlugin({
-    name: 'test-plugin',
+    name: 'testPlugin',
     initialState: { counter: 1 },
   });
 

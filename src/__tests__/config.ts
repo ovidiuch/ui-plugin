@@ -6,7 +6,7 @@ it('gets default config from context', () => {
   expect.hasAssertions();
 
   const { init } = registerPlugin({
-    name: 'test-plugin',
+    name: 'testPlugin',
     defaultConfig: { enabled: false },
   });
 
@@ -21,7 +21,7 @@ it('gets custom config from context', () => {
   expect.hasAssertions();
 
   const { init } = registerPlugin({
-    name: 'test-plugin',
+    name: 'testPlugin',
     defaultConfig: { enabled: false },
   });
 
@@ -31,7 +31,7 @@ it('gets custom config from context', () => {
 
   mountPlugins({
     config: {
-      'test-plugin': { enabled: true },
+      testPlugin: { enabled: true },
     },
   });
 });
@@ -40,13 +40,13 @@ it('gets config of other plugin from context', () => {
   expect.hasAssertions();
 
   registerPlugin({
-    name: 'test-plugin1',
+    name: 'testPlugin1',
     defaultConfig: { enabled: false },
   });
-  const { init } = registerPlugin({ name: 'test-plugin2' });
+  const { init } = registerPlugin({ name: 'testPlugin2' });
 
   init(({ getConfigOf }) => {
-    expect(getConfigOf('test-plugin1').enabled).toBe(false);
+    expect(getConfigOf('testPlugin1').enabled).toBe(false);
   });
 
   mountPlugins();

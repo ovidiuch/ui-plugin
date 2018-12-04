@@ -4,7 +4,7 @@ afterEach(unregisterPlugins);
 
 it('calls init handler on mount', () => {
   const { init } = registerPlugin({
-    name: 'test-plugin',
+    name: 'testPlugin',
   });
 
   const initHandler = jest.fn();
@@ -17,7 +17,7 @@ it('calls init handler on mount', () => {
 
 it('calls return callback of init handler on unmount', () => {
   const { init } = registerPlugin({
-    name: 'test-plugin',
+    name: 'testPlugin',
   });
 
   const returnCallback = jest.fn();
