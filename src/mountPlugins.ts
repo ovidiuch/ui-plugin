@@ -1,13 +1,7 @@
 import { find, merge } from 'lodash';
-import { getPluginStore } from './pluginStore';
-import {
-  IPluginConfigs,
-  IPluginContext,
-  IPluginScope,
-  IPluginStates,
-} from './types';
-import { IPlugins } from './types/PluginStore';
-import { StateUpdater } from './types/shared';
+import { IPluginContext } from './PluginContext';
+import { getPluginStore, IPlugins } from './pluginStore';
+import { IPluginConfigs, IPluginStates, StateUpdater } from './shared';
 
 export function mountPlugins({
   config,
@@ -28,7 +22,7 @@ export function mountPlugins({
     initialStates[pluginName] = plugins[pluginName].initialState;
   });
 
-  const pluginScope: IPluginScope = {
+  const pluginScope = {
     unmounted: false,
     config: merge({}, defaultConfigs, config),
     state: merge({}, initialStates, state),
@@ -66,7 +60,7 @@ export function mountPlugins({
 // TODO: Memoize per pluginScope & pluginName?
 function getPluginContext(
   plugins: IPlugins,
-  pluginScope: IPluginScope,
+  pluginScope: { config: IPluginConfigs; state: IPluginStates },
   pluginName: string,
 ): IPluginContext<object, any> {
   return {

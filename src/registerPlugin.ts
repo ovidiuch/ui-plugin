@@ -1,5 +1,5 @@
+import { IPluginApi } from './PluginApi';
 import { getPluginStore } from './pluginStore';
-import { IPluginApi } from './types';
 
 interface IPluginDef<PluginConfig extends object, PluginState> {
   name: string;
