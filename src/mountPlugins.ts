@@ -1,7 +1,6 @@
 import { find, merge } from 'lodash';
-import { IPluginContext } from './PluginContext';
 import { getPluginStore } from './pluginStore';
-import { StateUpdater } from './shared';
+import { IPluginContext, StateUpdater } from './shared';
 
 interface IPluginConfigs {
   [pluginName: string]: object;

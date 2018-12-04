@@ -1,4 +1,4 @@
-import { EventHandler, InitHandler, MethodHandler } from './PluginApi';
+import { EventHandler, InitHandler, MethodHandler } from './shared';
 
 interface IPlugin {
   defaultConfig: object;
@@ -18,31 +18,10 @@ export interface IPlugins {
   [plugiName: string]: IPlugin;
 }
 
-export interface IPluginStore {
-  plugins: IPlugins;
-  addPlugin: (
-    params: { name: string; defaultConfig: object; initialState: any },
-  ) => void;
-  addInitHandler: (
-    params: { pluginName: string; handler: InitHandler<any, any> },
-  ) => void;
-  addMethodHandler: (
-    params: {
-      pluginName: string;
-      methodName: string;
-      handler: MethodHandler<any, any>;
-    },
-  ) => void;
-  addEventHandler: (
-    params: {
-      pluginName: string;
-      eventPath: string;
-      handler: EventHandler<any, any>;
-    },
-  ) => void;
-}
+// TODO: Attach to global namespace
+let plugins: IPlugins = {};
 
-export function getPluginStore(): IPluginStore {
+export function getPluginStore() {
   return {
     plugins,
     addPlugin,
@@ -55,9 +34,6 @@ export function getPluginStore(): IPluginStore {
 export function resetPluginStore() {
   plugins = {};
 }
-
-// TODO: Attach to global namespace
-let plugins: IPlugins = {};
 
 function addPlugin({
   name,

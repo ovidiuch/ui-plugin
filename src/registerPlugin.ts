@@ -1,5 +1,18 @@
-import { IPluginApi } from './PluginApi';
 import { getPluginStore } from './pluginStore';
+import { EventHandler, InitHandler, MethodHandler } from './shared';
+
+interface IPluginApi<PluginConfig extends object, PluginState> {
+  init: (handler: InitHandler<PluginConfig, PluginState>) => void;
+  method: (
+    methodName: string,
+    handler: MethodHandler<PluginConfig, PluginState>,
+  ) => void;
+  on: (
+    eventPath: string,
+    handler: EventHandler<PluginConfig, PluginState>,
+  ) => void;
+  // TODO: onStateChange
+}
 
 interface IPluginDef<PluginConfig extends object, PluginState> {
   name: string;
