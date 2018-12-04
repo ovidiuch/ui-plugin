@@ -1,6 +1,6 @@
-import { mountPlugins, registerPlugin, unregisterPlugins } from '..';
+import { mountPlugins, registerPlugin, resetPluginStore } from '..';
 
-afterEach(unregisterPlugins);
+afterEach(resetPluginStore);
 
 it('calls method handler', () => {
   expect.hasAssertions();
