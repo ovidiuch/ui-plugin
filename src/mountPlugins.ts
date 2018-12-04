@@ -7,6 +7,7 @@ import {
   IPluginStates,
 } from './types';
 import { IPlugins } from './types/PluginStore';
+import { StateUpdater } from './types/shared';
 
 export function mountPlugins({
   config,
@@ -122,7 +123,7 @@ interface INotAFunction {
 
 function updateState<State extends INotAFunction>(
   prevState: State,
-  updater: State | ((prevState: State) => State),
+  updater: StateUpdater<State>,
 ): State {
   return typeof updater === 'function' ? updater(prevState) : updater;
 }
