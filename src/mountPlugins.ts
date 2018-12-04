@@ -95,7 +95,7 @@ export function mountPlugins({
       const [otherPluginName, methodName] = methodPath.split('.');
 
       if (!plugins[otherPluginName]) {
-        throw new Error(`Plugin not found: ${otherPluginName}`);
+        throw new Error(`Plugin not found ${otherPluginName}`);
       }
 
       const { methodHandlers } = plugins[otherPluginName];
@@ -105,7 +105,7 @@ export function mountPlugins({
       );
 
       if (!methodHandler) {
-        throw new Error(`Method not found: ${methodPath}`);
+        throw new Error(`Method not found ${methodPath}`);
       }
 
       return methodHandler.handler(getPluginContext(otherPluginName), ...args);
