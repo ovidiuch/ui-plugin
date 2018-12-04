@@ -1,56 +1,39 @@
 import { getPluginStore } from './pluginStore';
-import { IPluginApi, IPluginDef } from './types';
+import { IPluginApi } from './types';
+
+interface IPluginDef<PluginConfig extends object, PluginState> {
+  name: string;
+  defaultConfig?: PluginConfig;
+  initialState?: PluginState;
+}
 
 export function registerPlugin<PluginConfig extends object, PluginState>(
   pluginDef: IPluginDef<PluginConfig, PluginState>,
 ): IPluginApi<PluginConfig, PluginState> {
-  const { name: pluginName, defaultConfig = {}, initialState } = pluginDef;
+  const { name, defaultConfig = {}, initialState } = pluginDef;
 
   const {
-    defaultConfigs,
-    initialStates,
-    initHandlers,
-    methodHandlers,
-    eventHandlers,
+    addPlugin,
+    addInitHandler,
+    addMethodHandler,
+    addEventHandler,
   } = getPluginStore();
 
-  defaultConfigs[pluginName] = defaultConfig;
-  initialStates[pluginName] = initialState;
+  addPlugin({
+    name,
+    defaultConfig,
+    initialState,
+  });
 
   return {
     init: handler => {
-      pushPluginHandler(initHandlers, pluginName, handler);
+      addInitHandler({ pluginName: name, handler });
     },
     method: (methodName, handler) => {
-      mapPluginHandler(methodHandlers, pluginName, methodName, handler);
+      addMethodHandler({ pluginName: name, methodName, handler });
     },
     on: (eventName, handler) => {
-      mapPluginHandler(eventHandlers, pluginName, eventName, handler);
+      addEventHandler({ pluginName: name, eventName, handler });
     },
   };
-}
-
-function pushPluginHandler<T>(
-  handlers: { [pluginName: string]: T[] },
-  pluginName: string,
-  entry: T,
-) {
-  if (!handlers[pluginName]) {
-    handlers[pluginName] = [];
-  }
-
-  handlers[pluginName].push(entry);
-}
-
-function mapPluginHandler<T>(
-  handlers: { [pluginName: string]: { [entryName: string]: T } },
-  pluginName: string,
-  entryName: string,
-  entry: T,
-) {
-  if (!handlers[pluginName]) {
-    handlers[pluginName] = {};
-  }
-
-  handlers[pluginName][entryName] = entry;
 }

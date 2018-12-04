@@ -1,23 +1,31 @@
-import { merge } from 'lodash';
+import { find, merge } from 'lodash';
 import { getPluginStore } from './pluginStore';
 import {
   IPluginConfigs,
   IPluginContext,
   IPluginScope,
   IPluginStates,
-  IPluginStore,
 } from './types';
+import { IPlugins } from './types/PluginStore';
 
-// This method could also be called "createPluginContext", but is not perfectly
-// accurate because each plugin will have its own context
 export function mountPlugins({
   config,
   state,
 }: { config?: IPluginConfigs; state?: IPluginStates } = {}) {
   // TODO: unmount plugins if mountPlugins is called again
 
-  const pluginStore = getPluginStore();
-  const { defaultConfigs, initialStates, initHandlers } = pluginStore;
+  const { plugins } = getPluginStore();
+  const pluginNames = Object.keys(plugins);
+
+  const defaultConfigs: IPluginConfigs = {};
+  pluginNames.forEach(pluginName => {
+    defaultConfigs[pluginName] = plugins[pluginName].defaultConfig;
+  });
+
+  const initialStates: IPluginStates = {};
+  pluginNames.forEach(pluginName => {
+    initialStates[pluginName] = plugins[pluginName].initialState;
+  });
 
   const pluginScope: IPluginScope = {
     unmounted: false,
@@ -28,10 +36,10 @@ export function mountPlugins({
   const unmountHandlers: Array<() => unknown> = [];
 
   // Run all "init" handlers
-  Object.keys(initHandlers).forEach(pluginName => {
-    initHandlers[pluginName].forEach(handler => {
+  pluginNames.forEach(pluginName => {
+    plugins[pluginName].initHandlers.forEach(handler => {
       const returnCb = handler(
-        getPluginContext(pluginStore, pluginScope, pluginName),
+        getPluginContext(plugins, pluginScope, pluginName),
       );
 
       if (typeof returnCb === 'function') {
@@ -56,7 +64,7 @@ export function mountPlugins({
 
 // TODO: Memoize per pluginScope & pluginName?
 function getPluginContext(
-  pluginStore: IPluginStore,
+  plugins: IPlugins,
   pluginScope: IPluginScope,
   pluginName: string,
 ): IPluginContext<object, any> {
@@ -75,16 +83,35 @@ function getPluginContext(
         cb();
       }
     },
-    callMethod: (methodName, ...args) => {
-      const [otherPluginName, pluginMethodName] = methodName.split('.');
+    callMethod: (methodPath, ...args) => {
+      const [otherPluginName, methodName] = methodPath.split('.');
 
-      return pluginStore.methodHandlers[otherPluginName][pluginMethodName](
-        getPluginContext(pluginStore, pluginScope, otherPluginName),
+      const methodHandler = find(
+        plugins[otherPluginName].methodHandlers,
+        i => i.methodName === methodName,
+      );
+
+      if (!methodHandler) {
+        // TODO: Throw
+        return;
+      }
+
+      return methodHandler.handler(
+        getPluginContext(plugins, pluginScope, otherPluginName),
         ...args,
       );
     },
     emitEvent: (eventName, ...args) => {
-      // TODO: Emit event (requires pluginStore)
+      Object.keys(plugins).forEach(otherPluginName => {
+        plugins[otherPluginName].eventHandlers.forEach(i => {
+          if (i.eventName === eventName) {
+            i.handler(
+              getPluginContext(plugins, pluginScope, otherPluginName),
+              ...args,
+            );
+          }
+        });
+      });
     },
   };
 }

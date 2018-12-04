@@ -1,22 +1,6 @@
-import { getPluginStore } from './pluginStore';
+import { resetPluginStore } from './pluginStore';
 
 export function unregisterPlugins() {
-  const {
-    defaultConfigs,
-    initialStates,
-    initHandlers,
-    methodHandlers,
-    eventHandlers,
-  } = getPluginStore();
-
-  // Unmount plugin scope
-
-  // Remove all plugins from store
-  Object.keys(defaultConfigs).forEach(pluginName => {
-    delete defaultConfigs[pluginName];
-    delete initialStates[pluginName];
-    delete initHandlers[pluginName];
-    delete methodHandlers[pluginName];
-    delete eventHandlers[pluginName];
-  });
+  // TODO: Unmount plugin scope
+  resetPluginStore();
 }
