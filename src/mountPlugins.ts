@@ -61,10 +61,10 @@ function getPluginContext(
     getState: () => pluginScope.state[pluginName],
     getStateOf: otherPluginName => pluginScope.state[otherPluginName],
     setState: (change, cb) => {
-      const prevState = pluginScope.state[pluginName];
-
-      pluginScope.state[pluginName] =
-        typeof change === 'function' ? change(prevState) : change;
+      pluginScope.state[pluginName] = updateState(
+        pluginScope.state[pluginName],
+        change,
+      );
 
       if (typeof cb === 'function') {
         cb();
@@ -77,4 +77,15 @@ function getPluginContext(
       // TODO: Emit event (requires pluginStore)
     },
   };
+}
+
+interface INotAFunction {
+  call?: never;
+}
+
+function updateState<State extends INotAFunction>(
+  prevState: State,
+  updater: State | ((prevState: State) => State),
+): State {
+  return typeof updater === 'function' ? updater(prevState) : updater;
 }
