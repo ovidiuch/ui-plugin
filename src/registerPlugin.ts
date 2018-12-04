@@ -19,24 +19,18 @@ export function registerPlugin<PluginConfig extends object, PluginState>(
 
   return {
     init: handler => {
-      registerPluginHandler(initHandlers, pluginName, handler);
+      pushPluginHandler(initHandlers, pluginName, handler);
     },
     method: (methodName, handler) => {
-      registerPluginHandler(methodHandlers, pluginName, {
-        methodName,
-        handler,
-      });
+      mapPluginHandler(methodHandlers, pluginName, methodName, handler);
     },
     on: (eventName, handler) => {
-      registerPluginHandler(eventHandlers, pluginName, {
-        eventName,
-        handler,
-      });
+      mapPluginHandler(eventHandlers, pluginName, eventName, handler);
     },
   };
 }
 
-function registerPluginHandler<T>(
+function pushPluginHandler<T>(
   handlers: { [pluginName: string]: T[] },
   pluginName: string,
   entry: T,
@@ -46,4 +40,17 @@ function registerPluginHandler<T>(
   }
 
   handlers[pluginName].push(entry);
+}
+
+function mapPluginHandler<T>(
+  handlers: { [pluginName: string]: { [entryName: string]: T } },
+  pluginName: string,
+  entryName: string,
+  entry: T,
+) {
+  if (!handlers[pluginName]) {
+    handlers[pluginName] = {};
+  }
+
+  handlers[pluginName][entryName] = entry;
 }

@@ -1,22 +1,28 @@
-import { PluginHandler } from './PluginHandler';
+import { IPluginContext } from './PluginContext';
 
-type RegisterInitHandler<PluginConfig extends object, PluginState> = (
-  handler: PluginHandler<PluginConfig, PluginState>,
+export type InitHandler<PluginConfig extends object, PluginState> = (
+  context: IPluginContext<PluginConfig, PluginState>,
+) => void | (() => unknown);
+
+export type MethodHandler<PluginConfig extends object, PluginState> = (
+  context: IPluginContext<PluginConfig, PluginState>,
+  ...args: any[]
+) => any;
+
+export type EventHandler<PluginConfig extends object, PluginState> = (
+  context: IPluginContext<PluginConfig, PluginState>,
+  ...args: any[]
 ) => void;
 
-type RegisterMethod<PluginConfig extends object, PluginState> = (
-  methodName: string,
-  handler: PluginHandler<PluginConfig, PluginState>,
-) => any;
-
-type RegisterEventListener<PluginConfig extends object, PluginState> = (
-  eventName: string,
-  handler: PluginHandler<PluginConfig, PluginState>,
-) => any;
-
 export interface IPluginApi<PluginConfig extends object, PluginState> {
-  init: RegisterInitHandler<PluginConfig, PluginState>;
-  method: RegisterMethod<PluginConfig, PluginState>;
-  on: RegisterEventListener<PluginConfig, PluginState>;
+  init: (handler: InitHandler<PluginConfig, PluginState>) => void;
+  method: (
+    eventName: string,
+    handler: MethodHandler<PluginConfig, PluginState>,
+  ) => void;
+  on: (
+    eventName: string,
+    handler: EventHandler<PluginConfig, PluginState>,
+  ) => void;
   // TODO: onStateChange
 }

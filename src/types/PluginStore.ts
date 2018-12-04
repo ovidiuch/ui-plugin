@@ -1,22 +1,20 @@
-import { PluginHandler } from './PluginHandler';
+import { EventHandler, InitHandler, MethodHandler } from './PluginApi';
 import { IPluginConfigs, IPluginStates } from './shared';
 
 export interface IPluginStore {
   defaultConfigs: IPluginConfigs;
   initialStates: IPluginStates;
   initHandlers: {
-    [pluginName: string]: Array<PluginHandler<any, any>>;
+    [pluginName: string]: Array<InitHandler<any, any>>;
   };
   methodHandlers: {
-    [pluginName: string]: Array<{
-      methodName: string;
-      handler: PluginHandler<any, any>;
-    }>;
+    [pluginName: string]: {
+      [methodName: string]: MethodHandler<any, any>;
+    };
   };
   eventHandlers: {
-    [pluginName: string]: Array<{
-      eventName: string;
-      handler: PluginHandler<any, any>;
-    }>;
+    [pluginName: string]: {
+      [eventName: string]: EventHandler<any, any>;
+    };
   };
 }

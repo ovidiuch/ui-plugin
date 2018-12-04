@@ -3,7 +3,7 @@ import { mountPlugins, registerPlugin, unregisterPlugins } from '..';
 afterEach(unregisterPlugins);
 
 it('gets default config from context', () => {
-  expect.assertions(1);
+  expect.hasAssertions();
 
   const { init } = registerPlugin({
     name: 'test-plugin',
@@ -18,7 +18,7 @@ it('gets default config from context', () => {
 });
 
 it('gets custom config from context', () => {
-  expect.assertions(1);
+  expect.hasAssertions();
 
   const { init } = registerPlugin({
     name: 'test-plugin',
@@ -37,7 +37,7 @@ it('gets custom config from context', () => {
 });
 
 it('gets config of other plugin from context', () => {
-  expect.assertions(1);
+  expect.hasAssertions();
 
   registerPlugin({
     name: 'test-plugin1',

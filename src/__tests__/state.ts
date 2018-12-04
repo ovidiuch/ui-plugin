@@ -3,7 +3,7 @@ import { mountPlugins, registerPlugin, unregisterPlugins } from '..';
 afterEach(unregisterPlugins);
 
 it('gets initial state from context', () => {
-  expect.assertions(1);
+  expect.hasAssertions();
 
   const { init } = registerPlugin({
     name: 'test-plugin',
@@ -18,7 +18,7 @@ it('gets initial state from context', () => {
 });
 
 it('gets custom state from context', () => {
-  expect.assertions(1);
+  expect.hasAssertions();
 
   const { init } = registerPlugin({
     name: 'test-plugin',
@@ -37,7 +37,7 @@ it('gets custom state from context', () => {
 });
 
 it('gets state of other plugin from context', () => {
-  expect.assertions(1);
+  expect.hasAssertions();
 
   registerPlugin({
     name: 'test-plugin1',
@@ -53,7 +53,7 @@ it('gets state of other plugin from context', () => {
 });
 
 it('sets state', () => {
-  expect.assertions(1);
+  expect.hasAssertions();
 
   const { init } = registerPlugin({
     name: 'test-plugin',
@@ -70,7 +70,7 @@ it('sets state', () => {
 });
 
 it('sets state using updater function', () => {
-  expect.assertions(1);
+  expect.hasAssertions();
 
   const { init } = registerPlugin({
     name: 'test-plugin',

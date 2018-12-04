@@ -5,6 +5,7 @@ import {
   IPluginContext,
   IPluginScope,
   IPluginStates,
+  IPluginStore,
 } from './types';
 
 // This method could also be called "createPluginContext", but is not perfectly
@@ -15,7 +16,8 @@ export function mountPlugins({
 }: { config?: IPluginConfigs; state?: IPluginStates } = {}) {
   // TODO: unmount plugins if mountPlugins is called again
 
-  const { defaultConfigs, initialStates, initHandlers } = getPluginStore();
+  const pluginStore = getPluginStore();
+  const { defaultConfigs, initialStates, initHandlers } = pluginStore;
 
   const pluginScope: IPluginScope = {
     unmounted: false,
@@ -28,7 +30,9 @@ export function mountPlugins({
   // Run all "init" handlers
   Object.keys(initHandlers).forEach(pluginName => {
     initHandlers[pluginName].forEach(handler => {
-      const returnCb = handler(getPluginContext(pluginScope, pluginName));
+      const returnCb = handler(
+        getPluginContext(pluginStore, pluginScope, pluginName),
+      );
 
       if (typeof returnCb === 'function') {
         unmountHandlers.push(returnCb);
@@ -52,6 +56,7 @@ export function mountPlugins({
 
 // TODO: Memoize per pluginScope & pluginName?
 function getPluginContext(
+  pluginStore: IPluginStore,
   pluginScope: IPluginScope,
   pluginName: string,
 ): IPluginContext<object, any> {
@@ -71,7 +76,12 @@ function getPluginContext(
       }
     },
     callMethod: (methodName, ...args) => {
-      // TODO: Call method (requires pluginStore)
+      const [otherPluginName, pluginMethodName] = methodName.split('.');
+
+      return pluginStore.methodHandlers[otherPluginName][pluginMethodName](
+        getPluginContext(pluginStore, pluginScope, otherPluginName),
+        ...args,
+      );
     },
     emitEvent: (eventName, ...args) => {
       // TODO: Emit event (requires pluginStore)
