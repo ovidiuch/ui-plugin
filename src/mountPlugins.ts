@@ -72,54 +72,66 @@ export function mountPlugins({
       return activeConfig[otherPluginName];
     }
 
-    // TODO: Move plugin context function outside return object literal
+    function getState() {
+      return activeState[pluginName];
+    }
+
+    function getStateOf(otherPluginName: string) {
+      return activeState[otherPluginName];
+    }
+
+    function setState(change: StateUpdater<any>, cb?: () => void) {
+      activeState = {
+        ...activeState,
+        [pluginName]: updateState(activeState[pluginName], change),
+      };
+
+      if (typeof cb === 'function') {
+        cb();
+      }
+    }
+
+    function callMethod(methodPath: string, ...args: Array<unknown>): any {
+      const [otherPluginName, methodName] = methodPath.split('.');
+
+      if (!plugins[otherPluginName]) {
+        throw new Error(`Plugin not found: ${otherPluginName}`);
+      }
+
+      const { methodHandlers } = plugins[otherPluginName];
+      const methodHandler = find(
+        methodHandlers,
+        i => i.methodName === methodName,
+      );
+
+      if (!methodHandler) {
+        throw new Error(`Method not found: ${methodPath}`);
+      }
+
+      return methodHandler.handler(getPluginContext(otherPluginName), ...args);
+    }
+
+    function emitEvent(eventName: string, ...args: Array<unknown>) {
+      pluginNames.forEach(otherPluginName => {
+        plugins[otherPluginName].eventHandlers.forEach(eventHandler => {
+          const { eventPath, handler } = eventHandler;
+          const [curEventPluginName, curEventName] = eventPath.split('.');
+
+          if (curEventPluginName === pluginName && curEventName === eventName) {
+            handler(getPluginContext(otherPluginName), ...args);
+          }
+        });
+      });
+    }
+
     return {
       getConfig,
       getConfigOf,
-      getState: () => activeState[pluginName],
-      getStateOf: otherPluginName => activeState[otherPluginName],
-      setState: (change, cb) => {
-        activeState = {
-          ...activeState,
-          [pluginName]: updateState(activeState[pluginName], change),
-        };
-
-        if (typeof cb === 'function') {
-          cb();
-        }
-      },
-      callMethod: (methodPath, ...args) => {
-        const [otherPluginName, methodName] = methodPath.split('.');
-
-        const methodHandler = find(
-          plugins[otherPluginName].methodHandlers,
-          i => i.methodName === methodName,
-        );
-
-        if (!methodHandler) {
-          throw new Error(`Method not found: ${methodPath}`);
-        }
-
-        return methodHandler.handler(
-          getPluginContext(otherPluginName),
-          ...args,
-        );
-      },
-      emitEvent: (eventName, ...args) => {
-        pluginNames.forEach(otherPluginName => {
-          plugins[otherPluginName].eventHandlers.forEach(eventHandler => {
-            const { eventPath, handler } = eventHandler;
-            const [curEventPluginName, curEventName] = eventPath.split('.');
-
-            if (
-              curEventPluginName === pluginName &&
-              curEventName === eventName
-            ) {
-              handler(getPluginContext(otherPluginName), ...args);
-            }
-          });
-        });
-      },
+      getState,
+      getStateOf,
+      setState,
+      callMethod,
+      emitEvent,
     };
   }
 }
