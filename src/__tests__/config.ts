@@ -40,13 +40,13 @@ it('gets config of other plugin from context', () => {
   expect.assertions(1);
 
   registerPlugin({
-    name: 'test-plugin',
+    name: 'test-plugin1',
     defaultConfig: { enabled: false },
   });
   const { init } = registerPlugin({ name: 'test-plugin2' });
 
   init(({ getConfigOf }) => {
-    expect(getConfigOf('test-plugin').enabled).toBe(false);
+    expect(getConfigOf('test-plugin1').enabled).toBe(false);
   });
 
   mountPlugins();

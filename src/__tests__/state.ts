@@ -40,13 +40,13 @@ it('gets state of other plugin from context', () => {
   expect.assertions(1);
 
   registerPlugin({
-    name: 'test-plugin',
+    name: 'test-plugin1',
     initialState: { counter: 0 },
   });
   const { init } = registerPlugin({ name: 'test-plugin2' });
 
   init(({ getStateOf }) => {
-    expect(getStateOf('test-plugin').counter).toBe(0);
+    expect(getStateOf('test-plugin1').counter).toBe(0);
   });
 
   mountPlugins();
