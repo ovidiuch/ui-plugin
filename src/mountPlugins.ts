@@ -1,7 +1,15 @@
 import { find, merge } from 'lodash';
 import { IPluginContext } from './PluginContext';
-import { getPluginStore, IPlugins } from './pluginStore';
-import { IPluginConfigs, IPluginStates, StateUpdater } from './shared';
+import { getPluginStore } from './pluginStore';
+import { StateUpdater } from './shared';
+
+interface IPluginConfigs {
+  [pluginName: string]: object;
+}
+
+interface IPluginStates {
+  [pluginName: string]: any;
+}
 
 export function mountPlugins({
   config,
@@ -22,23 +30,21 @@ export function mountPlugins({
     initialStates[pluginName] = plugins[pluginName].initialState;
   });
 
-  const pluginScope = {
-    unmounted: false,
-    config: merge({}, defaultConfigs, config),
-    state: merge({}, initialStates, state),
-  };
+  // let unmounted = false;
 
-  const unmountHandlers: Array<() => unknown> = [];
+  const activeConfig = merge({}, defaultConfigs, config);
+
+  let activeState = merge({}, initialStates, state);
+
+  let unmountHandlers: Array<() => unknown> = [];
 
   // Run all "init" handlers
   pluginNames.forEach(pluginName => {
     plugins[pluginName].initHandlers.forEach(handler => {
-      const returnCb = handler(
-        getPluginContext(plugins, pluginScope, pluginName),
-      );
+      const returnCb = handler(getPluginContext(pluginName));
 
       if (typeof returnCb === 'function') {
-        unmountHandlers.push(returnCb);
+        unmountHandlers = [...unmountHandlers, returnCb];
       }
     });
   });
@@ -46,7 +52,7 @@ export function mountPlugins({
   // TODO: Attach unmountPlugins to store, so it can be called in unregisterPlugins?
   const unmountPlugins = () => {
     // Mark scope as unmounted
-    pluginScope.unmounted = true;
+    // unmounted = true;
 
     // Run all "init" handler return handlers
     unmountHandlers.forEach(handler => handler());
@@ -55,63 +61,58 @@ export function mountPlugins({
   };
 
   return unmountPlugins;
-}
 
-// TODO: Memoize per pluginScope & pluginName?
-function getPluginContext(
-  plugins: IPlugins,
-  pluginScope: { config: IPluginConfigs; state: IPluginStates },
-  pluginName: string,
-): IPluginContext<object, any> {
-  return {
-    getConfig: () => pluginScope.config[pluginName],
-    getConfigOf: otherPluginName => pluginScope.config[otherPluginName],
-    getState: () => pluginScope.state[pluginName],
-    getStateOf: otherPluginName => pluginScope.state[otherPluginName],
-    setState: (change, cb) => {
-      pluginScope.state[pluginName] = updateState(
-        pluginScope.state[pluginName],
-        change,
-      );
+  // TODO: Memoize per pluginName
+  function getPluginContext(pluginName: string): IPluginContext<object, any> {
+    return {
+      getConfig: () => activeConfig[pluginName],
+      getConfigOf: otherPluginName => activeConfig[otherPluginName],
+      getState: () => activeState[pluginName],
+      getStateOf: otherPluginName => activeState[otherPluginName],
+      setState: (change, cb) => {
+        activeState = {
+          ...activeState,
+          [pluginName]: updateState(activeState[pluginName], change),
+        };
 
-      if (typeof cb === 'function') {
-        cb();
-      }
-    },
-    callMethod: (methodPath, ...args) => {
-      const [otherPluginName, methodName] = methodPath.split('.');
+        if (typeof cb === 'function') {
+          cb();
+        }
+      },
+      callMethod: (methodPath, ...args) => {
+        const [otherPluginName, methodName] = methodPath.split('.');
 
-      const methodHandler = find(
-        plugins[otherPluginName].methodHandlers,
-        i => i.methodName === methodName,
-      );
+        const methodHandler = find(
+          plugins[otherPluginName].methodHandlers,
+          i => i.methodName === methodName,
+        );
 
-      if (!methodHandler) {
-        // TODO: Throw
-        return;
-      }
+        if (!methodHandler) {
+          throw new Error(`Method not found: ${methodPath}`);
+        }
 
-      return methodHandler.handler(
-        getPluginContext(plugins, pluginScope, otherPluginName),
-        ...args,
-      );
-    },
-    emitEvent: (eventName, ...args) => {
-      Object.keys(plugins).forEach(otherPluginName => {
-        plugins[otherPluginName].eventHandlers.forEach(eventHandler => {
-          const { eventPath, handler } = eventHandler;
-          const [curEventPluginName, curEventName] = eventPath.split('.');
+        return methodHandler.handler(
+          getPluginContext(otherPluginName),
+          ...args,
+        );
+      },
+      emitEvent: (eventName, ...args) => {
+        Object.keys(plugins).forEach(otherPluginName => {
+          plugins[otherPluginName].eventHandlers.forEach(eventHandler => {
+            const { eventPath, handler } = eventHandler;
+            const [curEventPluginName, curEventName] = eventPath.split('.');
 
-          if (curEventPluginName === pluginName && curEventName === eventName) {
-            handler(
-              getPluginContext(plugins, pluginScope, otherPluginName),
-              ...args,
-            );
-          }
+            if (
+              curEventPluginName === pluginName &&
+              curEventName === eventName
+            ) {
+              handler(getPluginContext(otherPluginName), ...args);
+            }
+          });
         });
-      });
-    },
-  };
+      },
+    };
+  }
 }
 
 interface INotAFunction {
