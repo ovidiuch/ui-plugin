@@ -9,7 +9,6 @@ it('gets default config from context', () => {
     name: 'testPlugin',
     defaultConfig: { enabled: false },
   });
-
   init(({ getConfig }) => {
     expect(getConfig().enabled).toBe(false);
   });
@@ -24,7 +23,6 @@ it('gets custom config from context', () => {
     name: 'testPlugin',
     defaultConfig: { enabled: false },
   });
-
   init(({ getConfig }) => {
     expect(getConfig().enabled).toBe(true);
   });
@@ -43,8 +41,8 @@ it('gets config of other plugin from context', () => {
     name: 'testPlugin1',
     defaultConfig: { enabled: false },
   });
-  const { init } = registerPlugin({ name: 'testPlugin2' });
 
+  const { init } = registerPlugin({ name: 'testPlugin2' });
   init(({ getConfigOf }) => {
     expect(getConfigOf('testPlugin1').enabled).toBe(false);
   });

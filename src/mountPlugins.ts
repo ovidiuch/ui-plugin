@@ -29,8 +29,9 @@ export function mountPlugins({
     initialStates[pluginName] = plugins[pluginName].initialState;
   });
 
-  // TODO: Explain
-  // let unmounted = false;
+  // The unmounted flag helps detect plugin execution that leaks after plugins
+  // have been unmounted
+  let unmounted = false;
 
   // TODO: Explain
   const activeConfig = merge({}, defaultConfigs, config);
@@ -54,7 +55,7 @@ export function mountPlugins({
 
   const unmountPlugins = () => {
     // Mark scope as unmounted
-    // unmounted = true;
+    unmounted = true;
 
     // Run all "init" handler return handlers
     unmountHandlers.forEach(handler => handler());
@@ -81,6 +82,10 @@ export function mountPlugins({
     }
 
     function setState(change: StateUpdater<any>, cb?: () => void) {
+      if (unmounted) {
+        throw new Error(`Unmounted plugin ${pluginName} called setState`);
+      }
+
       activeState = {
         ...activeState,
         [pluginName]: updateState(activeState[pluginName], change),
@@ -92,6 +97,12 @@ export function mountPlugins({
     }
 
     function callMethod(methodPath: string, ...args: Array<unknown>): any {
+      if (unmounted) {
+        throw new Error(
+          `Unmounted plugin ${pluginName} called method ${methodPath}`,
+        );
+      }
+
       const [otherPluginName, methodName] = methodPath.split('.');
 
       if (!plugins[otherPluginName]) {
@@ -112,6 +123,12 @@ export function mountPlugins({
     }
 
     function emitEvent(eventName: string, ...args: Array<unknown>) {
+      if (unmounted) {
+        throw new Error(
+          `Unmounted plugin ${pluginName} emitted event ${eventName}`,
+        );
+      }
+
       pluginNames.forEach(otherPluginName => {
         plugins[otherPluginName].eventHandlers.forEach(eventHandler => {
           const { eventPath, handler } = eventHandler;

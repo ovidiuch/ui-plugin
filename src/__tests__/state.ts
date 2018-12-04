@@ -9,7 +9,6 @@ it('gets initial state from context', () => {
     name: 'testPlugin',
     initialState: { counter: 0 },
   });
-
   init(({ getState }) => {
     expect(getState().counter).toBe(0);
   });
@@ -24,7 +23,6 @@ it('gets custom state from context', () => {
     name: 'testPlugin',
     initialState: { counter: 0 },
   });
-
   init(({ getState }) => {
     expect(getState().counter).toBe(5);
   });
@@ -43,8 +41,8 @@ it('gets state of other plugin from context', () => {
     name: 'testPlugin1',
     initialState: { counter: 0 },
   });
-  const { init } = registerPlugin({ name: 'testPlugin2' });
 
+  const { init } = registerPlugin({ name: 'testPlugin2' });
   init(({ getStateOf }) => {
     expect(getStateOf('testPlugin1').counter).toBe(0);
   });
@@ -59,7 +57,6 @@ it('sets state', () => {
     name: 'testPlugin',
     initialState: { counter: 1 },
   });
-
   init(({ getState, setState }) => {
     setState({ counter: 2 }, () => {
       expect(getState().counter).toBe(2);
@@ -76,7 +73,6 @@ it('sets state using updater function', () => {
     name: 'testPlugin',
     initialState: { counter: 1 },
   });
-
   init(({ getState, setState }) => {
     setState(
       prevState => ({ counter: prevState.counter + 2 }),
@@ -87,4 +83,24 @@ it('sets state using updater function', () => {
   });
 
   mountPlugins();
+});
+
+it('throws exception after plugins unmounted', done => {
+  expect.hasAssertions();
+
+  const { init } = registerPlugin({
+    name: 'testPlugin',
+    initialState: { counter: 0 },
+  });
+  init(({ setState }) => {
+    setTimeout(() => {
+      expect(() => {
+        setState({ counter: 1 });
+      }).toThrow('Unmounted plugin testPlugin called setState');
+      done();
+    });
+  });
+
+  const unmountPlugins = mountPlugins();
+  unmountPlugins();
 });
