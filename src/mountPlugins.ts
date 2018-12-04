@@ -61,7 +61,14 @@ function getPluginContext(
     getState: () => pluginScope.state[pluginName],
     getStateOf: otherPluginName => pluginScope.state[otherPluginName],
     setState: (change, cb) => {
-      // TODO: Set state (requires pluginStore)
+      const prevState = pluginScope.state[pluginName];
+
+      pluginScope.state[pluginName] =
+        typeof change === 'function' ? change(prevState) : change;
+
+      if (typeof cb === 'function') {
+        cb();
+      }
     },
     callMethod: (methodName, ...args) => {
       // TODO: Call method (requires pluginStore)

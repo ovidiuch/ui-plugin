@@ -51,3 +51,40 @@ it('gets state of other plugin from context', () => {
 
   mountPlugins();
 });
+
+it('sets state', () => {
+  expect.assertions(1);
+
+  const { init } = registerPlugin({
+    name: 'test-plugin',
+    initialState: { counter: 1 },
+  });
+
+  init(({ getState, setState }) => {
+    setState({ counter: 2 }, () => {
+      expect(getState().counter).toBe(2);
+    });
+  });
+
+  mountPlugins();
+});
+
+it('sets state using updater function', () => {
+  expect.assertions(1);
+
+  const { init } = registerPlugin({
+    name: 'test-plugin',
+    initialState: { counter: 1 },
+  });
+
+  init(({ getState, setState }) => {
+    setState(
+      prevState => ({ counter: prevState.counter + 2 }),
+      () => {
+        expect(getState().counter).toBe(3);
+      },
+    );
+  });
+
+  mountPlugins();
+});
