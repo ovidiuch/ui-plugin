@@ -1,7 +1,7 @@
 {
   "name": "ui-plugin",
   "version": "1.0.0-alpha.0",
-  "description": "API for 3rd party UI plugins",
+  "description": "API for composable 3rd party UI plugins",
   "repository": "https://github.com/skidding/ui-plugin.git",
   "author": "Ovidiu Cherecheș <skidding@gmail.com>",
   "license": "MIT",
