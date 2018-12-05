@@ -1,12 +1,18 @@
 {
   "name": "ui-plugin",
-  "version": "0.0.0",
+  "version": "1.0.0-alpha.0",
   "description": "API for 3rd party UI plugins",
   "repository": "https://github.com/skidding/ui-plugin.git",
   "author": "Ovidiu Cherecheș <skidding@gmail.com>",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && yarn tsc"
+  },
   "dependencies": {
     "lodash": "^4.17.11"
   },
