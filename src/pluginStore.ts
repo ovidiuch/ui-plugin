@@ -41,6 +41,7 @@ export function addPlugin({
     initHandlers: [],
     methodHandlers: [],
     eventHandlers: [],
+    stateHandlers: [],
   };
 }
 
@@ -79,6 +80,17 @@ export function addEventHandler({
 }) {
   const { eventHandlers } = getPlugin(pluginName);
   eventHandlers.push({ eventPath, handler });
+}
+
+export function addStateHandler({
+  pluginName,
+  handler,
+}: {
+  pluginName: string;
+  handler: EventHandler<any, any>;
+}) {
+  const { stateHandlers } = getPlugin(pluginName);
+  stateHandlers.push(handler);
 }
 
 function getPlugin(pluginName: string) {

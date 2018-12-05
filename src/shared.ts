@@ -1,5 +1,11 @@
 export type StateUpdater<State> = State | ((prevState: State) => State);
 
+export interface IPluginDef<PluginConfig extends object, PluginState> {
+  name: string;
+  defaultConfig?: PluginConfig;
+  initialState?: PluginState;
+}
+
 export interface IPluginContext<PluginConfig extends object, PluginState> {
   getConfig: () => PluginConfig;
   getConfigOf: (pluginName: string) => { [attr: string]: any };
@@ -25,6 +31,10 @@ export type EventHandler<PluginConfig extends object, PluginState> = (
   ...args: any[]
 ) => void;
 
+export type StateHandler<PluginConfig extends object, PluginState> = (
+  context: IPluginContext<PluginConfig, PluginState>,
+) => void;
+
 interface IPlugin {
   defaultConfig: object;
   initialState: any;
@@ -37,8 +47,23 @@ interface IPlugin {
     eventPath: string;
     handler: MethodHandler<any, any>;
   }>;
+  // At the moment state handlers fire on state changes from any plugin
+  stateHandlers: Array<StateHandler<any, any>>;
 }
 
 export interface IPlugins {
   [plugiName: string]: IPlugin;
+}
+
+export interface IPluginConfigs {
+  [pluginName: string]: object;
+}
+
+export interface IPluginStates {
+  [pluginName: string]: any;
+}
+
+export interface IPluginMountOpts {
+  config?: IPluginConfigs;
+  state?: IPluginStates;
 }
