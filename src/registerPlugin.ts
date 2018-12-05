@@ -8,15 +8,10 @@ import {
 import {
   EventHandler,
   InitHandler,
+  IPluginDef,
   MethodHandler,
   StateHandler,
 } from './shared';
-
-interface IPluginDef<PluginConfig extends object, PluginState> {
-  name: string;
-  defaultConfig?: PluginConfig;
-  initialState?: PluginState;
-}
 
 export function registerPlugin<PluginConfig extends object, PluginState>(
   pluginDef: IPluginDef<PluginConfig, PluginState>,

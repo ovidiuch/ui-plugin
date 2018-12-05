@@ -1,5 +1,11 @@
 export type StateUpdater<State> = State | ((prevState: State) => State);
 
+export interface IPluginDef<PluginConfig extends object, PluginState> {
+  name: string;
+  defaultConfig?: PluginConfig;
+  initialState?: PluginState;
+}
+
 export interface IPluginContext<PluginConfig extends object, PluginState> {
   getConfig: () => PluginConfig;
   getConfigOf: (pluginName: string) => { [attr: string]: any };
@@ -48,4 +54,17 @@ interface IPlugin {
 
 export interface IPlugins {
   [plugiName: string]: IPlugin;
+}
+
+export interface IPluginConfigs {
+  [pluginName: string]: object;
+}
+
+export interface IPluginStates {
+  [pluginName: string]: any;
+}
+
+export interface IPluginMountOpts {
+  config?: IPluginConfigs;
+  state?: IPluginStates;
 }

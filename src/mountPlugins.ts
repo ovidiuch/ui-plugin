@@ -1,19 +1,14 @@
 import { find, merge } from 'lodash';
 import { getPlugins, setUnmountCallback, unmountPlugins } from './pluginStore';
-import { IPluginContext, StateUpdater } from './shared';
+import {
+  IPluginConfigs,
+  IPluginContext,
+  IPluginMountOpts,
+  IPluginStates,
+  StateUpdater,
+} from './shared';
 
-interface IPluginConfigs {
-  [pluginName: string]: object;
-}
-
-interface IPluginStates {
-  [pluginName: string]: any;
-}
-
-export function mountPlugins({
-  config,
-  state,
-}: { config?: IPluginConfigs; state?: IPluginStates } = {}) {
+export function mountPlugins({ config, state }: IPluginMountOpts = {}) {
   // Ensure mounting more than once doesn't duplicate plugin execution
   unmountPlugins();
 
