@@ -48,7 +48,6 @@ interface IPlugin {
     handler: MethodHandler<any, any>;
   }>;
   // At the moment state handlers fire on state changes from any plugin
-  // TODO: Bind state handlers to the plugins they draw state from
   stateHandlers: Array<StateHandler<any, any>>;
 }
 
