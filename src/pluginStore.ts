@@ -1,27 +1,9 @@
+import { getGlobalStore } from './global';
 import { EventHandler, InitHandler, MethodHandler } from './shared';
 
-interface IPlugin {
-  defaultConfig: object;
-  initialState: any;
-  initHandlers: Array<InitHandler<any, any>>;
-  methodHandlers: Array<{
-    methodName: string;
-    handler: MethodHandler<any, any>;
-  }>;
-  eventHandlers: Array<{
-    eventPath: string;
-    handler: MethodHandler<any, any>;
-  }>;
-}
-
-export interface IPlugins {
-  [plugiName: string]: IPlugin;
-}
-
-// TODO: Attach to global namespace
-let plugins: IPlugins = {};
-
 export function getPluginStore() {
+  const { plugins } = getGlobalStore();
+
   return {
     plugins,
     addPlugin,
@@ -32,7 +14,8 @@ export function getPluginStore() {
 }
 
 export function resetPluginStore() {
-  plugins = {};
+  const store = getGlobalStore();
+  store.plugins = {};
 }
 
 function addPlugin({
@@ -44,6 +27,8 @@ function addPlugin({
   defaultConfig: object;
   initialState: any;
 }) {
+  const { plugins } = getGlobalStore();
+
   plugins[name] = {
     defaultConfig,
     initialState,
@@ -91,6 +76,8 @@ function addEventHandler({
 }
 
 function getPlugin(pluginName: string) {
+  const { plugins } = getGlobalStore();
+
   if (!plugins[pluginName]) {
     throw new Error(`Plugin not found ${pluginName}`);
   }

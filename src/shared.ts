@@ -24,3 +24,21 @@ export type EventHandler<PluginConfig extends object, PluginState> = (
   context: IPluginContext<PluginConfig, PluginState>,
   ...args: any[]
 ) => void;
+
+interface IPlugin {
+  defaultConfig: object;
+  initialState: any;
+  initHandlers: Array<InitHandler<any, any>>;
+  methodHandlers: Array<{
+    methodName: string;
+    handler: MethodHandler<any, any>;
+  }>;
+  eventHandlers: Array<{
+    eventPath: string;
+    handler: MethodHandler<any, any>;
+  }>;
+}
+
+export interface IPlugins {
+  [plugiName: string]: IPlugin;
+}
