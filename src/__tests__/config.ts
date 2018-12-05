@@ -1,6 +1,6 @@
-import { mountPlugins, registerPlugin, resetPluginStore } from '..';
+import { mountPlugins, registerPlugin, resetPlugins } from '..';
 
-afterEach(resetPluginStore);
+afterEach(resetPlugins);
 
 it('gets default config from context', () => {
   expect.hasAssertions();

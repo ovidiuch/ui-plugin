@@ -1,24 +1,17 @@
 import { getGlobalStore } from './global';
 import { EventHandler, InitHandler, MethodHandler } from './shared';
 
-export function getPluginStore() {
-  const { plugins } = getGlobalStore();
 
-  return {
-    plugins,
-    addPlugin,
-    addInitHandler,
-    addMethodHandler,
-    addEventHandler,
-  };
-}
-
-export function resetPluginStore() {
+export function resetPlugins() {
   const store = getGlobalStore();
   store.plugins = {};
 }
 
-function addPlugin({
+export function getPlugins() {
+  return getGlobalStore().plugins;
+}
+
+export function addPlugin({
   name,
   defaultConfig,
   initialState,
@@ -38,7 +31,7 @@ function addPlugin({
   };
 }
 
-function addInitHandler({
+export function addInitHandler({
   pluginName,
   handler,
 }: {
@@ -49,7 +42,7 @@ function addInitHandler({
   initHandlers.push(handler);
 }
 
-function addMethodHandler({
+export function addMethodHandler({
   pluginName,
   methodName,
   handler,
@@ -62,7 +55,7 @@ function addMethodHandler({
   methodHandlers.push({ methodName, handler });
 }
 
-function addEventHandler({
+export function addEventHandler({
   pluginName,
   eventPath,
   handler,

@@ -1,4 +1,9 @@
-import { getPluginStore } from './pluginStore';
+import {
+  addEventHandler,
+  addInitHandler,
+  addMethodHandler,
+  addPlugin,
+} from './pluginStore';
 import { EventHandler, InitHandler, MethodHandler } from './shared';
 
 interface IPluginDef<PluginConfig extends object, PluginState> {
@@ -11,13 +16,6 @@ export function registerPlugin<PluginConfig extends object, PluginState>(
   pluginDef: IPluginDef<PluginConfig, PluginState>,
 ) {
   const { name, defaultConfig = {}, initialState } = pluginDef;
-
-  const {
-    addPlugin,
-    addInitHandler,
-    addMethodHandler,
-    addEventHandler,
-  } = getPluginStore();
 
   addPlugin({
     name,

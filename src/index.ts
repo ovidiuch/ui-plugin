@@ -1,3 +1,3 @@
 export { mountPlugins } from './mountPlugins';
-export { resetPluginStore } from './pluginStore';
+export { getPlugins, resetPlugins } from './pluginStore';
 export { registerPlugin } from './registerPlugin';

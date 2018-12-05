@@ -1,5 +1,5 @@
 import { find, merge } from 'lodash';
-import { getPluginStore } from './pluginStore';
+import { getPlugins } from './pluginStore';
 import { IPluginContext, StateUpdater } from './shared';
 
 interface IPluginConfigs {
@@ -16,7 +16,7 @@ export function mountPlugins({
 }: { config?: IPluginConfigs; state?: IPluginStates } = {}) {
   // TODO: Unmount plugins if mountPlugins is called again?
 
-  const { plugins } = getPluginStore();
+  const plugins = getPlugins();
   const pluginNames = Object.keys(plugins);
 
   const defaultConfigs: IPluginConfigs = {};
