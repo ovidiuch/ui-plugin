@@ -26,3 +26,16 @@ it('calls return callback of init handler on unmount', () => {
 
   expect(returnCallback).toBeCalled();
 });
+
+it('calls return callback of init handler on re-mount', () => {
+  const { init } = registerPlugin({
+    name: 'testPlugin',
+  });
+  const returnCallback = jest.fn();
+  init(() => returnCallback);
+
+  mountPlugins();
+  mountPlugins();
+
+  expect(returnCallback).toBeCalledTimes(1);
+});

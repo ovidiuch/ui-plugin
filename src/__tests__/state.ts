@@ -28,9 +28,7 @@ it('gets custom state from context', () => {
   });
 
   mountPlugins({
-    state: {
-      testPlugin: { counter: 5 },
-    },
+    state: { testPlugin: { counter: 5 } },
   });
 });
 
@@ -103,4 +101,26 @@ it('throws exception after plugins unmounted', done => {
 
   const unmountPlugins = mountPlugins();
   unmountPlugins();
+});
+
+it('gets state from 2nd mount context', () => {
+  let counter = 0;
+
+  const { init } = registerPlugin({
+    name: 'testPlugin',
+    initialState: { counter },
+  });
+  init(({ getState }) => {
+    counter = getState().counter;
+  });
+
+  mountPlugins({
+    state: { testPlugin: { counter: 5 } },
+  });
+  expect(counter).toBe(5);
+
+  mountPlugins({
+    state: { testPlugin: { counter: 10 } },
+  });
+  expect(counter).toBe(10);
 });

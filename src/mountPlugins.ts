@@ -1,5 +1,5 @@
 import { find, merge } from 'lodash';
-import { getPlugins } from './pluginStore';
+import { getPlugins, setUnmountCallback, unmountPlugins } from './pluginStore';
 import { IPluginContext, StateUpdater } from './shared';
 
 interface IPluginConfigs {
@@ -14,7 +14,8 @@ export function mountPlugins({
   config,
   state,
 }: { config?: IPluginConfigs; state?: IPluginStates } = {}) {
-  // TODO: Unmount plugins if mountPlugins is called again?
+  // Ensure mounting more than once doesn't duplicate plugin execution
+  unmountPlugins();
 
   const plugins = getPlugins();
   const pluginNames = Object.keys(plugins);
@@ -33,13 +34,15 @@ export function mountPlugins({
   // have been unmounted
   let unmounted = false;
 
-  // TODO: Explain
+  // The merger of the default config with the optional passed-in config makes
+  // up the (immutable) config this scope is bound to
   const activeConfig = merge({}, defaultConfigs, config);
 
-  // TODO: Explain
+  // The merger of the initial state with the optional passed-in state makes
+  // up the start value of the (mutable) state this scope is bound to
   let activeState = merge({}, initialStates, state);
 
-  // TODO: Explain
+  // Collect unmount handlers from this scope
   let unmountHandlers: Array<() => unknown> = [];
 
   // Run all "init" handlers
@@ -53,7 +56,7 @@ export function mountPlugins({
     });
   });
 
-  const unmountPlugins = () => {
+  const unmount = () => {
     // Mark scope as unmounted
     unmounted = true;
 
@@ -61,9 +64,13 @@ export function mountPlugins({
     unmountHandlers.forEach(handler => handler());
   };
 
-  return unmountPlugins;
+  // There can only be one active plugin scope at a time. We bind the unmount
+  // callback of this scope globally to call it when re-mounting.
+  setUnmountCallback(unmount);
 
-  // TODO: Memoize per pluginName
+  return unmount;
+
+  // TODO: Memoize plugin context per plugin name (bound to this scope)
   function getPluginContext(pluginName: string): IPluginContext<object, any> {
     function getConfig() {
       return activeConfig[pluginName];

@@ -1,10 +1,23 @@
 import { getGlobalStore } from './global';
 import { EventHandler, InitHandler, MethodHandler } from './shared';
 
-
 export function resetPlugins() {
+  unmountPlugins();
+  getGlobalStore().plugins = {};
+}
+
+export function setUnmountCallback(cb: () => void) {
   const store = getGlobalStore();
-  store.plugins = {};
+  store.unmount = cb;
+}
+
+export function unmountPlugins() {
+  const store = getGlobalStore();
+
+  if (typeof store.unmount === 'function') {
+    store.unmount();
+    store.unmount = null;
+  }
 }
 
 export function getPlugins() {
