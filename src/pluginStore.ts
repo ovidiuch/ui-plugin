@@ -60,8 +60,8 @@ function addInitHandler({
   pluginName: string;
   handler: InitHandler<any, any>;
 }) {
-  // TODO: Throw if plugin doesn't exist
-  plugins[pluginName].initHandlers.push(handler);
+  const { initHandlers } = getPlugin(pluginName);
+  initHandlers.push(handler);
 }
 
 function addMethodHandler({
@@ -73,8 +73,8 @@ function addMethodHandler({
   methodName: string;
   handler: MethodHandler<any, any>;
 }) {
-  // TODO: Throw if plugin doesn't exist
-  plugins[pluginName].methodHandlers.push({ methodName, handler });
+  const { methodHandlers } = getPlugin(pluginName);
+  methodHandlers.push({ methodName, handler });
 }
 
 function addEventHandler({
@@ -86,6 +86,14 @@ function addEventHandler({
   eventPath: string;
   handler: EventHandler<any, any>;
 }) {
-  // TODO: Throw if plugin doesn't exist
-  plugins[pluginName].eventHandlers.push({ eventPath, handler });
+  const { eventHandlers } = getPlugin(pluginName);
+  eventHandlers.push({ eventPath, handler });
+}
+
+function getPlugin(pluginName: string) {
+  if (!plugins[pluginName]) {
+    throw new Error(`Plugin not found ${pluginName}`);
+  }
+
+  return plugins[pluginName];
 }
