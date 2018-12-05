@@ -25,6 +25,10 @@ export type EventHandler<PluginConfig extends object, PluginState> = (
   ...args: any[]
 ) => void;
 
+export type StateHandler<PluginConfig extends object, PluginState> = (
+  context: IPluginContext<PluginConfig, PluginState>,
+) => void;
+
 interface IPlugin {
   defaultConfig: object;
   initialState: any;
@@ -37,6 +41,9 @@ interface IPlugin {
     eventPath: string;
     handler: MethodHandler<any, any>;
   }>;
+  // At the moment state handlers fire on state changes from any plugin
+  // TODO: Bind state handlers to the plugins they draw state from
+  stateHandlers: Array<StateHandler<any, any>>;
 }
 
 export interface IPlugins {

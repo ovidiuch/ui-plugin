@@ -3,8 +3,14 @@ import {
   addInitHandler,
   addMethodHandler,
   addPlugin,
+  addStateHandler,
 } from './pluginStore';
-import { EventHandler, InitHandler, MethodHandler } from './shared';
+import {
+  EventHandler,
+  InitHandler,
+  MethodHandler,
+  StateHandler,
+} from './shared';
 
 interface IPluginDef<PluginConfig extends object, PluginState> {
   name: string;
@@ -41,9 +47,14 @@ export function registerPlugin<PluginConfig extends object, PluginState>(
     addEventHandler({ pluginName: name, eventPath, handler });
   }
 
+  function onState(handler: StateHandler<PluginConfig, PluginState>) {
+    addStateHandler({ pluginName: name, handler });
+  }
+
   return {
     init,
     method,
     on,
+    onState,
   };
 }

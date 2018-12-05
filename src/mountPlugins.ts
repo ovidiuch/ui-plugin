@@ -98,6 +98,13 @@ export function mountPlugins({
         [pluginName]: updateState(activeState[pluginName], change),
       };
 
+      // Trigger all state change handlers
+      pluginNames.forEach(otherPluginName => {
+        plugins[otherPluginName].stateHandlers.forEach(handler => {
+          handler(getPluginContext(otherPluginName));
+        });
+      });
+
       if (typeof cb === 'function') {
         cb();
       }
