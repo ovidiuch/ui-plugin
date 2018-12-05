@@ -11,7 +11,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf dist && yarn tsc"
+    "lint": "tslint --project tsconfig.json",
+    "test": "jest src --coverage",
+    "build": "rm -rf dist && yarn lint && yarn tsc"
   },
   "dependencies": {
     "lodash": "^4.17.11"
