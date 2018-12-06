@@ -1,8 +1,13 @@
-import { IPlugins } from './shared';
+import { IPluginContext, IPlugins } from './shared';
+
+export interface IMountedApi {
+  getPluginContext: (pluginName: string) => IPluginContext<any, any>;
+  unmount: () => void;
+}
 
 interface IGlobalStore {
   plugins: IPlugins;
-  unmount: null | (() => void);
+  mountedApi: null | IMountedApi;
 }
 
 declare var global: {
@@ -14,7 +19,7 @@ export function getGlobalStore() {
   if (!global.UiPlugin) {
     global.UiPlugin = {
       plugins: {},
-      unmount: null,
+      mountedApi: null,
     };
   }
 
