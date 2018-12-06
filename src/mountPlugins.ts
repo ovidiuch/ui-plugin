@@ -13,15 +13,17 @@ export function mountPlugins({ config, state }: IPluginMountOpts = {}) {
   unmountPlugins();
 
   const plugins = getPlugins();
-  const pluginNames = Object.keys(plugins);
+  const enabledPluginNames = Object.keys(plugins).filter(
+    pluginName => plugins[pluginName].enabled,
+  );
 
   const defaultConfigs: IPluginConfigs = {};
-  pluginNames.forEach(pluginName => {
+  enabledPluginNames.forEach(pluginName => {
     defaultConfigs[pluginName] = plugins[pluginName].defaultConfig;
   });
 
   const initialStates: IPluginStates = {};
-  pluginNames.forEach(pluginName => {
+  enabledPluginNames.forEach(pluginName => {
     initialStates[pluginName] = plugins[pluginName].initialState;
   });
 
@@ -41,7 +43,7 @@ export function mountPlugins({ config, state }: IPluginMountOpts = {}) {
   let unmountHandlers: Array<() => unknown> = [];
 
   // Run all "init" handlers
-  pluginNames.forEach(pluginName => {
+  enabledPluginNames.forEach(pluginName => {
     plugins[pluginName].initHandlers.forEach(handler => {
       const returnCb = handler(getPluginContext(pluginName));
 
@@ -73,6 +75,12 @@ export function mountPlugins({ config, state }: IPluginMountOpts = {}) {
     }
 
     function getConfigOf(otherPluginName: string) {
+      if (enabledPluginNames.indexOf(otherPluginName) === -1) {
+        throw new Error(
+          `Requested config of missing plugin ${otherPluginName}`,
+        );
+      }
+
       return activeConfig[otherPluginName];
     }
 
@@ -81,6 +89,10 @@ export function mountPlugins({ config, state }: IPluginMountOpts = {}) {
     }
 
     function getStateOf(otherPluginName: string) {
+      if (enabledPluginNames.indexOf(otherPluginName) === -1) {
+        throw new Error(`Requested state of missing plugin ${otherPluginName}`);
+      }
+
       return activeState[otherPluginName];
     }
 
@@ -95,7 +107,7 @@ export function mountPlugins({ config, state }: IPluginMountOpts = {}) {
       };
 
       // Trigger all state change handlers
-      pluginNames.forEach(otherPluginName => {
+      enabledPluginNames.forEach(otherPluginName => {
         plugins[otherPluginName].stateHandlers.forEach(handler => {
           handler(getPluginContext(otherPluginName));
         });
@@ -139,7 +151,7 @@ export function mountPlugins({ config, state }: IPluginMountOpts = {}) {
         );
       }
 
-      pluginNames.forEach(otherPluginName => {
+      enabledPluginNames.forEach(otherPluginName => {
         plugins[otherPluginName].eventHandlers.forEach(eventHandler => {
           const { eventPath, handler } = eventHandler;
           const [curEventPluginName, curEventName] = eventPath.split('.');
