@@ -7,10 +7,10 @@ it('gets default config from context', () => {
 
   const { init } = registerPlugin({
     name: 'testPlugin',
-    defaultConfig: { enabled: false },
+    defaultConfig: { tabSize: 2 },
   });
   init(({ getConfig }) => {
-    expect(getConfig().enabled).toBe(false);
+    expect(getConfig().tabSize).toBe(2);
   });
 
   mountPlugins();
@@ -21,15 +21,15 @@ it('gets custom config from context', () => {
 
   const { init } = registerPlugin({
     name: 'testPlugin',
-    defaultConfig: { enabled: false },
+    defaultConfig: { tabSize: 2 },
   });
   init(({ getConfig }) => {
-    expect(getConfig().enabled).toBe(true);
+    expect(getConfig().tabSize).toBe(4);
   });
 
   mountPlugins({
     config: {
-      testPlugin: { enabled: true },
+      testPlugin: { tabSize: 4 },
     },
   });
 });
@@ -39,12 +39,12 @@ it('gets config of other plugin from context', () => {
 
   registerPlugin({
     name: 'testPlugin1',
-    defaultConfig: { enabled: false },
+    defaultConfig: { tabSize: 2 },
   });
 
   const { init } = registerPlugin({ name: 'testPlugin2' });
   init(({ getConfigOf }) => {
-    expect(getConfigOf('testPlugin1').enabled).toBe(false);
+    expect(getConfigOf('testPlugin1').tabSize).toBe(2);
   });
 
   mountPlugins();
