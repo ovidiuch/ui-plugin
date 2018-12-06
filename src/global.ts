@@ -1,8 +1,9 @@
 import { IPluginContext, IPlugins } from './shared';
 
 export interface IMountedApi {
-  getPluginContext: (pluginName: string) => IPluginContext<any, any>;
   unmount: () => void;
+  reload: () => void;
+  getPluginContext: (pluginName: string) => IPluginContext<any, any>;
 }
 
 interface IGlobalStore {

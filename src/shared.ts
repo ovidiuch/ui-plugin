@@ -2,6 +2,7 @@ export type StateUpdater<State> = State | ((prevState: State) => State);
 
 export interface IPluginDef<PluginConfig extends object, PluginState> {
   name: string;
+  enabled?: boolean;
   defaultConfig?: PluginConfig;
   initialState?: PluginState;
 }
@@ -35,7 +36,8 @@ export type StateHandler<PluginConfig extends object, PluginState> = (
   context: IPluginContext<PluginConfig, PluginState>,
 ) => void;
 
-interface IPlugin {
+export interface IPlugin {
+  enabled: boolean;
   defaultConfig: object;
   initialState: any;
   initHandlers: Array<InitHandler<any, any>>;

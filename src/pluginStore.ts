@@ -1,6 +1,7 @@
 import { getGlobalStore, IMountedApi } from './global';
-import { EventHandler, InitHandler, MethodHandler } from './shared';
+import { EventHandler, InitHandler, IPlugin, MethodHandler } from './shared';
 
+// Meant for testing cleanup purposes
 export function resetPlugins() {
   unmountPlugins();
   getGlobalStore().plugins = {};
@@ -24,6 +25,15 @@ export function getPlugins() {
   return getGlobalStore().plugins;
 }
 
+export function enablePlugin(pluginName: string, enabled: boolean) {
+  const plugin = getPlugin(pluginName);
+
+  setPlugin(pluginName, {
+    ...plugin,
+    enabled,
+  });
+}
+
 export function getPluginContext(pluginName: string) {
   const { mountedApi } = getGlobalStore();
 
@@ -36,23 +46,24 @@ export function getPluginContext(pluginName: string) {
 
 export function addPlugin({
   name,
+  enabled,
   defaultConfig,
   initialState,
 }: {
   name: string;
+  enabled: boolean;
   defaultConfig: object;
   initialState: any;
 }) {
-  const { plugins } = getGlobalStore();
-
-  plugins[name] = {
+  setPlugin(name, {
+    enabled,
     defaultConfig,
     initialState,
     initHandlers: [],
     methodHandlers: [],
     eventHandlers: [],
     stateHandlers: [],
-  };
+  });
 }
 
 export function addInitHandler({
@@ -111,4 +122,14 @@ function getPlugin(pluginName: string) {
   }
 
   return plugins[pluginName];
+}
+
+function setPlugin(pluginName: string, plugin: IPlugin) {
+  const store = getGlobalStore();
+
+  store.plugins[pluginName] = plugin;
+
+  if (store.mountedApi) {
+    store.mountedApi.reload();
+  }
 }
