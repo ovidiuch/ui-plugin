@@ -55,8 +55,9 @@ export function mountPlugins({ config, state }: IPluginMountOpts = {}) {
     // Mark scope as unmounted
     unmounted = true;
 
-    // Run all "init" handler return handlers
+    // Run all "init" handler return handlers and remove their references
     unmountHandlers.forEach(handler => handler());
+    unmountHandlers = [];
   };
 
   // There can only be one active plugin scope at a time. We bind the unmount
