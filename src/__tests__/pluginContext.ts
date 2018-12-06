@@ -10,13 +10,13 @@ afterEach(resetPlugins);
 it('gets plugin context', () => {
   registerPlugin({
     name: 'testPlugin',
-    initialState: { enabled: false },
+    initialState: { active: false },
   });
 
   mountPlugins();
 
   const { getState } = getPluginContext('testPlugin');
-  expect(getState()).toEqual({ enabled: false });
+  expect(getState()).toEqual({ active: false });
 });
 
 it('throws exception if plugins are not mounted', () => {
