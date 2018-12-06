@@ -57,7 +57,10 @@ export function mountPlugins(opts: IPluginMountOpts = {}) {
 
   function unmount() {
     if (scope) {
-      cleanUpScope(scope);
+      // Run all "init" handler return handlers and remove their references
+      scope.unmountHandlers.forEach(handler => handler());
+      scope.unmountHandlers = [];
+
       scope = null;
     }
   }
@@ -206,12 +209,6 @@ function createScope(opts: IPluginMountOpts): IPluginScope {
     state: merge({}, getInitialStates(plugins), opts.state),
     unmountHandlers: [],
   };
-}
-
-function cleanUpScope(scope: IPluginScope) {
-  // Run all "init" handler return handlers and remove their references
-  scope.unmountHandlers.forEach(handler => handler());
-  scope.unmountHandlers = [];
 }
 
 function getDefaultConfigs(plugins: IPlugins): IPluginConfigs {
