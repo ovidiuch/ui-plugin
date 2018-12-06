@@ -24,6 +24,20 @@ export function getPlugins() {
   return getGlobalStore().plugins;
 }
 
+export function enablePlugin(pluginName: string, enabled: boolean) {
+  const store = getGlobalStore();
+  const plugin = getPlugin(pluginName);
+
+  store.plugins[pluginName] = {
+    ...plugin,
+    enabled,
+  };
+
+  if (store.mountedApi) {
+    store.mountedApi.reload();
+  }
+}
+
 export function getPluginContext(pluginName: string) {
   const { mountedApi } = getGlobalStore();
 

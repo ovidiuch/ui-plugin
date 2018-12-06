@@ -4,110 +4,129 @@ import {
   IPluginConfigs,
   IPluginContext,
   IPluginMountOpts,
+  IPlugins,
   IPluginStates,
   StateUpdater,
 } from './shared';
 
-export function mountPlugins({ config, state }: IPluginMountOpts = {}) {
-  // Ensure mounting more than once doesn't duplicate plugin execution
-  unmountPlugins();
+type UnmountHandlers = () => unknown;
 
-  const plugins = getPlugins();
-  const enabledPluginNames = Object.keys(plugins).filter(
-    pluginName => plugins[pluginName].enabled,
-  );
-
-  const defaultConfigs: IPluginConfigs = {};
-  enabledPluginNames.forEach(pluginName => {
-    defaultConfigs[pluginName] = plugins[pluginName].defaultConfig;
-  });
-
-  const initialStates: IPluginStates = {};
-  enabledPluginNames.forEach(pluginName => {
-    initialStates[pluginName] = plugins[pluginName].initialState;
-  });
-
-  // The unmounted flag helps detect plugin execution that leaks after plugins
-  // have been unmounted
-  let unmounted = false;
-
+interface IPluginScope {
+  plugins: IPlugins;
   // The merger of the default config with the optional passed-in config makes
   // up the (immutable) config this scope is bound to
-  const activeConfig = merge({}, defaultConfigs, config);
-
+  config: IPluginConfigs;
   // The merger of the initial state with the optional passed-in state makes
   // up the start value of the (mutable) state this scope is bound to
-  let activeState = merge({}, initialStates, state);
-
+  state: IPluginStates;
   // Collect unmount handlers from this scope
-  let unmountHandlers: Array<() => unknown> = [];
+  unmountHandlers: UnmountHandlers[];
+}
 
-  // Run all "init" handlers
-  enabledPluginNames.forEach(pluginName => {
-    plugins[pluginName].initHandlers.forEach(handler => {
-      const returnCb = handler(getPluginContext(pluginName));
+export function mountPlugins(opts: IPluginMountOpts = {}) {
+  // Ensure calling mountPlugins more than once doesn't duplicate plugin scope
+  unmountPlugins();
 
-      if (typeof returnCb === 'function') {
-        unmountHandlers = [...unmountHandlers, returnCb];
-      }
-    });
-  });
-
-  const unmount = () => {
-    // Mark scope as unmounted
-    unmounted = true;
-
-    // Run all "init" handler return handlers and remove their references
-    unmountHandlers.forEach(handler => handler());
-    unmountHandlers = [];
-  };
+  let scope: null | IPluginScope = null;
 
   // There can only be one active plugin scope at a time
   exposeMountedApi({
-    getPluginContext,
     unmount,
+    reload,
+    getPluginContext,
   });
+
+  init();
+
+  function init() {
+    scope = createScope(opts);
+    const { plugins, unmountHandlers } = scope;
+
+    // Run all "init" handlers
+    getEnabledPluginNames(plugins).forEach(pluginName => {
+      plugins[pluginName].initHandlers.forEach(handler => {
+        const returnCb = handler(getPluginContext(pluginName));
+
+        if (typeof returnCb === 'function') {
+          unmountHandlers.push(returnCb);
+        }
+      });
+    });
+  }
+
+  function unmount() {
+    if (scope) {
+      cleanUpScope(scope);
+      scope = null;
+    }
+  }
+
+  function reload() {
+    unmount();
+    init();
+  }
 
   // TODO: Memoize plugin context per plugin name (bound to this scope)
   function getPluginContext(pluginName: string): IPluginContext<object, any> {
     function getConfig() {
-      return activeConfig[pluginName];
+      if (!scope) {
+        throw new Error(`Unmounted plugin ${pluginName} called getConfig`);
+      }
+
+      return scope.config[pluginName];
     }
 
     function getConfigOf(otherPluginName: string) {
-      if (enabledPluginNames.indexOf(otherPluginName) === -1) {
+      if (!scope) {
+        throw new Error(`Unmounted plugin ${pluginName} called getConfigOf`);
+      }
+
+      const { plugins, config } = scope;
+
+      if (getEnabledPluginNames(plugins).indexOf(otherPluginName) === -1) {
         throw new Error(
           `Requested config of missing plugin ${otherPluginName}`,
         );
       }
 
-      return activeConfig[otherPluginName];
+      return config[otherPluginName];
     }
 
     function getState() {
-      return activeState[pluginName];
+      if (!scope) {
+        throw new Error(`Unmounted plugin ${pluginName} called getState`);
+      }
+
+      const { state } = scope;
+
+      return state[pluginName];
     }
 
     function getStateOf(otherPluginName: string) {
-      if (enabledPluginNames.indexOf(otherPluginName) === -1) {
+      if (!scope) {
+        throw new Error(`Unmounted plugin ${pluginName} called getStateOf`);
+      }
+
+      const { plugins, state } = scope;
+
+      if (getEnabledPluginNames(plugins).indexOf(otherPluginName) === -1) {
         throw new Error(`Requested state of missing plugin ${otherPluginName}`);
       }
 
-      return activeState[otherPluginName];
+      return state[otherPluginName];
     }
 
     function setState(change: StateUpdater<any>, cb?: () => void) {
-      if (unmounted) {
+      if (!scope) {
         throw new Error(`Unmounted plugin ${pluginName} called setState`);
       }
 
-      activeState = {
-        ...activeState,
-        [pluginName]: updateState(activeState[pluginName], change),
-      };
+      const { plugins, state } = scope;
+
+      state[pluginName] = updateState(state[pluginName], change);
 
       // Trigger all state change handlers
-      enabledPluginNames.forEach(otherPluginName => {
+      getEnabledPluginNames(plugins).forEach(otherPluginName => {
         plugins[otherPluginName].stateHandlers.forEach(handler => {
           handler(getPluginContext(otherPluginName));
         });
@@ -119,12 +138,13 @@ export function mountPlugins({ config, state }: IPluginMountOpts = {}) {
     }
 
     function callMethod(methodPath: string, ...args: Array<unknown>): any {
-      if (unmounted) {
+      if (!scope) {
         throw new Error(
           `Unmounted plugin ${pluginName} called method ${methodPath}`,
         );
       }
 
+      const { plugins } = scope;
       const [otherPluginName, methodName] = methodPath.split('.');
 
       if (!plugins[otherPluginName]) {
@@ -145,13 +165,14 @@ export function mountPlugins({ config, state }: IPluginMountOpts = {}) {
     }
 
     function emitEvent(eventName: string, ...args: Array<unknown>) {
-      if (unmounted) {
+      if (!scope) {
         throw new Error(
           `Unmounted plugin ${pluginName} emitted event ${eventName}`,
         );
       }
 
-      enabledPluginNames.forEach(otherPluginName => {
+      const { plugins } = scope;
+      getEnabledPluginNames(plugins).forEach(otherPluginName => {
         plugins[otherPluginName].eventHandlers.forEach(eventHandler => {
           const { eventPath, handler } = eventHandler;
           const [curEventPluginName, curEventName] = eventPath.split('.');
@@ -173,6 +194,47 @@ export function mountPlugins({ config, state }: IPluginMountOpts = {}) {
       emitEvent,
     };
   }
+}
+
+function createScope(opts: IPluginMountOpts): IPluginScope {
+  const plugins = getPlugins();
+
+  return {
+    plugins,
+    config: merge({}, getDefaultConfigs(plugins), opts.config),
+    state: merge({}, getInitialStates(plugins), opts.state),
+    unmountHandlers: [],
+  };
+}
+
+function cleanUpScope(scope: IPluginScope) {
+  // Run all "init" handler return handlers and remove their references
+  scope.unmountHandlers.forEach(handler => handler());
+  scope.unmountHandlers = [];
+}
+
+function getDefaultConfigs(plugins: IPlugins): IPluginConfigs {
+  return getEnabledPluginNames(plugins).reduce(
+    (acc, pluginName) => ({
+      ...acc,
+      [pluginName]: plugins[pluginName].defaultConfig,
+    }),
+    {},
+  );
+}
+
+function getInitialStates(plugins: IPlugins): IPluginStates {
+  return getEnabledPluginNames(plugins).reduce(
+    (acc, pluginName) => ({
+      ...acc,
+      [pluginName]: plugins[pluginName].initialState,
+    }),
+    {},
+  );
+}
+
+function getEnabledPluginNames(plugins: IPlugins): string[] {
+  return Object.keys(plugins).filter(pluginName => plugins[pluginName].enabled);
 }
 
 interface INotAFunction {

@@ -1,5 +1,6 @@
 export { mountPlugins } from './mountPlugins';
 export {
+  enablePlugin,
   getPluginContext,
   getPlugins,
   resetPlugins,
