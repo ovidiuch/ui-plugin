@@ -24,7 +24,8 @@ interface IPluginScope {
 }
 
 export function mountPlugins(opts: IPluginMountOpts = {}) {
-  // Ensure calling mountPlugins more than once doesn't duplicate plugin scope
+  // Ensure calling mountPlugins more than once doesn't duplicate plugin
+  // execution
   unmountPlugins();
 
   let scope: null | IPluginScope = null;
