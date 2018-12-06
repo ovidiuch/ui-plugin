@@ -1,4 +1,4 @@
-import { mountPlugins, registerPlugin, resetPlugins } from '..';
+import { mountPlugins, registerPlugin, resetPlugins, unmountPlugins } from '..';
 
 afterEach(resetPlugins);
 
@@ -21,7 +21,7 @@ it('calls return callback of init handler on unmount', () => {
   const returnCallback = jest.fn();
   init(() => returnCallback);
 
-  const unmountPlugins = mountPlugins();
+  mountPlugins();
   unmountPlugins();
 
   expect(returnCallback).toBeCalled();

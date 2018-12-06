@@ -63,8 +63,6 @@ export function mountPlugins({ config, state }: IPluginMountOpts = {}) {
   // callback of this scope globally to call it when re-mounting.
   setUnmountCallback(unmount);
 
-  return unmount;
-
   // TODO: Memoize plugin context per plugin name (bound to this scope)
   function getPluginContext(pluginName: string): IPluginContext<object, any> {
     function getConfig() {

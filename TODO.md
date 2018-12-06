@@ -1,3 +1,3 @@
-- [ ] No longer return unmount cb in `mountPlugins`
+- [x] No longer return unmount cb in `mountPlugins`
 - [ ] Expose global `getContext` method under top level API
 - [ ] Add enabled plugin state
