@@ -1,4 +1,4 @@
 - [x] No longer return unmount cb in `mountPlugins`
 - [x] Expose global getPluginContext method under top level API
 - [x] Add enabled plugin state
-- [ ] Re-mount plugins when adding plugin (if mounted)
+- [x] Re-mount plugins when adding plugin (if mounted)

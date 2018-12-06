@@ -36,7 +36,7 @@ export type StateHandler<PluginConfig extends object, PluginState> = (
   context: IPluginContext<PluginConfig, PluginState>,
 ) => void;
 
-interface IPlugin {
+export interface IPlugin {
   enabled: boolean;
   defaultConfig: object;
   initialState: any;
