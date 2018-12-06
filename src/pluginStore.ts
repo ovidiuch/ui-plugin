@@ -1,4 +1,4 @@
-import { getGlobalStore } from './global';
+import { getGlobalStore, IMountedApi } from './global';
 import { EventHandler, InitHandler, MethodHandler } from './shared';
 
 export function resetPlugins() {
@@ -6,22 +6,32 @@ export function resetPlugins() {
   getGlobalStore().plugins = {};
 }
 
-export function setUnmountCallback(cb: () => void) {
+export function exposeMountedApi(mountedApi: IMountedApi) {
   const store = getGlobalStore();
-  store.unmount = cb;
+  store.mountedApi = mountedApi;
 }
 
 export function unmountPlugins() {
   const store = getGlobalStore();
 
-  if (typeof store.unmount === 'function') {
-    store.unmount();
-    store.unmount = null;
+  if (store.mountedApi) {
+    store.mountedApi.unmount();
+    store.mountedApi = null;
   }
 }
 
 export function getPlugins() {
   return getGlobalStore().plugins;
+}
+
+export function getPluginContext(pluginName: string) {
+  const { mountedApi } = getGlobalStore();
+
+  if (!mountedApi) {
+    throw new Error('getPluginContext called before mounting plugins');
+  }
+
+  return mountedApi.getPluginContext(pluginName);
 }
 
 export function addPlugin({

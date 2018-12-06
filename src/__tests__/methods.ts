@@ -1,4 +1,4 @@
-import { mountPlugins, registerPlugin, resetPlugins } from '..';
+import { mountPlugins, registerPlugin, resetPlugins, unmountPlugins } from '..';
 
 afterEach(resetPlugins);
 
@@ -84,6 +84,6 @@ it('throws exception after plugins unmounted', done => {
     });
   });
 
-  const unmountPlugins = mountPlugins();
+  mountPlugins();
   unmountPlugins();
 });

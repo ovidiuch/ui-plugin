@@ -1,5 +1,5 @@
 import { find, merge } from 'lodash';
-import { getPlugins, setUnmountCallback, unmountPlugins } from './pluginStore';
+import { exposeMountedApi, getPlugins, unmountPlugins } from './pluginStore';
 import {
   IPluginConfigs,
   IPluginContext,
@@ -55,15 +55,16 @@ export function mountPlugins({ config, state }: IPluginMountOpts = {}) {
     // Mark scope as unmounted
     unmounted = true;
 
-    // Run all "init" handler return handlers
+    // Run all "init" handler return handlers and remove their references
     unmountHandlers.forEach(handler => handler());
+    unmountHandlers = [];
   };
 
-  // There can only be one active plugin scope at a time. We bind the unmount
-  // callback of this scope globally to call it when re-mounting.
-  setUnmountCallback(unmount);
-
-  return unmount;
+  // There can only be one active plugin scope at a time
+  exposeMountedApi({
+    getPluginContext,
+    unmount,
+  });
 
   // TODO: Memoize plugin context per plugin name (bound to this scope)
   function getPluginContext(pluginName: string): IPluginContext<object, any> {
