@@ -36,16 +36,19 @@ export function getPluginContext(pluginName: string) {
 
 export function addPlugin({
   name,
+  enabled,
   defaultConfig,
   initialState,
 }: {
   name: string;
+  enabled: boolean;
   defaultConfig: object;
   initialState: any;
 }) {
   const { plugins } = getGlobalStore();
 
   plugins[name] = {
+    enabled,
     defaultConfig,
     initialState,
     initHandlers: [],

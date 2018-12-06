@@ -16,10 +16,11 @@ import {
 export function registerPlugin<PluginConfig extends object, PluginState>(
   pluginDef: IPluginDef<PluginConfig, PluginState>,
 ) {
-  const { name, defaultConfig = {}, initialState } = pluginDef;
+  const { name, enabled = true, defaultConfig = {}, initialState } = pluginDef;
 
   addPlugin({
     name,
+    enabled,
     defaultConfig,
     initialState,
   });
