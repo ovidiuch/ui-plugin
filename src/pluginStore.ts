@@ -1,6 +1,7 @@
 import { getGlobalStore, IMountedApi } from './global';
 import { EventHandler, InitHandler, IPlugin, MethodHandler } from './shared';
 
+// Meant for testing cleanup purposes
 export function resetPlugins() {
   unmountPlugins();
   getGlobalStore().plugins = {};
