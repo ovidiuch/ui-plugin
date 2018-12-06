@@ -1,7 +1,7 @@
 {
   "name": "ui-plugin",
   "version": "1.0.0-alpha.0",
-  "description": "API for 3rd party UI plugins",
+  "description": "API for composable 3rd party UI plugins",
   "repository": "https://github.com/skidding/ui-plugin.git",
   "author": "Ovidiu Cherecheș <skidding@gmail.com>",
   "license": "MIT",
@@ -12,8 +12,9 @@
   ],
   "scripts": {
     "lint": "tslint --project tsconfig.json",
-    "test": "jest src --coverage",
-    "build": "rm -rf dist && yarn lint && yarn tsc"
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "build": "rm -rf dist && yarn lint && yarn tsc -b tsconfig.build.json"
   },
   "dependencies": {
     "lodash": "^4.17.11"
