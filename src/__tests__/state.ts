@@ -1,4 +1,4 @@
-import { mountPlugins, registerPlugin, resetPlugins, unmountPlugins } from '..';
+import { loadPlugins, registerPlugin, resetPlugins, unloadPlugins } from '..';
 
 afterEach(resetPlugins);
 
@@ -13,7 +13,7 @@ it('gets initial state from context', () => {
     expect(getState().counter).toBe(0);
   });
 
-  mountPlugins();
+  loadPlugins();
 });
 
 it('gets custom state from context', () => {
@@ -27,7 +27,7 @@ it('gets custom state from context', () => {
     expect(getState().counter).toBe(5);
   });
 
-  mountPlugins({
+  loadPlugins({
     state: { testPlugin: { counter: 5 } },
   });
 });
@@ -45,7 +45,7 @@ it('gets state of other plugin from context', () => {
     expect(getStateOf('testPlugin1').counter).toBe(0);
   });
 
-  mountPlugins();
+  loadPlugins();
 });
 
 it('sets state', () => {
@@ -61,7 +61,7 @@ it('sets state', () => {
     });
   });
 
-  mountPlugins();
+  loadPlugins();
 });
 
 it('sets state using updater function', () => {
@@ -80,10 +80,10 @@ it('sets state using updater function', () => {
     );
   });
 
-  mountPlugins();
+  loadPlugins();
 });
 
-it('throws exception after plugins unmounted', done => {
+it('throws exception after plugins unloaded', done => {
   expect.hasAssertions();
 
   const { init } = registerPlugin({
@@ -94,16 +94,16 @@ it('throws exception after plugins unmounted', done => {
     setTimeout(() => {
       expect(() => {
         setState({ counter: 1 });
-      }).toThrow('Unmounted plugin testPlugin called setState');
+      }).toThrow('Not loaded plugin testPlugin called setState');
       done();
     });
   });
 
-  mountPlugins();
-  unmountPlugins();
+  loadPlugins();
+  unloadPlugins();
 });
 
-it('gets state from 2nd mount context', () => {
+it('gets state from 2nd load context', () => {
   let counter = 0;
 
   const { init } = registerPlugin({
@@ -114,12 +114,12 @@ it('gets state from 2nd mount context', () => {
     counter = getState().counter;
   });
 
-  mountPlugins({
+  loadPlugins({
     state: { testPlugin: { counter: 5 } },
   });
   expect(counter).toBe(5);
 
-  mountPlugins({
+  loadPlugins({
     state: { testPlugin: { counter: 10 } },
   });
   expect(counter).toBe(10);

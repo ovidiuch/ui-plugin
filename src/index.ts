@@ -1,10 +1,13 @@
-export { mountPlugins } from './mountPlugins';
+export { loadPlugins } from './loadPlugins';
 export {
+  addStateHandler,
   enablePlugin,
   getPluginContext,
   getPlugins,
+  reloadPlugins,
+  removeStateHandler,
   resetPlugins,
-  unmountPlugins,
+  unloadPlugins,
 } from './pluginStore';
 export { registerPlugin } from './registerPlugin';
-export { IPluginContext, IPluginDef, IPluginMountOpts } from './shared';
+export { ILoadPluginsOpts, IPluginContext, IPluginDef } from './shared';

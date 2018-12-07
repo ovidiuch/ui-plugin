@@ -1,4 +1,4 @@
-import { mountPlugins, registerPlugin, resetPlugins } from '..';
+import { loadPlugins, registerPlugin, resetPlugins } from '..';
 
 afterEach(resetPlugins);
 
@@ -13,7 +13,7 @@ it('gets default config from context', () => {
     expect(getConfig().tabSize).toBe(2);
   });
 
-  mountPlugins();
+  loadPlugins();
 });
 
 it('gets custom config from context', () => {
@@ -27,7 +27,7 @@ it('gets custom config from context', () => {
     expect(getConfig().tabSize).toBe(4);
   });
 
-  mountPlugins({
+  loadPlugins({
     config: {
       testPlugin: { tabSize: 4 },
     },
@@ -47,5 +47,5 @@ it('gets config of other plugin from context', () => {
     expect(getConfigOf('testPlugin1').tabSize).toBe(2);
   });
 
-  mountPlugins();
+  loadPlugins();
 });

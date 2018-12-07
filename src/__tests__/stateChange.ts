@@ -1,5 +1,5 @@
 import retry from '@skidding/async-retry';
-import { mountPlugins, registerPlugin, resetPlugins } from '..';
+import { loadPlugins, registerPlugin, resetPlugins } from '..';
 
 afterEach(resetPlugins);
 
@@ -19,7 +19,7 @@ it('reacts to own state change', async () => {
     counter = getState().counter;
   });
 
-  mountPlugins();
+  loadPlugins();
   await retry(() => {
     expect(counter).toBe(5);
   });
@@ -43,7 +43,7 @@ it('reacts to state change from other plugin', async () => {
     counter = getStateOf('testPlugin1').counter;
   });
 
-  mountPlugins();
+  loadPlugins();
   await retry(() => {
     expect(counter).toBe(5);
   });

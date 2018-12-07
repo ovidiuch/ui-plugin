@@ -1,4 +1,4 @@
-import { mountPlugins, registerPlugin, resetPlugins, unmountPlugins } from '..';
+import { loadPlugins, registerPlugin, resetPlugins, unloadPlugins } from '..';
 
 afterEach(resetPlugins);
 
@@ -15,7 +15,7 @@ it('calls event handler', () => {
     expect(handleEvent).toBeCalled();
   });
 
-  mountPlugins();
+  loadPlugins();
 });
 
 it('calls event handler with params', () => {
@@ -32,7 +32,7 @@ it('calls event handler with params', () => {
     emitEvent('testEvent', 'foo', 'bar');
   });
 
-  mountPlugins();
+  loadPlugins();
 });
 
 it('calls event handler with plugin context', () => {
@@ -48,7 +48,7 @@ it('calls event handler with plugin context', () => {
     emitEvent('testEvent');
   });
 
-  mountPlugins();
+  loadPlugins();
 });
 
 it('calls multiple event handlers', () => {
@@ -67,10 +67,10 @@ it('calls multiple event handlers', () => {
     expect(handleEvent2).toBeCalled();
   });
 
-  mountPlugins();
+  loadPlugins();
 });
 
-it('throws exception after plugins unmounted', done => {
+it('throws exception after plugins unloaded', done => {
   expect.hasAssertions();
 
   const { init } = registerPlugin({ name: 'testPlugin' });
@@ -78,11 +78,11 @@ it('throws exception after plugins unmounted', done => {
     setTimeout(() => {
       expect(() => {
         emitEvent('testEvent');
-      }).toThrow('Unmounted plugin testPlugin emitted event testEvent');
+      }).toThrow('Not loaded plugin testPlugin emitted event testEvent');
       done();
     });
   });
 
-  mountPlugins();
-  unmountPlugins();
+  loadPlugins();
+  unloadPlugins();
 });

@@ -2,3 +2,7 @@
 - [x] Expose global getPluginContext method under top level API
 - [x] Add enabled plugin state
 - [x] Re-mount plugins when adding plugin (if mounted)
+- [x] Improve naming (s/mountPlugins/loadPlugins)
+- [x] reloadPlugins
+- [x] Export global add/remove state change handlers
+- [ ] Expose onPluginChange API

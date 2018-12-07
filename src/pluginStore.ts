@@ -1,23 +1,37 @@
-import { getGlobalStore, IMountedApi } from './global';
-import { EventHandler, InitHandler, IPlugin, MethodHandler } from './shared';
+import { getGlobalStore, ILoadedScope } from './global';
+import {
+  EventHandler,
+  InitHandler,
+  IPlugin,
+  MethodHandler,
+  StateHandler,
+} from './shared';
 
 // Meant for testing cleanup purposes
 export function resetPlugins() {
-  unmountPlugins();
+  unloadPlugins();
   getGlobalStore().plugins = {};
 }
 
-export function exposeMountedApi(mountedApi: IMountedApi) {
+export function exposeLoadedScope(scope: ILoadedScope) {
   const store = getGlobalStore();
-  store.mountedApi = mountedApi;
+  store.loadedScope = scope;
 }
 
-export function unmountPlugins() {
+export function reloadPlugins() {
   const store = getGlobalStore();
 
-  if (store.mountedApi) {
-    store.mountedApi.unmount();
-    store.mountedApi = null;
+  if (store.loadedScope) {
+    store.loadedScope.reload();
+  }
+}
+
+export function unloadPlugins() {
+  const store = getGlobalStore();
+
+  if (store.loadedScope) {
+    store.loadedScope.unload();
+    store.loadedScope = null;
   }
 }
 
@@ -35,13 +49,13 @@ export function enablePlugin(pluginName: string, enabled: boolean) {
 }
 
 export function getPluginContext(pluginName: string) {
-  const { mountedApi } = getGlobalStore();
+  const { loadedScope } = getGlobalStore();
 
-  if (!mountedApi) {
-    throw new Error('getPluginContext called before mounting plugins');
+  if (!loadedScope) {
+    throw new Error('getPluginContext called before loading plugins');
   }
 
-  return mountedApi.getPluginContext(pluginName);
+  return loadedScope.getPluginContext(pluginName);
 }
 
 export function addPlugin({
@@ -108,10 +122,25 @@ export function addStateHandler({
   handler,
 }: {
   pluginName: string;
-  handler: EventHandler<any, any>;
+  handler: StateHandler<any, any>;
 }) {
   const { stateHandlers } = getPlugin(pluginName);
   stateHandlers.push(handler);
+}
+
+export function removeStateHandler({
+  pluginName,
+  handler,
+}: {
+  pluginName: string;
+  handler: StateHandler<any, any>;
+}) {
+  const { stateHandlers } = getPlugin(pluginName);
+  const index = stateHandlers.indexOf(handler);
+
+  if (index !== -1) {
+    stateHandlers.splice(index, 1);
+  }
 }
 
 function getPlugin(pluginName: string) {
@@ -128,8 +157,4 @@ function setPlugin(pluginName: string, plugin: IPlugin) {
   const store = getGlobalStore();
 
   store.plugins[pluginName] = plugin;
-
-  if (store.mountedApi) {
-    store.mountedApi.reload();
-  }
 }

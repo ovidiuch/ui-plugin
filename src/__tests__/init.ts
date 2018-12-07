@@ -1,41 +1,41 @@
-import { mountPlugins, registerPlugin, resetPlugins, unmountPlugins } from '..';
+import { loadPlugins, registerPlugin, resetPlugins, unloadPlugins } from '..';
 
 afterEach(resetPlugins);
 
-it('calls init handler on mount', () => {
+it('calls init handler on load', () => {
   const { init } = registerPlugin({
     name: 'testPlugin',
   });
   const initHandler = jest.fn();
   init(initHandler);
 
-  mountPlugins();
+  loadPlugins();
 
   expect(initHandler).toBeCalled();
 });
 
-it('calls return callback of init handler on unmount', () => {
+it('calls return callback of init handler on unload', () => {
   const { init } = registerPlugin({
     name: 'testPlugin',
   });
   const returnCallback = jest.fn();
   init(() => returnCallback);
 
-  mountPlugins();
-  unmountPlugins();
+  loadPlugins();
+  unloadPlugins();
 
   expect(returnCallback).toBeCalled();
 });
 
-it('calls return callback of init handler on re-mount', () => {
+it('calls return callback of init handler on reload', () => {
   const { init } = registerPlugin({
     name: 'testPlugin',
   });
   const returnCallback = jest.fn();
   init(() => returnCallback);
 
-  mountPlugins();
-  mountPlugins();
+  loadPlugins();
+  loadPlugins();
 
   expect(returnCallback).toBeCalledTimes(1);
 });

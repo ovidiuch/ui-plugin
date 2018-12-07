@@ -65,7 +65,7 @@ export interface IPluginStates {
   [pluginName: string]: any;
 }
 
-export interface IPluginMountOpts {
+export interface ILoadPluginsOpts {
   config?: IPluginConfigs;
   state?: IPluginStates;
 }

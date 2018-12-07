@@ -1,4 +1,4 @@
-import { mountPlugins, registerPlugin, resetPlugins, unmountPlugins } from '..';
+import { loadPlugins, registerPlugin, resetPlugins, unloadPlugins } from '..';
 
 afterEach(resetPlugins);
 
@@ -15,7 +15,7 @@ it('calls method handler', () => {
     expect(handleMethod).toBeCalled();
   });
 
-  mountPlugins();
+  loadPlugins();
 });
 
 it('calls method handler with params', () => {
@@ -32,7 +32,7 @@ it('calls method handler with params', () => {
     callMethod('testPlugin1.testMethod', 'foo', 'bar');
   });
 
-  mountPlugins();
+  loadPlugins();
 });
 
 it('returns method handler return value', () => {
@@ -47,7 +47,7 @@ it('returns method handler return value', () => {
     expect(callMethod('testPlugin1.testMethod')).toBe(returnVal);
   });
 
-  mountPlugins();
+  loadPlugins();
 });
 
 it('calls method handler with plugin context', () => {
@@ -63,10 +63,10 @@ it('calls method handler with plugin context', () => {
     callMethod('testPlugin1.testMethod');
   });
 
-  mountPlugins();
+  loadPlugins();
 });
 
-it('throws exception after plugins unmounted', done => {
+it('throws exception after plugins unloaded', done => {
   expect.hasAssertions();
 
   const { method } = registerPlugin({ name: 'testPlugin1', initialState: 0 });
@@ -78,12 +78,12 @@ it('throws exception after plugins unmounted', done => {
       expect(() => {
         callMethod('testPlugin1.testMethod');
       }).toThrow(
-        'Unmounted plugin testPlugin2 called method testPlugin1.testMethod',
+        'Not loaded plugin testPlugin2 called method testPlugin1.testMethod',
       );
       done();
     });
   });
 
-  mountPlugins();
-  unmountPlugins();
+  loadPlugins();
+  unloadPlugins();
 });
