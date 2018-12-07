@@ -1,4 +1,10 @@
-import { enablePlugin, loadPlugins, registerPlugin, resetPlugins } from '..';
+import {
+  enablePlugin,
+  loadPlugins,
+  registerPlugin,
+  reloadPlugins,
+  resetPlugins,
+} from '..';
 
 afterEach(resetPlugins);
 
@@ -55,6 +61,7 @@ it('can access state of plugin enabled at run time', () => {
       expect(getStateOf('testPlugin1')).toEqual({ counter: 1 });
     } catch (err) {
       enablePlugin('testPlugin1', true);
+      reloadPlugins();
     }
   });
 

@@ -3,6 +3,7 @@ export {
   enablePlugin,
   getPluginContext,
   getPlugins,
+  reloadPlugins,
   resetPlugins,
   unloadPlugins,
 } from './pluginStore';

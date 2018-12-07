@@ -12,6 +12,14 @@ export function exposeLoadedScope(scope: ILoadedScope) {
   store.loadedScope = scope;
 }
 
+export function reloadPlugins() {
+  const store = getGlobalStore();
+
+  if (store.loadedScope) {
+    store.loadedScope.reload();
+  }
+}
+
 export function unloadPlugins() {
   const store = getGlobalStore();
 
@@ -128,8 +136,4 @@ function setPlugin(pluginName: string, plugin: IPlugin) {
   const store = getGlobalStore();
 
   store.plugins[pluginName] = plugin;
-
-  if (store.loadedScope) {
-    store.loadedScope.reload();
-  }
 }
