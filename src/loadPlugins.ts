@@ -1,15 +1,15 @@
 import { find, merge } from 'lodash';
-import { exposeMountedApi, getPlugins, unmountPlugins } from './pluginStore';
+import { exposeLoadedScope, getPlugins, unloadPlugins } from './pluginStore';
 import {
+  ILoadPluginsOpts,
   IPluginConfigs,
   IPluginContext,
-  IPluginMountOpts,
   IPlugins,
   IPluginStates,
   StateUpdater,
 } from './shared';
 
-type UnmountHandlers = () => unknown;
+type UnloadHandlers = () => unknown;
 
 interface IPluginScope {
   plugins: IPlugins;
@@ -19,29 +19,29 @@ interface IPluginScope {
   // The merger of the initial state with the optional passed-in state makes
   // up the start value of the (mutable) state this scope is bound to
   state: IPluginStates;
-  // Collect unmount handlers from this scope
-  unmountHandlers: UnmountHandlers[];
+  // Collect unload handlers from this scope
+  unloadHandlers: UnloadHandlers[];
 }
 
-export function mountPlugins(opts: IPluginMountOpts = {}) {
-  // Ensure calling mountPlugins more than once doesn't duplicate plugin
+export function loadPlugins(opts: ILoadPluginsOpts = {}) {
+  // Ensure calling loadPlugins more than once doesn't duplicate plugin
   // execution
-  unmountPlugins();
+  unloadPlugins();
 
   let scope: null | IPluginScope = null;
 
   // There can only be one active plugin scope at a time
-  exposeMountedApi({
-    unmount,
+  exposeLoadedScope({
+    unload,
     reload,
     getPluginContext,
   });
 
-  init();
+  load();
 
-  function init() {
+  function load() {
     scope = createScope(opts);
-    const { plugins, unmountHandlers } = scope;
+    const { plugins, unloadHandlers } = scope;
 
     // Run all "init" handlers
     getEnabledPluginNames(plugins).forEach(pluginName => {
@@ -49,32 +49,32 @@ export function mountPlugins(opts: IPluginMountOpts = {}) {
         const returnCb = handler(getPluginContext(pluginName));
 
         if (typeof returnCb === 'function') {
-          unmountHandlers.push(returnCb);
+          unloadHandlers.push(returnCb);
         }
       });
     });
   }
 
-  function unmount() {
+  function unload() {
     if (scope) {
       // Run all "init" handler return handlers and remove their references
-      scope.unmountHandlers.forEach(handler => handler());
-      scope.unmountHandlers = [];
+      scope.unloadHandlers.forEach(handler => handler());
+      scope.unloadHandlers = [];
 
       scope = null;
     }
   }
 
   function reload() {
-    unmount();
-    init();
+    unload();
+    load();
   }
 
   // TODO: Memoize plugin context per plugin name (bound to this scope)
   function getPluginContext(pluginName: string): IPluginContext<object, any> {
     function getConfig() {
       if (!scope) {
-        throw new Error(`Unmounted plugin ${pluginName} called getConfig`);
+        throw new Error(`Not loaded plugin ${pluginName} called getConfig`);
       }
 
       return scope.config[pluginName];
@@ -82,7 +82,7 @@ export function mountPlugins(opts: IPluginMountOpts = {}) {
 
     function getConfigOf(otherPluginName: string) {
       if (!scope) {
-        throw new Error(`Unmounted plugin ${pluginName} called getConfigOf`);
+        throw new Error(`Not loaded plugin ${pluginName} called getConfigOf`);
       }
 
       const { plugins, config } = scope;
@@ -98,7 +98,7 @@ export function mountPlugins(opts: IPluginMountOpts = {}) {
 
     function getState() {
       if (!scope) {
-        throw new Error(`Unmounted plugin ${pluginName} called getState`);
+        throw new Error(`Not loaded plugin ${pluginName} called getState`);
       }
 
       const { state } = scope;
@@ -108,7 +108,7 @@ export function mountPlugins(opts: IPluginMountOpts = {}) {
 
     function getStateOf(otherPluginName: string) {
       if (!scope) {
-        throw new Error(`Unmounted plugin ${pluginName} called getStateOf`);
+        throw new Error(`Not loaded plugin ${pluginName} called getStateOf`);
       }
 
       const { plugins, state } = scope;
@@ -122,7 +122,7 @@ export function mountPlugins(opts: IPluginMountOpts = {}) {
 
     function setState(change: StateUpdater<any>, cb?: () => void) {
       if (!scope) {
-        throw new Error(`Unmounted plugin ${pluginName} called setState`);
+        throw new Error(`Not loaded plugin ${pluginName} called setState`);
       }
 
       const { plugins, state } = scope;
@@ -144,7 +144,7 @@ export function mountPlugins(opts: IPluginMountOpts = {}) {
     function callMethod(methodPath: string, ...args: Array<unknown>): any {
       if (!scope) {
         throw new Error(
-          `Unmounted plugin ${pluginName} called method ${methodPath}`,
+          `Not loaded plugin ${pluginName} called method ${methodPath}`,
         );
       }
 
@@ -171,7 +171,7 @@ export function mountPlugins(opts: IPluginMountOpts = {}) {
     function emitEvent(eventName: string, ...args: Array<unknown>) {
       if (!scope) {
         throw new Error(
-          `Unmounted plugin ${pluginName} emitted event ${eventName}`,
+          `Not loaded plugin ${pluginName} emitted event ${eventName}`,
         );
       }
 
@@ -200,14 +200,14 @@ export function mountPlugins(opts: IPluginMountOpts = {}) {
   }
 }
 
-function createScope(opts: IPluginMountOpts): IPluginScope {
+function createScope(opts: ILoadPluginsOpts): IPluginScope {
   const plugins = getPlugins();
 
   return {
     plugins,
     config: merge({}, getDefaultConfigs(plugins), opts.config),
     state: merge({}, getInitialStates(plugins), opts.state),
-    unmountHandlers: [],
+    unloadHandlers: [],
   };
 }
 

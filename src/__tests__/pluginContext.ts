@@ -1,6 +1,6 @@
 import {
   getPluginContext,
-  mountPlugins,
+  loadPlugins,
   registerPlugin,
   resetPlugins,
 } from '..';
@@ -13,18 +13,18 @@ it('gets plugin context', () => {
     initialState: { active: false },
   });
 
-  mountPlugins();
+  loadPlugins();
 
   const { getState } = getPluginContext('testPlugin');
   expect(getState()).toEqual({ active: false });
 });
 
-it('throws exception if plugins are not mounted', () => {
+it('throws exception if plugins are not loaded', () => {
   registerPlugin({
     name: 'testPlugin',
   });
 
   expect(() => {
     getPluginContext('testPlugin');
-  }).toThrow('getPluginContext called before mounting plugins');
+  }).toThrow('getPluginContext called before loading plugins');
 });

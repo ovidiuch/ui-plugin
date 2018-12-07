@@ -1,4 +1,4 @@
-import { enablePlugin, mountPlugins, registerPlugin, resetPlugins } from '..';
+import { enablePlugin, loadPlugins, registerPlugin, resetPlugins } from '..';
 
 afterEach(resetPlugins);
 
@@ -18,7 +18,7 @@ it(`can't access config of disabled plugin`, () => {
     }).toThrow('Requested config of missing plugin testPlugin1');
   });
 
-  mountPlugins();
+  loadPlugins();
 });
 
 it(`can't access state of disabled plugin`, () => {
@@ -37,7 +37,7 @@ it(`can't access state of disabled plugin`, () => {
     }).toThrow('Requested state of missing plugin testPlugin1');
   });
 
-  mountPlugins();
+  loadPlugins();
 });
 
 it('can access state of plugin enabled at run time', () => {
@@ -58,5 +58,5 @@ it('can access state of plugin enabled at run time', () => {
     }
   });
 
-  mountPlugins();
+  loadPlugins();
 });

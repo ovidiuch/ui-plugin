@@ -2,3 +2,7 @@
 - [x] Expose global getPluginContext method under top level API
 - [x] Add enabled plugin state
 - [x] Re-mount plugins when adding plugin (if mounted)
+- [x] Improve naming (s/mountPlugins/loadPlugins)
+- [ ] reloadPlugins
+- [ ] Export add/remove state change handler APIs (tests: `stateChangeGlobal.ts`)
+- [ ] Expose onPluginChange API
