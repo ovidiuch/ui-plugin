@@ -72,10 +72,11 @@ export function loadPlugins(
     }
   }
 
-  // The difference between calling loadPlugins and reload is this:
+  // The difference between calling "loadPlugins" and "reload" is this:
   // - loadPlugins() requires params (config, state)
-  // - reload() reloads plugins with same params already passed to loadPlugins,
-  //   thus reload() is only available after loadPlugins() was called
+  // - reload() reloads plugins using the same params already passed to
+  //   loadPlugins, and thus reload() is only available after loadPlugins was
+  //   called
   function reload() {
     unload();
     load();
