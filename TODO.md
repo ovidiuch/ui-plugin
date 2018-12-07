@@ -5,4 +5,4 @@
 - [x] Improve naming (s/mountPlugins/loadPlugins)
 - [x] reloadPlugins
 - [x] Export global add/remove state change handlers
-- [ ] Expose onPluginChange API
+- [x] Add loadPlugins callback
