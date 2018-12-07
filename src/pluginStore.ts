@@ -1,5 +1,11 @@
 import { getGlobalStore, ILoadedScope } from './global';
-import { EventHandler, InitHandler, IPlugin, MethodHandler } from './shared';
+import {
+  EventHandler,
+  InitHandler,
+  IPlugin,
+  MethodHandler,
+  StateHandler,
+} from './shared';
 
 // Meant for testing cleanup purposes
 export function resetPlugins() {
@@ -116,10 +122,25 @@ export function addStateHandler({
   handler,
 }: {
   pluginName: string;
-  handler: EventHandler<any, any>;
+  handler: StateHandler<any, any>;
 }) {
   const { stateHandlers } = getPlugin(pluginName);
   stateHandlers.push(handler);
+}
+
+export function removeStateHandler({
+  pluginName,
+  handler,
+}: {
+  pluginName: string;
+  handler: StateHandler<any, any>;
+}) {
+  const { stateHandlers } = getPlugin(pluginName);
+  const index = stateHandlers.indexOf(handler);
+
+  if (index !== -1) {
+    stateHandlers.splice(index, 1);
+  }
 }
 
 function getPlugin(pluginName: string) {

@@ -1,9 +1,11 @@
 export { loadPlugins } from './loadPlugins';
 export {
+  addStateHandler,
   enablePlugin,
   getPluginContext,
   getPlugins,
   reloadPlugins,
+  removeStateHandler,
   resetPlugins,
   unloadPlugins,
 } from './pluginStore';

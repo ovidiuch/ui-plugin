@@ -4,5 +4,5 @@
 - [x] Re-mount plugins when adding plugin (if mounted)
 - [x] Improve naming (s/mountPlugins/loadPlugins)
 - [x] reloadPlugins
-- [ ] Export add/remove state change handler APIs (tests: `stateChangeGlobal.ts`)
+- [x] Export global add/remove state change handlers
 - [ ] Expose onPluginChange API
