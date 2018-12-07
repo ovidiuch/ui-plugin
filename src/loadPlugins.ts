@@ -23,7 +23,10 @@ interface IPluginScope {
   unloadHandlers: UnloadHandlers[];
 }
 
-export function loadPlugins(opts: ILoadPluginsOpts = {}) {
+export function loadPlugins(
+  opts: ILoadPluginsOpts = {},
+  onLoad?: () => unknown,
+) {
   // Ensure calling loadPlugins more than once doesn't duplicate plugin
   // execution
   unloadPlugins();
@@ -53,6 +56,10 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
         }
       });
     });
+
+    if (typeof onLoad === 'function') {
+      onLoad();
+    }
   }
 
   function unload() {
@@ -65,6 +72,11 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
     }
   }
 
+  // The difference between calling "loadPlugins" and "reload" is this:
+  // - loadPlugins() requires params (config, state)
+  // - reload() reloads plugins using the same params already passed to
+  //   loadPlugins, and thus reload() is only available after loadPlugins was
+  //   called
   function reload() {
     unload();
     load();

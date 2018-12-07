@@ -10,4 +10,9 @@ export {
   unloadPlugins,
 } from './pluginStore';
 export { registerPlugin } from './registerPlugin';
-export { ILoadPluginsOpts, IPluginContext, IPluginDef } from './shared';
+export {
+  ILoadPluginsOpts,
+  IPlugin,
+  IPluginContext,
+  IPluginDef,
+} from './shared';
