@@ -58,7 +58,7 @@ export interface IPlugins {
 }
 
 export interface IPluginConfigs {
-  [pluginName: string]: object;
+  [pluginName: string]: { [attr: string]: any };
 }
 
 export interface IPluginStates {
