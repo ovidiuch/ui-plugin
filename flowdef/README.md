@@ -1,6 +1,6 @@
 ## Current flow for generating Flow types :)
 
-Update the [index.js.flow](index.js.flow) file by hand. Paste in [Try Flow](https://flow.org/try/) to ensure syntax is correct. As an extra precaution step, manually update `node_modules/ui-plugin/dist/index.js.flow` in the [Cosmos](https://github.com/react-cosmos/react-cosmos) monorepo and run Flow there.
+Update the [index.js.flow](index.js.flow) file by hand whenever the exported API changes. Carefully port the changed TypeScript types into Flow syntax. Paste in [Try Flow](https://flow.org/try/) to ensure syntax is correct. As an extra precaution step, manually update `node_modules/ui-plugin/dist/index.js.flow` in the [Cosmos](https://github.com/react-cosmos/react-cosmos) monorepo and run Flow there.
 
 Yeah... pretty lame.
 
