@@ -6,3 +6,5 @@
 - [x] reloadPlugins
 - [x] Export global add/remove state change handlers
 - [x] Add loadPlugins callback
+- [x] Publish Flow types
+- [ ] Add logging
