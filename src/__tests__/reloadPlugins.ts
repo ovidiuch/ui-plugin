@@ -3,17 +3,15 @@ import { loadPlugins, registerPlugin, reloadPlugins, resetPlugins } from '..';
 afterEach(resetPlugins);
 
 it('preserves state after reload', done => {
-  expect.assertions(2);
-  let state = 0;
-
-  const { init } = registerPlugin({ name: 'testPlugin', initialState: state });
+  // NOTE: When this test fails, it times out
+  const { init } = registerPlugin({ name: 'testPlugin', initialState: 0 });
   init(({ getState, setState }) => {
-    expect(getState()).toBe(state);
-
-    if (state === 1) {
+    // If the state 1 then init() was called a second time, which is only
+    // possible if plugins reloaded
+    if (getState() === 1) {
       done();
     } else {
-      setState((state = 1));
+      setState(1);
     }
   });
 
