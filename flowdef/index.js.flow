@@ -35,6 +35,23 @@ type ILoadPluginsOpts = {
   state?: IPluginStates,
 };
 
+export type IPlugin = {
+  name: string,
+  enabled: boolean,
+  defaultConfig: {},
+  initialState: any,
+  initHandlers: Array<InitHandler<any, any>>,
+  methodHandlers: Array<{
+    methodName: string,
+    handler: MethodHandler<any, any>,
+  }>,
+  eventHandlers: Array<{
+    eventPath: string,
+    handler: PluginEventHandler<any, any>,
+  }>,
+  stateHandlers: Array<StateHandler<any, any>>,
+}
+
 export type IPluginDef<PluginConfig: {}, PluginState> = {
   name: string,
   enabled?: boolean,
