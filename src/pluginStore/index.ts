@@ -170,12 +170,6 @@ function setPlugin(pluginName: string, plugin: IPlugin) {
   emitPluginChange();
 }
 
-function getPluginList(): IPlugin[] {
-  const plugins = getPlugins();
-
-  return Object.keys(plugins).map(pluginName => plugins[pluginName]);
-}
-
 function removePluginChangeHandler(handler: PluginChangeHandler) {
   const { pluginChangeHandlers } = getGlobalStore();
   const index = pluginChangeHandlers.indexOf(handler);
@@ -189,6 +183,6 @@ function emitPluginChange() {
   const { pluginChangeHandlers } = getGlobalStore();
 
   pluginChangeHandlers.forEach(handler => {
-    handler(getPluginList());
+    handler(getPlugins());
   });
 }
