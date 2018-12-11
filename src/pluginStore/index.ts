@@ -6,7 +6,7 @@ import {
   StateHandler,
 } from '../shared';
 import { getGlobalStore } from './global';
-import { ILoadedScope } from './shared';
+import { ILoadedScope, PluginChangeHandler } from './shared';
 
 // Meant for testing cleanup purposes
 export function resetPlugins() {
@@ -38,6 +38,15 @@ export function unloadPlugins() {
 
 export function getPlugins() {
   return getGlobalStore().plugins;
+}
+
+export function onPluginChange(handler: PluginChangeHandler) {
+  const { pluginChangeHandlers } = getGlobalStore();
+  pluginChangeHandlers.push(handler);
+
+  return () => {
+    removePluginChangeHandler(handler);
+  };
 }
 
 export function enablePlugin(pluginName: string, enabled: boolean) {
@@ -157,6 +166,29 @@ function getPlugin(pluginName: string) {
 
 function setPlugin(pluginName: string, plugin: IPlugin) {
   const store = getGlobalStore();
-
   store.plugins[pluginName] = plugin;
+  emitPluginChange();
+}
+
+function getPluginList(): IPlugin[] {
+  const plugins = getPlugins();
+
+  return Object.keys(plugins).map(pluginName => plugins[pluginName]);
+}
+
+function removePluginChangeHandler(handler: PluginChangeHandler) {
+  const { pluginChangeHandlers } = getGlobalStore();
+  const index = pluginChangeHandlers.indexOf(handler);
+
+  if (index !== -1) {
+    pluginChangeHandlers.splice(index, 1);
+  }
+}
+
+function emitPluginChange() {
+  const { pluginChangeHandlers } = getGlobalStore();
+
+  pluginChangeHandlers.forEach(handler => {
+    handler(getPluginList());
+  });
 }

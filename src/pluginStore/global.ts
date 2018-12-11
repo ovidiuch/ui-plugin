@@ -9,6 +9,7 @@ export function getGlobalStore() {
   if (!global.UiPluginStore) {
     global.UiPluginStore = {
       plugins: {},
+      pluginChangeHandlers: [],
       loadedScope: null,
     };
   }

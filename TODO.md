@@ -8,5 +8,6 @@
 - [x] Add loadPlugins callback
 - [x] Publish Flow types
 - [x] Export IPlugin flow type
-- [ ] Global `onPluginRegister` event
+- [x] Create global `onPluginChange` event
+- [ ] Create global `onPluginLoad` event
 - [ ] Add logging

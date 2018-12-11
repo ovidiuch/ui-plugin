@@ -35,6 +35,8 @@ type ILoadPluginsOpts = {
   state?: IPluginStates,
 };
 
+type PluginChangeHandler = (plugins: IPlugin[]) => mixed;
+
 export type IPlugin = {
   name: string,
   enabled: boolean,
@@ -50,6 +52,10 @@ export type IPlugin = {
     handler: PluginEventHandler<any, any>,
   }>,
   stateHandlers: Array<StateHandler<any, any>>,
+};
+
+export interface IPlugins {
+  [plugiName: string]: IPlugin;
 }
 
 export type IPluginDef<PluginConfig: {}, PluginState> = {
@@ -92,3 +98,9 @@ declare export function loadPlugins(
   opts?: ILoadPluginsOpts,
   onLoad?: () => mixed,
 ): void;
+
+declare export function getPlugins(): IPlugins;
+
+declare export function onPluginChange(
+  handler: PluginChangeHandler,
+): () => void;
