@@ -1,4 +1,4 @@
-import { loadPlugins, registerPlugin, resetPlugins, unloadPlugins } from '..';
+import { loadPlugins, registerPlugin, resetPlugins } from '..';
 
 afterEach(resetPlugins);
 
@@ -66,10 +66,47 @@ it('calls method handler with plugin context', () => {
   loadPlugins();
 });
 
-it('throws exception after plugins unloaded', done => {
+it('throws exception on missing plugin', done => {
   expect.hasAssertions();
 
-  const { method } = registerPlugin({ name: 'testPlugin1', initialState: 0 });
+  const { init } = registerPlugin({ name: 'testPlugin2' });
+  init(({ callMethod }) => {
+    setTimeout(() => {
+      expect(() => {
+        callMethod('testPlugin1.testMethod');
+      }).toThrow('Called method testMethod of missing plugin testPlugin1');
+      done();
+    });
+  });
+
+  loadPlugins();
+});
+
+it('throws exception on missing method', done => {
+  expect.hasAssertions();
+
+  registerPlugin({ name: 'testPlugin1' });
+
+  const { init } = registerPlugin({ name: 'testPlugin2' });
+  init(({ callMethod }) => {
+    setTimeout(() => {
+      expect(() => {
+        callMethod('testPlugin1.testMethod');
+      }).toThrow('Called missing method testMethod of plugin testPlugin1');
+      done();
+    });
+  });
+
+  loadPlugins();
+});
+
+it('throws exception on disabled plugin', done => {
+  expect.hasAssertions();
+
+  const { method } = registerPlugin({
+    name: 'testPlugin1',
+    enabled: false,
+  });
   method('testMethod', () => undefined);
 
   const { init } = registerPlugin({ name: 'testPlugin2' });
@@ -77,13 +114,10 @@ it('throws exception after plugins unloaded', done => {
     setTimeout(() => {
       expect(() => {
         callMethod('testPlugin1.testMethod');
-      }).toThrow(
-        'Not loaded plugin testPlugin2 called method testPlugin1.testMethod',
-      );
+      }).toThrow('Called method testMethod of disabled plugin testPlugin1');
       done();
     });
   });
 
   loadPlugins();
-  unloadPlugins();
 });

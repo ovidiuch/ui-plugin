@@ -99,9 +99,15 @@ export function loadPlugins(
 
       const { plugins, config } = scope;
 
-      if (getEnabledPluginNames(plugins).indexOf(otherPluginName) === -1) {
+      if (!plugins[otherPluginName]) {
         throw new Error(
           `Requested config of missing plugin ${otherPluginName}`,
+        );
+      }
+
+      if (getEnabledPluginNames(plugins).indexOf(otherPluginName) === -1) {
+        throw new Error(
+          `Requested config of disabled plugin ${otherPluginName}`,
         );
       }
 
@@ -125,8 +131,14 @@ export function loadPlugins(
 
       const { plugins, state } = scope;
 
-      if (getEnabledPluginNames(plugins).indexOf(otherPluginName) === -1) {
+      if (!plugins[otherPluginName]) {
         throw new Error(`Requested state of missing plugin ${otherPluginName}`);
+      }
+
+      if (getEnabledPluginNames(plugins).indexOf(otherPluginName) === -1) {
+        throw new Error(
+          `Requested state of disabled plugin ${otherPluginName}`,
+        );
       }
 
       return state[otherPluginName];
@@ -164,7 +176,15 @@ export function loadPlugins(
       const [otherPluginName, methodName] = methodPath.split('.');
 
       if (!plugins[otherPluginName]) {
-        throw new Error(`Plugin not found ${otherPluginName}`);
+        throw new Error(
+          `Called method ${methodName} of missing plugin ${otherPluginName}`,
+        );
+      }
+
+      if (getEnabledPluginNames(plugins).indexOf(otherPluginName) === -1) {
+        throw new Error(
+          `Called method ${methodName} of disabled plugin ${otherPluginName}`,
+        );
       }
 
       const { methodHandlers } = plugins[otherPluginName];
@@ -174,7 +194,9 @@ export function loadPlugins(
       );
 
       if (!methodHandler) {
-        throw new Error(`Method not found ${methodPath}`);
+        throw new Error(
+          `Called missing method ${methodName} of plugin ${otherPluginName}`,
+        );
       }
 
       return methodHandler.handler(getPluginContext(otherPluginName), ...args);
