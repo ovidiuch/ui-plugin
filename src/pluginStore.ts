@@ -70,6 +70,7 @@ export function addPlugin({
   initialState: any;
 }) {
   setPlugin(name, {
+    name,
     enabled,
     defaultConfig,
     initialState,

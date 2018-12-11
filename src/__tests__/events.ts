@@ -1,4 +1,4 @@
-import { loadPlugins, registerPlugin, resetPlugins, unloadPlugins } from '..';
+import { loadPlugins, registerPlugin, resetPlugins } from '..';
 
 afterEach(resetPlugins);
 
@@ -68,21 +68,4 @@ it('calls multiple event handlers', () => {
   });
 
   loadPlugins();
-});
-
-it('throws exception after plugins unloaded', done => {
-  expect.hasAssertions();
-
-  const { init } = registerPlugin({ name: 'testPlugin' });
-  init(({ emitEvent }) => {
-    setTimeout(() => {
-      expect(() => {
-        emitEvent('testEvent');
-      }).toThrow('Not loaded plugin testPlugin emitted event testEvent');
-      done();
-    });
-  });
-
-  loadPlugins();
-  unloadPlugins();
 });

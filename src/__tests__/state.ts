@@ -1,4 +1,4 @@
-import { loadPlugins, registerPlugin, resetPlugins, unloadPlugins } from '..';
+import { loadPlugins, registerPlugin, resetPlugins } from '..';
 
 afterEach(resetPlugins);
 
@@ -48,6 +48,37 @@ it('gets state of other plugin from context', () => {
   loadPlugins();
 });
 
+it('throws exception on missing plugin', () => {
+  expect.hasAssertions();
+
+  const { init } = registerPlugin({ name: 'testPlugin2' });
+  init(({ getStateOf }) => {
+    expect(() => {
+      getStateOf('testPlugin1');
+    }).toThrow('Requested state of missing plugin testPlugin1');
+  });
+
+  loadPlugins();
+});
+
+it('throws exception on disabled plugin', () => {
+  expect.hasAssertions();
+
+  registerPlugin({
+    name: 'testPlugin1',
+    enabled: false,
+  });
+
+  const { init } = registerPlugin({ name: 'testPlugin2' });
+  init(({ getStateOf }) => {
+    expect(() => {
+      getStateOf('testPlugin1');
+    }).toThrow('Requested state of disabled plugin testPlugin1');
+  });
+
+  loadPlugins();
+});
+
 it('sets state', () => {
   expect.hasAssertions();
 
@@ -81,26 +112,6 @@ it('sets state using updater function', () => {
   });
 
   loadPlugins();
-});
-
-it('throws exception after plugins unloaded', done => {
-  expect.hasAssertions();
-
-  const { init } = registerPlugin({
-    name: 'testPlugin',
-    initialState: { counter: 0 },
-  });
-  init(({ setState }) => {
-    setTimeout(() => {
-      expect(() => {
-        setState({ counter: 1 });
-      }).toThrow('Not loaded plugin testPlugin called setState');
-      done();
-    });
-  });
-
-  loadPlugins();
-  unloadPlugins();
 });
 
 it('gets state from 2nd load context', () => {

@@ -49,3 +49,34 @@ it('gets config of other plugin from context', () => {
 
   loadPlugins();
 });
+
+it('throws exception on missing plugin', () => {
+  expect.hasAssertions();
+
+  const { init } = registerPlugin({ name: 'testPlugin2' });
+  init(({ getConfigOf }) => {
+    expect(() => {
+      getConfigOf('testPlugin1');
+    }).toThrow('Requested config of missing plugin testPlugin1');
+  });
+
+  loadPlugins();
+});
+
+it('throws exception on disabled plugin', () => {
+  expect.hasAssertions();
+
+  registerPlugin({
+    name: 'testPlugin1',
+    enabled: false,
+  });
+
+  const { init } = registerPlugin({ name: 'testPlugin2' });
+  init(({ getConfigOf }) => {
+    expect(() => {
+      getConfigOf('testPlugin1');
+    }).toThrow('Requested config of disabled plugin testPlugin1');
+  });
+
+  loadPlugins();
+});

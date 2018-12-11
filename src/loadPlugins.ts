@@ -1,4 +1,4 @@
-import { find, merge } from 'lodash';
+import { find } from 'lodash';
 import { exposeLoadedScope, getPlugins, unloadPlugins } from './pluginStore';
 import {
   ILoadPluginsOpts,
@@ -42,8 +42,8 @@ export function loadPlugins(
 
   load();
 
-  function load() {
-    scope = createScope(opts);
+  function load(prevState?: IPluginStates) {
+    scope = createScope(opts, prevState);
     const { plugins, unloadHandlers } = scope;
 
     // Run all "init" handlers
@@ -77,9 +77,15 @@ export function loadPlugins(
   // - reload() reloads plugins using the same params already passed to
   //   loadPlugins, and thus reload() is only available after loadPlugins was
   //   called
+  // - reload() preserves previously accumulated state
   function reload() {
+    if (!scope) {
+      throw new Error('Trying to reload unloaded plugins');
+    }
+
+    const prevState = scope.state;
     unload();
-    load();
+    load(prevState);
   }
 
   // TODO: Memoize plugin context per plugin name (bound to this scope)
@@ -99,9 +105,15 @@ export function loadPlugins(
 
       const { plugins, config } = scope;
 
-      if (getEnabledPluginNames(plugins).indexOf(otherPluginName) === -1) {
+      if (!plugins[otherPluginName]) {
         throw new Error(
           `Requested config of missing plugin ${otherPluginName}`,
+        );
+      }
+
+      if (getEnabledPluginNames(plugins).indexOf(otherPluginName) === -1) {
+        throw new Error(
+          `Requested config of disabled plugin ${otherPluginName}`,
         );
       }
 
@@ -125,8 +137,14 @@ export function loadPlugins(
 
       const { plugins, state } = scope;
 
-      if (getEnabledPluginNames(plugins).indexOf(otherPluginName) === -1) {
+      if (!plugins[otherPluginName]) {
         throw new Error(`Requested state of missing plugin ${otherPluginName}`);
+      }
+
+      if (getEnabledPluginNames(plugins).indexOf(otherPluginName) === -1) {
+        throw new Error(
+          `Requested state of disabled plugin ${otherPluginName}`,
+        );
       }
 
       return state[otherPluginName];
@@ -164,7 +182,15 @@ export function loadPlugins(
       const [otherPluginName, methodName] = methodPath.split('.');
 
       if (!plugins[otherPluginName]) {
-        throw new Error(`Plugin not found ${otherPluginName}`);
+        throw new Error(
+          `Called method ${methodName} of missing plugin ${otherPluginName}`,
+        );
+      }
+
+      if (getEnabledPluginNames(plugins).indexOf(otherPluginName) === -1) {
+        throw new Error(
+          `Called method ${methodName} of disabled plugin ${otherPluginName}`,
+        );
       }
 
       const { methodHandlers } = plugins[otherPluginName];
@@ -174,7 +200,9 @@ export function loadPlugins(
       );
 
       if (!methodHandler) {
-        throw new Error(`Method not found ${methodPath}`);
+        throw new Error(
+          `Called missing method ${methodName} of plugin ${otherPluginName}`,
+        );
       }
 
       return methodHandler.handler(getPluginContext(otherPluginName), ...args);
@@ -212,32 +240,49 @@ export function loadPlugins(
   }
 }
 
-function createScope(opts: ILoadPluginsOpts): IPluginScope {
+function createScope(
+  opts: ILoadPluginsOpts,
+  prevState: undefined | IPluginStates,
+): IPluginScope {
   const plugins = getPlugins();
 
   return {
     plugins,
-    config: merge({}, getDefaultConfigs(plugins), opts.config),
-    state: merge({}, getInitialStates(plugins), opts.state),
+    config: createScopeConfig(plugins, opts.config),
+    state: createScopeState(plugins, opts.state, prevState),
     unloadHandlers: [],
   };
 }
 
-function getDefaultConfigs(plugins: IPlugins): IPluginConfigs {
+function createScopeConfig(
+  plugins: IPlugins,
+  customConfig: undefined | IPluginConfigs,
+): IPluginConfigs {
   return getEnabledPluginNames(plugins).reduce(
     (acc, pluginName) => ({
       ...acc,
-      [pluginName]: plugins[pluginName].defaultConfig,
+      [pluginName]: Object.assign(
+        {},
+        plugins[pluginName].defaultConfig,
+        (customConfig && customConfig[pluginName]) || {},
+      ),
     }),
     {},
   );
 }
 
-function getInitialStates(plugins: IPlugins): IPluginStates {
+function createScopeState(
+  plugins: IPlugins,
+  customState: undefined | IPluginStates,
+  prevState: undefined | IPluginStates,
+): IPluginStates {
   return getEnabledPluginNames(plugins).reduce(
     (acc, pluginName) => ({
       ...acc,
-      [pluginName]: plugins[pluginName].initialState,
+      [pluginName]:
+        (prevState && prevState[pluginName]) ||
+        (customState && customState[pluginName]) ||
+        plugins[pluginName].initialState,
     }),
     {},
   );
