@@ -6,7 +6,7 @@ it('gets initial state from context', () => {
   expect.hasAssertions();
 
   const { init } = registerPlugin({
-    name: 'testPlugin',
+    name: 'test',
     initialState: { counter: 0 },
   });
   init(({ getState }) => {
@@ -20,7 +20,7 @@ it('gets custom state from context', () => {
   expect.hasAssertions();
 
   const { init } = registerPlugin({
-    name: 'testPlugin',
+    name: 'test',
     initialState: { counter: 0 },
   });
   init(({ getState }) => {
@@ -28,7 +28,7 @@ it('gets custom state from context', () => {
   });
 
   loadPlugins({
-    state: { testPlugin: { counter: 5 } },
+    state: { test: { counter: 5 } },
   });
 });
 
@@ -36,13 +36,13 @@ it('gets state of other plugin from context', () => {
   expect.hasAssertions();
 
   registerPlugin({
-    name: 'testPlugin1',
+    name: 'test1',
     initialState: { counter: 0 },
   });
 
-  const { init } = registerPlugin({ name: 'testPlugin2' });
+  const { init } = registerPlugin({ name: 'test2' });
   init(({ getStateOf }) => {
-    expect(getStateOf('testPlugin1').counter).toBe(0);
+    expect(getStateOf('test1').counter).toBe(0);
   });
 
   loadPlugins();
@@ -51,11 +51,11 @@ it('gets state of other plugin from context', () => {
 it('throws exception on missing plugin', () => {
   expect.hasAssertions();
 
-  const { init } = registerPlugin({ name: 'testPlugin2' });
+  const { init } = registerPlugin({ name: 'test2' });
   init(({ getStateOf }) => {
     expect(() => {
-      getStateOf('testPlugin1');
-    }).toThrow('Requested state of missing plugin testPlugin1');
+      getStateOf('test1');
+    }).toThrow('Requested state of missing plugin test1');
   });
 
   loadPlugins();
@@ -65,15 +65,15 @@ it('throws exception on disabled plugin', () => {
   expect.hasAssertions();
 
   registerPlugin({
-    name: 'testPlugin1',
+    name: 'test1',
     enabled: false,
   });
 
-  const { init } = registerPlugin({ name: 'testPlugin2' });
+  const { init } = registerPlugin({ name: 'test2' });
   init(({ getStateOf }) => {
     expect(() => {
-      getStateOf('testPlugin1');
-    }).toThrow('Requested state of disabled plugin testPlugin1');
+      getStateOf('test1');
+    }).toThrow('Requested state of disabled plugin test1');
   });
 
   loadPlugins();
@@ -83,7 +83,7 @@ it('sets state', () => {
   expect.hasAssertions();
 
   const { init } = registerPlugin({
-    name: 'testPlugin',
+    name: 'test',
     initialState: { counter: 1 },
   });
   init(({ getState, setState }) => {
@@ -99,7 +99,7 @@ it('sets state using updater function', () => {
   expect.hasAssertions();
 
   const { init } = registerPlugin({
-    name: 'testPlugin',
+    name: 'test',
     initialState: { counter: 1 },
   });
   init(({ getState, setState }) => {
@@ -118,7 +118,7 @@ it('gets state from 2nd load context', () => {
   let counter = 0;
 
   const { init } = registerPlugin({
-    name: 'testPlugin',
+    name: 'test',
     initialState: { counter },
   });
   init(({ getState }) => {
@@ -126,12 +126,12 @@ it('gets state from 2nd load context', () => {
   });
 
   loadPlugins({
-    state: { testPlugin: { counter: 5 } },
+    state: { test: { counter: 5 } },
   });
   expect(counter).toBe(5);
 
   loadPlugins({
-    state: { testPlugin: { counter: 10 } },
+    state: { test: { counter: 10 } },
   });
   expect(counter).toBe(10);
 });

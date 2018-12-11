@@ -9,7 +9,7 @@ it('reacts to own state change', async () => {
   let counter = 0;
 
   const { init, onState } = registerPlugin({
-    name: 'testPlugin1',
+    name: 'test1',
     initialState: { counter },
   });
   init(({ setState }) => {
@@ -31,16 +31,16 @@ it('reacts to state change from other plugin', async () => {
   let counter = 0;
 
   const { init } = registerPlugin({
-    name: 'testPlugin1',
+    name: 'test1',
     initialState: { counter },
   });
   init(({ setState }) => {
     setState({ counter: 5 });
   });
 
-  const { onState } = registerPlugin({ name: 'testPlugin2' });
+  const { onState } = registerPlugin({ name: 'test2' });
   onState(({ getStateOf }) => {
-    counter = getStateOf('testPlugin1').counter;
+    counter = getStateOf('test1').counter;
   });
 
   loadPlugins();

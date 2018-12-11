@@ -9,22 +9,22 @@ afterEach(resetPlugins);
 
 it('gets plugin context', () => {
   registerPlugin({
-    name: 'testPlugin',
+    name: 'test',
     initialState: { active: false },
   });
 
   loadPlugins();
 
-  const { getState } = getPluginContext('testPlugin');
+  const { getState } = getPluginContext('test');
   expect(getState()).toEqual({ active: false });
 });
 
 it('throws exception if plugins are not loaded', () => {
   registerPlugin({
-    name: 'testPlugin',
+    name: 'test',
   });
 
   expect(() => {
-    getPluginContext('testPlugin');
+    getPluginContext('test');
   }).toThrow('getPluginContext called before loading plugins');
 });

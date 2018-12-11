@@ -10,12 +10,12 @@ function loadAndUnloadPlugins() {
 it('throws exception on getConfig', done => {
   expect.hasAssertions();
 
-  const { init } = registerPlugin({ name: 'testPlugin' });
+  const { init } = registerPlugin({ name: 'test' });
   init(({ getConfig }) => {
     setTimeout(() => {
       expect(() => {
         getConfig();
-      }).toThrow('Not loaded plugin testPlugin called getConfig');
+      }).toThrow('Not loaded plugin test called getConfig');
       done();
     });
   });
@@ -26,12 +26,12 @@ it('throws exception on getConfig', done => {
 it('throws exception on getConfigOf', done => {
   expect.hasAssertions();
 
-  const { init } = registerPlugin({ name: 'testPlugin1' });
+  const { init } = registerPlugin({ name: 'test1' });
   init(({ getConfigOf }) => {
     setTimeout(() => {
       expect(() => {
-        getConfigOf('testPlugin2');
-      }).toThrow('Not loaded plugin testPlugin1 called getConfigOf');
+        getConfigOf('test2');
+      }).toThrow('Not loaded plugin test1 called getConfigOf');
       done();
     });
   });
@@ -42,12 +42,12 @@ it('throws exception on getConfigOf', done => {
 it('throws exception on getState', done => {
   expect.hasAssertions();
 
-  const { init } = registerPlugin({ name: 'testPlugin' });
+  const { init } = registerPlugin({ name: 'test' });
   init(({ getState }) => {
     setTimeout(() => {
       expect(() => {
         getState();
-      }).toThrow('Not loaded plugin testPlugin called getState');
+      }).toThrow('Not loaded plugin test called getState');
       done();
     });
   });
@@ -58,12 +58,12 @@ it('throws exception on getState', done => {
 it('throws exception on getStateOf', done => {
   expect.hasAssertions();
 
-  const { init } = registerPlugin({ name: 'testPlugin1' });
+  const { init } = registerPlugin({ name: 'test1' });
   init(({ getStateOf }) => {
     setTimeout(() => {
       expect(() => {
-        getStateOf('testPlugin2');
-      }).toThrow('Not loaded plugin testPlugin1 called getStateOf');
+        getStateOf('test2');
+      }).toThrow('Not loaded plugin test1 called getStateOf');
       done();
     });
   });
@@ -74,12 +74,12 @@ it('throws exception on getStateOf', done => {
 it('throws exception on setState', done => {
   expect.hasAssertions();
 
-  const { init } = registerPlugin({ name: 'testPlugin', initialState: 0 });
+  const { init } = registerPlugin({ name: 'test', initialState: 0 });
   init(({ setState }) => {
     setTimeout(() => {
       expect(() => {
         setState(1);
-      }).toThrow('Not loaded plugin testPlugin called setState');
+      }).toThrow('Not loaded plugin test called setState');
       done();
     });
   });
@@ -90,17 +90,15 @@ it('throws exception on setState', done => {
 it('throws exception on callMethod', done => {
   expect.hasAssertions();
 
-  const { method } = registerPlugin({ name: 'testPlugin1' });
+  const { method } = registerPlugin({ name: 'test1' });
   method('testMethod', () => undefined);
 
-  const { init } = registerPlugin({ name: 'testPlugin2' });
+  const { init } = registerPlugin({ name: 'test2' });
   init(({ callMethod }) => {
     setTimeout(() => {
       expect(() => {
-        callMethod('testPlugin1.testMethod');
-      }).toThrow(
-        'Not loaded plugin testPlugin2 called method testPlugin1.testMethod',
-      );
+        callMethod('test1.testMethod');
+      }).toThrow('Not loaded plugin test2 called method test1.testMethod');
       done();
     });
   });
@@ -111,12 +109,12 @@ it('throws exception on callMethod', done => {
 it('throws exception on emitEvent', done => {
   expect.hasAssertions();
 
-  const { init } = registerPlugin({ name: 'testPlugin' });
+  const { init } = registerPlugin({ name: 'test' });
   init(({ emitEvent }) => {
     setTimeout(() => {
       expect(() => {
         emitEvent('testEvent');
-      }).toThrow('Not loaded plugin testPlugin emitted event testEvent');
+      }).toThrow('Not loaded plugin test emitted event testEvent');
       done();
     });
   });
