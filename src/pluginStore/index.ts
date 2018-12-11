@@ -1,11 +1,12 @@
-import { getGlobalStore, ILoadedScope } from './global';
 import {
   EventHandler,
   InitHandler,
   IPlugin,
   MethodHandler,
   StateHandler,
-} from './shared';
+} from '../shared';
+import { getGlobalStore } from './global';
+import { ILoadedScope } from './shared';
 
 // Meant for testing cleanup purposes
 export function resetPlugins() {
