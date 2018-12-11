@@ -94,10 +94,7 @@ declare export function registerPlugin<PluginConfig: {}, PluginState>(
   pluginDef: IPluginDef<PluginConfig, PluginState>,
 ): IPluginApi<PluginConfig, PluginState>;
 
-declare export function loadPlugins(
-  opts?: ILoadPluginsOpts,
-  onLoad?: () => mixed,
-): void;
+declare export function loadPlugins(opts?: ILoadPluginsOpts): void;
 
 declare export function getPlugins(): IPlugins;
 

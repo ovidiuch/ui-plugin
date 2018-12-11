@@ -23,10 +23,7 @@ interface IPluginScope {
   unloadHandlers: UnloadHandlers[];
 }
 
-export function loadPlugins(
-  opts: ILoadPluginsOpts = {},
-  onLoad?: () => unknown,
-) {
+export function loadPlugins(opts: ILoadPluginsOpts = {}) {
   // Ensure calling loadPlugins more than once doesn't duplicate plugin
   // execution
   unloadPlugins();
@@ -56,10 +53,6 @@ export function loadPlugins(
         }
       });
     });
-
-    if (typeof onLoad === 'function') {
-      onLoad();
-    }
   }
 
   function unload() {
