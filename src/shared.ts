@@ -47,7 +47,7 @@ export interface IPlugin {
   }>;
   eventHandlers: Array<{
     eventPath: string;
-    handler: MethodHandler<any, any>;
+    handler: EventHandler<any, any>;
   }>;
   // At the moment state handlers fire on state changes from any plugin
   stateHandlers: Array<StateHandler<any, any>>;

@@ -4,6 +4,7 @@ export {
   enablePlugin,
   getPluginContext,
   getPlugins,
+  onPluginChange,
   reloadPlugins,
   removeStateHandler,
   resetPlugins,

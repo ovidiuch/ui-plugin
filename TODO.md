@@ -7,5 +7,7 @@
 - [x] Export global add/remove state change handlers
 - [x] Add loadPlugins callback
 - [x] Publish Flow types
-- [ ] Global `onPluginRegister` event
+- [x] Export IPlugin flow type
+- [x] Create global onPluginChange event
+- [ ] Create global onPluginLoad event
 - [ ] Add logging

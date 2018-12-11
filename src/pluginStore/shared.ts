@@ -6,7 +6,10 @@ export interface ILoadedScope {
   getPluginContext: (pluginName: string) => IPluginContext<any, any>;
 }
 
+export type PluginChangeHandler = (plugins: IPlugins) => unknown;
+
 export interface IPluginStore {
   plugins: IPlugins;
+  pluginChangeHandlers: PluginChangeHandler[];
   loadedScope: null | ILoadedScope;
 }

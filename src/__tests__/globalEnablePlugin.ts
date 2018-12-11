@@ -8,7 +8,7 @@ import {
 
 afterEach(resetPlugins);
 
-it('can access state of plugin enabled at run time', () => {
+it('enables plugin at run-time', () => {
   expect.hasAssertions();
 
   registerPlugin({
