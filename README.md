@@ -23,3 +23,7 @@ Enable a system of user interface plugins that meets the following criteria:
 ## Strategy
 
 Use the global namespace to connect plugins from different script files. Expose declarative APIs for defining and registering plugins that abstracts the global namespace.
+
+## Opinions
+
+- Registered plugins are enabled by default. In the user land, this indirectly leads to using a _disabled_ plugin list to configure the enabled state of installed plugins (ie. a _deny_ list).
