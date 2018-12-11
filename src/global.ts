@@ -12,17 +12,17 @@ interface IGlobalStore {
 }
 
 declare var global: {
-  UiPlugin: undefined | IGlobalStore;
+  UiPluginStore: undefined | IGlobalStore;
 };
 
 // Plugins are shared between multiple code bundles that run in the same page
 export function getGlobalStore() {
-  if (!global.UiPlugin) {
-    global.UiPlugin = {
+  if (!global.UiPluginStore) {
+    global.UiPluginStore = {
       plugins: {},
       loadedScope: null,
     };
   }
 
-  return global.UiPlugin;
+  return global.UiPluginStore;
 }
