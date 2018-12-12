@@ -1,25 +1,24 @@
+import retry from '@skidding/async-retry';
 import { loadPlugins, onStateChange, registerPlugin, resetPlugins } from '..';
 
 afterEach(resetPlugins);
 
 it('calls state handler', async () => {
+  const handler = jest.fn();
+  onStateChange(handler);
+
   const { init } = registerPlugin({
     name: 'test',
     initialState: { counter: 0 },
   });
 
-  const handler = jest.fn();
-  onStateChange(handler);
-
-  await new Promise(done => {
-    init(({ setState }) => {
-      setState({ counter: 1 });
-      expect(handler).toBeCalled();
-      done();
-    });
-
-    loadPlugins();
+  init(({ setState }) => {
+    setState({ counter: 1 });
   });
+
+  loadPlugins();
+
+  await retry(() => expect(handler).toBeCalled());
 });
 
 it('stops calling state handler', async () => {
@@ -31,18 +30,19 @@ it('stops calling state handler', async () => {
   const handler = jest.fn();
   const removeHandler = onStateChange(handler);
 
-  await new Promise(done => {
-    init(({ setState }) => {
-      setState({ counter: 1 });
-      expect(handler).toBeCalled();
+  let removeHandlerAndSetState: () => void;
+  init(({ setState }) => {
+    setState({ counter: 1 });
 
+    removeHandlerAndSetState = () => {
       removeHandler();
-
       setState({ counter: 2 });
-      expect(handler).toBeCalledTimes(1);
-      done();
-    });
-
-    loadPlugins();
+    };
   });
+
+  loadPlugins();
+
+  await retry(() => expect(handler).toBeCalled());
+  removeHandlerAndSetState!();
+  await retry(() => expect(handler).toBeCalledTimes(1));
 });
