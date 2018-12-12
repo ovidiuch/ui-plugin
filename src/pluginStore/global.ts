@@ -10,6 +10,7 @@ export function getGlobalStore() {
     global.UiPluginStore = {
       plugins: {},
       pluginChangeHandlers: [],
+      stateChangeHandlers: [],
       loadedScope: null,
     };
   }

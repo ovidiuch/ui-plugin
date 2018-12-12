@@ -1,17 +1,23 @@
-import {
-  EventHandler,
-  InitHandler,
-  IPlugin,
-  MethodHandler,
-  StateHandler,
-} from '../shared';
+import { EventHandler, InitHandler, IPlugin, MethodHandler } from '../shared';
 import { getGlobalStore } from './global';
-import { ILoadedScope, PluginChangeHandler } from './shared';
+import { ILoadedScope } from './shared';
 
 // Meant for testing cleanup purposes
 export function resetPlugins() {
   unloadPlugins();
   getGlobalStore().plugins = {};
+}
+
+export function getPlugins() {
+  return getGlobalStore().plugins;
+}
+
+export function getPluginChangeHandlers() {
+  return getGlobalStore().pluginChangeHandlers;
+}
+
+export function getStateChangeHandlers() {
+  return getGlobalStore().stateChangeHandlers;
 }
 
 export function getLoadedScope(): null | ILoadedScope {
@@ -41,29 +47,6 @@ export function unloadPlugins() {
   }
 }
 
-export function onPluginChange(handler: PluginChangeHandler) {
-  const { pluginChangeHandlers } = getGlobalStore();
-  pluginChangeHandlers.push(handler);
-
-  return () => {
-    removePluginChangeHandler(handler);
-  };
-}
-
-export function getPluginContext(pluginName: string) {
-  const { loadedScope } = getGlobalStore();
-
-  if (!loadedScope) {
-    throw new Error('getPluginContext called before loading plugins');
-  }
-
-  return loadedScope.getPluginContext(pluginName);
-}
-
-export function getPlugins() {
-  return getGlobalStore().plugins;
-}
-
 export function createPlugin({
   name,
   enabled,
@@ -85,7 +68,6 @@ export function createPlugin({
     initHandlers: [],
     methodHandlers: [],
     eventHandlers: [],
-    stateHandlers: [],
   };
 }
 
@@ -136,32 +118,6 @@ export function addEventHandler({
   eventHandlers.push({ eventPath, handler });
 }
 
-export function addStateHandler({
-  pluginName,
-  handler,
-}: {
-  pluginName: string;
-  handler: StateHandler<any, any>;
-}) {
-  const { stateHandlers } = getPlugin(pluginName);
-  stateHandlers.push(handler);
-}
-
-export function removeStateHandler({
-  pluginName,
-  handler,
-}: {
-  pluginName: string;
-  handler: StateHandler<any, any>;
-}) {
-  const { stateHandlers } = getPlugin(pluginName);
-  const index = stateHandlers.indexOf(handler);
-
-  if (index !== -1) {
-    stateHandlers.splice(index, 1);
-  }
-}
-
 function getPlugin(pluginName: string) {
   const { plugins } = getGlobalStore();
 
@@ -170,15 +126,6 @@ function getPlugin(pluginName: string) {
   }
 
   return plugins[pluginName];
-}
-
-function removePluginChangeHandler(handler: PluginChangeHandler) {
-  const { pluginChangeHandlers } = getGlobalStore();
-  const index = pluginChangeHandlers.indexOf(handler);
-
-  if (index !== -1) {
-    pluginChangeHandlers.splice(index, 1);
-  }
 }
 
 function emitPluginChange() {

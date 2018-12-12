@@ -1,14 +1,9 @@
 export { enablePlugin } from './enablePlugin';
+export { getPluginContext } from './getPluginContext';
 export { loadPlugins } from './loadPlugins';
-export {
-  addStateHandler,
-  getPluginContext,
-  getPlugins,
-  onPluginChange,
-  removeStateHandler,
-  resetPlugins,
-  unloadPlugins,
-} from './pluginStore';
+export { onPluginChange } from './onPluginChange';
+export { onStateChange } from './onStateChange';
+export { getPlugins, resetPlugins, unloadPlugins } from './pluginStore';
 export { registerPlugin } from './registerPlugin';
 export {
   ILoadPluginsOpts,

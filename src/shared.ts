@@ -31,10 +31,6 @@ export type EventHandler<PluginConfig extends object, PluginState> = (
   ...args: any[]
 ) => void;
 
-export type StateHandler<PluginConfig extends object, PluginState> = (
-  context: IPluginContext<PluginConfig, PluginState>,
-) => void;
-
 export interface IPlugin {
   name: string;
   enabled: boolean;
@@ -49,8 +45,6 @@ export interface IPlugin {
     eventPath: string;
     handler: EventHandler<any, any>;
   }>;
-  // At the moment state handlers fire on state changes from any plugin
-  stateHandlers: Array<StateHandler<any, any>>;
 }
 
 export interface IPlugins {
@@ -68,4 +62,16 @@ export interface IPluginStates {
 export interface ILoadPluginsOpts {
   config?: IPluginConfigs;
   state?: IPluginStates;
+}
+
+export type PluginChangeHandler = (plugins: IPlugins) => unknown;
+
+export type StateChangeHandler = () => unknown;
+
+export function removeHandler<H>(handlers: H[], handler: H) {
+  const index = handlers.indexOf(handler);
+
+  if (index !== -1) {
+    handlers.splice(index, 1);
+  }
 }
