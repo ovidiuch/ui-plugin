@@ -92,6 +92,8 @@ declare export function registerPlugin<PluginConfig: {}, PluginState>(
 
 declare export function loadPlugins(opts?: ILoadPluginsOpts): void;
 
+declare export function unloadPlugins(): void;
+
 declare export function getPlugins(): IPlugins;
 
 declare export function onPluginChange(
@@ -99,3 +101,12 @@ declare export function onPluginChange(
 ): () => void;
 
 declare export function onStateChange(handler: StateChangeHandler): () => void;
+
+declare export function getPluginContext(
+  pluginName: string,
+): IPluginContext<any, any>;
+
+declare export function enablePlugin(
+  pluginName: string,
+  enabled: boolean,
+): void;
