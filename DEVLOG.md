@@ -2,7 +2,7 @@ Q: When installing a plugin at run-time, how do we know when the plugin is ready
 
 Problem: The `registerPlugin` call will be followed by a few other calls, like `init`, `method` and `event`, all declaring bits of the plugin, bits that the plugin cannot be activated without.
 
-(Pragmatic) answer: Anytime starting with next _loop_ iteration. This implies that all plugin parts are called synchronously right after `registerPlugin` call.
+(Pragmatic) answer: Anytime starting with next _loop_ iteration. This implies that all plugin parts are called synchronously right after the registerPlugin call.
 
 Decide: Do we automatically reload plugins after registering a plugin at run-time? Or do we expect users to manually call `reloadPlugins` after plugin registration?
 
