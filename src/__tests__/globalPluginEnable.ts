@@ -15,6 +15,9 @@ it('enables plugin at run-time', async () => {
         expect(getStateOf('test1')).toEqual(1);
         done();
       } catch (err) {
+        expect(err).toEqual(
+          new Error('Requested state of disabled plugin test1'),
+        );
         enablePlugin('test1', true);
       }
     });
