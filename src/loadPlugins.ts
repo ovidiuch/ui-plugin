@@ -1,5 +1,10 @@
 import { find } from 'lodash';
-import { exposeLoadedScope, getPlugins, unloadPlugins } from './pluginStore';
+import {
+  exposeLoadedScope,
+  getPlugins,
+  getStateChangeHandlers,
+  unloadPlugins,
+} from './pluginStore';
 import {
   ILoadPluginsOpts,
   IPluginConfigs,
@@ -23,10 +28,7 @@ interface IPluginScope {
   unloadHandlers: UnloadHandlers[];
 }
 
-export function loadPlugins(
-  opts: ILoadPluginsOpts = {},
-  onLoad?: () => unknown,
-) {
+export function loadPlugins(opts: ILoadPluginsOpts = {}) {
   // Ensure calling loadPlugins more than once doesn't duplicate plugin
   // execution
   unloadPlugins();
@@ -56,10 +58,6 @@ export function loadPlugins(
         }
       });
     });
-
-    if (typeof onLoad === 'function') {
-      onLoad();
-    }
   }
 
   function unload() {
@@ -155,15 +153,13 @@ export function loadPlugins(
         throw new Error(`Not loaded plugin ${pluginName} called setState`);
       }
 
-      const { plugins, state } = scope;
+      const { state } = scope;
 
       state[pluginName] = updateState(state[pluginName], change);
 
       // Trigger all state change handlers
-      getEnabledPluginNames(plugins).forEach(otherPluginName => {
-        plugins[otherPluginName].stateHandlers.forEach(handler => {
-          handler(getPluginContext(otherPluginName));
-        });
+      getStateChangeHandlers().forEach(handler => {
+        handler();
       });
 
       if (typeof cb === 'function') {

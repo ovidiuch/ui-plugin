@@ -24,6 +24,7 @@ Enable a system of user interface plugins that meets the following criteria:
 
 Use the global namespace to connect plugins from different script files. Expose declarative APIs for defining and registering plugins that abstracts the global namespace.
 
-## Opinions
+## Design
 
 - Registered plugins are enabled by default. In the user land, this indirectly leads to using a _disabled_ plugin list to configure the enabled state of installed plugins (ie. a _deny_ list).
+- Plugins are registered using multiple function calls. The first call takes in the metadata (name, default config and initial state). _Init_, _method_ and _event_ handlers are then registered using specific calls for each. This aids type safety and aesthetics. But it rasises one issue: When is a new plugin ready to be loaded? To reliably, automatically load a plugin at run-time upon registration, we expect all plugin registration to consist of sync function calls inside the same event loop iteration.

@@ -18,10 +18,6 @@ type PluginEventHandler<PluginConfig: {}, PluginState> = (
   ...args: any[]
 ) => void;
 
-type StateHandler<PluginConfig: {}, PluginState> = (
-  context: IPluginContext<PluginConfig, PluginState>,
-) => void;
-
 type IPluginConfigs = {
   [pluginName: string]: { [attr: string]: any },
 };
@@ -49,7 +45,6 @@ export type IPlugin = {
     eventPath: string,
     handler: PluginEventHandler<any, any>,
   }>,
-  stateHandlers: Array<StateHandler<any, any>>,
 };
 
 type IPlugins = {
@@ -57,6 +52,8 @@ type IPlugins = {
 };
 
 type PluginChangeHandler = (plugins: IPlugins) => mixed;
+
+type StateChangeHandler = () => mixed;
 
 export type IPluginDef<PluginConfig: {}, PluginState> = {
   name: string,
@@ -85,7 +82,6 @@ export type IPluginApi<PluginConfig: {}, PluginState> = {
     eventPath: string,
     handler: PluginEventHandler<PluginConfig, PluginState>,
   ) => void,
-  onState: (handler: StateHandler<PluginConfig, PluginState>) => void,
 };
 
 declare export function resetPlugins(): void;
@@ -94,13 +90,12 @@ declare export function registerPlugin<PluginConfig: {}, PluginState>(
   pluginDef: IPluginDef<PluginConfig, PluginState>,
 ): IPluginApi<PluginConfig, PluginState>;
 
-declare export function loadPlugins(
-  opts?: ILoadPluginsOpts,
-  onLoad?: () => mixed,
-): void;
+declare export function loadPlugins(opts?: ILoadPluginsOpts): void;
 
 declare export function getPlugins(): IPlugins;
 
 declare export function onPluginChange(
   handler: PluginChangeHandler,
 ): () => void;
+
+declare export function onStateChange(handler: StateChangeHandler): () => void;

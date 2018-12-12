@@ -1,4 +1,9 @@
-import { IPluginContext, IPlugins } from '../shared';
+import {
+  IPluginContext,
+  IPlugins,
+  PluginChangeHandler,
+  StateChangeHandler,
+} from '../shared';
 
 export interface ILoadedScope {
   unload: () => void;
@@ -6,10 +11,9 @@ export interface ILoadedScope {
   getPluginContext: (pluginName: string) => IPluginContext<any, any>;
 }
 
-export type PluginChangeHandler = (plugins: IPlugins) => unknown;
-
 export interface IPluginStore {
   plugins: IPlugins;
   pluginChangeHandlers: PluginChangeHandler[];
+  stateChangeHandlers: StateChangeHandler[];
   loadedScope: null | ILoadedScope;
 }

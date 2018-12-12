@@ -2,23 +2,18 @@ import {
   addEventHandler,
   addInitHandler,
   addMethodHandler,
-  addPlugin,
-  addStateHandler,
+  createPlugin,
+  getLoadedScope,
+  reloadPlugins,
 } from './pluginStore';
-import {
-  EventHandler,
-  InitHandler,
-  IPluginDef,
-  MethodHandler,
-  StateHandler,
-} from './shared';
+import { EventHandler, InitHandler, IPluginDef, MethodHandler } from './shared';
 
 export function registerPlugin<PluginConfig extends object, PluginState>(
   pluginDef: IPluginDef<PluginConfig, PluginState>,
 ) {
   const { name, enabled = true, defaultConfig = {}, initialState } = pluginDef;
 
-  addPlugin({
+  createPlugin({
     name,
     enabled,
     defaultConfig,
@@ -43,14 +38,17 @@ export function registerPlugin<PluginConfig extends object, PluginState>(
     addEventHandler({ pluginName: name, eventPath, handler });
   }
 
-  function onState(handler: StateHandler<PluginConfig, PluginState>) {
-    addStateHandler({ pluginName: name, handler });
+  if (getLoadedScope()) {
+    // Wait until all the plugin parts have been registered using the API
+    // returned by this function (eg. init, method, on, etc). All such calls
+    // must occur right after this one (synchronously) for the automatic
+    // activation of this plugin to work properly.
+    setTimeout(reloadPlugins, 0);
   }
 
   return {
     init,
     method,
     on,
-    onState,
   };
 }

@@ -4,7 +4,7 @@ afterEach(resetPlugins);
 
 it('calls init handler on load', () => {
   const { init } = registerPlugin({
-    name: 'testPlugin',
+    name: 'test',
   });
   const initHandler = jest.fn();
   init(initHandler);
@@ -16,7 +16,7 @@ it('calls init handler on load', () => {
 
 it('calls return callback of init handler on unload', () => {
   const { init } = registerPlugin({
-    name: 'testPlugin',
+    name: 'test',
   });
   const returnCallback = jest.fn();
   init(() => returnCallback);
@@ -29,7 +29,7 @@ it('calls return callback of init handler on unload', () => {
 
 it('calls return callback of init handler on reload', () => {
   const { init } = registerPlugin({
-    name: 'testPlugin',
+    name: 'test',
   });
   const returnCallback = jest.fn();
   init(() => returnCallback);
