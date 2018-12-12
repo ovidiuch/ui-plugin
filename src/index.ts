@@ -1,11 +1,10 @@
+export { enablePlugin } from './enablePlugin';
 export { loadPlugins } from './loadPlugins';
 export {
   addStateHandler,
-  enablePlugin,
   getPluginContext,
   getPlugins,
   onPluginChange,
-  reloadPlugins,
   removeStateHandler,
   resetPlugins,
   unloadPlugins,

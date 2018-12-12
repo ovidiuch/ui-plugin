@@ -14,6 +14,10 @@ export function resetPlugins() {
   getGlobalStore().plugins = {};
 }
 
+export function getLoadedScope(): null | ILoadedScope {
+  return getGlobalStore().loadedScope;
+}
+
 export function exposeLoadedScope(scope: ILoadedScope) {
   const store = getGlobalStore();
   store.loadedScope = scope;
@@ -24,6 +28,7 @@ export function reloadPlugins() {
 
   if (store.loadedScope) {
     store.loadedScope.reload();
+    emitPluginChange();
   }
 }
 
@@ -36,10 +41,6 @@ export function unloadPlugins() {
   }
 }
 
-export function getPlugins() {
-  return getGlobalStore().plugins;
-}
-
 export function onPluginChange(handler: PluginChangeHandler) {
   const { pluginChangeHandlers } = getGlobalStore();
   pluginChangeHandlers.push(handler);
@@ -47,15 +48,6 @@ export function onPluginChange(handler: PluginChangeHandler) {
   return () => {
     removePluginChangeHandler(handler);
   };
-}
-
-export function enablePlugin(pluginName: string, enabled: boolean) {
-  const plugin = getPlugin(pluginName);
-
-  setPlugin(pluginName, {
-    ...plugin,
-    enabled,
-  });
 }
 
 export function getPluginContext(pluginName: string) {
@@ -68,7 +60,11 @@ export function getPluginContext(pluginName: string) {
   return loadedScope.getPluginContext(pluginName);
 }
 
-export function addPlugin({
+export function getPlugins() {
+  return getGlobalStore().plugins;
+}
+
+export function createPlugin({
   name,
   enabled,
   defaultConfig,
@@ -79,7 +75,9 @@ export function addPlugin({
   defaultConfig: object;
   initialState: any;
 }) {
-  setPlugin(name, {
+  const { plugins } = getGlobalStore();
+
+  plugins[name] = {
     name,
     enabled,
     defaultConfig,
@@ -88,7 +86,17 @@ export function addPlugin({
     methodHandlers: [],
     eventHandlers: [],
     stateHandlers: [],
-  });
+  };
+}
+
+export function updatePlugin(
+  pluginName: string,
+  change: (plugin: IPlugin) => IPlugin,
+) {
+  const { plugins } = getGlobalStore();
+  const plugin = getPlugin(pluginName);
+
+  plugins[pluginName] = change(plugin);
 }
 
 export function addInitHandler({
@@ -162,12 +170,6 @@ function getPlugin(pluginName: string) {
   }
 
   return plugins[pluginName];
-}
-
-function setPlugin(pluginName: string, plugin: IPlugin) {
-  const store = getGlobalStore();
-  store.plugins[pluginName] = plugin;
-  emitPluginChange();
 }
 
 function removePluginChangeHandler(handler: PluginChangeHandler) {

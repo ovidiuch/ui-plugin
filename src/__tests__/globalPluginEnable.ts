@@ -1,31 +1,24 @@
-import {
-  enablePlugin,
-  loadPlugins,
-  registerPlugin,
-  reloadPlugins,
-  resetPlugins,
-} from '..';
+import { enablePlugin, loadPlugins, registerPlugin, resetPlugins } from '..';
 
 afterEach(resetPlugins);
 
-it('enables plugin at run-time', () => {
-  expect.hasAssertions();
-
+it('enables plugin at run-time', async () => {
   registerPlugin({
     name: 'test1',
     enabled: false,
-    initialState: { counter: 1 },
+    initialState: 1,
   });
 
-  const { init } = registerPlugin({ name: 'test2' });
-  init(({ getStateOf }) => {
-    try {
-      expect(getStateOf('test1')).toEqual({ counter: 1 });
-    } catch (err) {
-      reloadPlugins();
-      enablePlugin('test1', true);
-    }
-  });
+  await new Promise(done => {
+    registerPlugin({ name: 'test2' }).init(({ getStateOf }) => {
+      try {
+        expect(getStateOf('test1')).toEqual(1);
+        done();
+      } catch (err) {
+        enablePlugin('test1', true);
+      }
+    });
 
-  loadPlugins();
+    loadPlugins();
+  });
 });

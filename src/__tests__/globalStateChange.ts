@@ -6,12 +6,9 @@ import {
   resetPlugins,
 } from '..';
 
-// WARN: These tests might need to be refactored if state updates become async
 afterEach(resetPlugins);
 
 it('calls state handler', async () => {
-  expect.hasAssertions();
-
   const { init } = registerPlugin({
     name: 'test',
     initialState: { counter: 0 },
@@ -20,17 +17,18 @@ it('calls state handler', async () => {
   const handler = jest.fn();
   addStateHandler({ pluginName: 'test', handler });
 
-  init(({ setState }) => {
-    setState({ counter: 1 });
-    expect(handler).toBeCalled();
-  });
+  await new Promise(done => {
+    init(({ setState }) => {
+      setState({ counter: 1 });
+      expect(handler).toBeCalled();
+      done();
+    });
 
-  loadPlugins();
+    loadPlugins();
+  });
 });
 
 it('stops calling state handler', async () => {
-  expect.hasAssertions();
-
   const { init } = registerPlugin({
     name: 'test',
     initialState: { counter: 0 },
@@ -39,15 +37,18 @@ it('stops calling state handler', async () => {
   const handler = jest.fn();
   addStateHandler({ pluginName: 'test', handler });
 
-  init(({ setState }) => {
-    setState({ counter: 1 });
-    expect(handler).toBeCalled();
+  await new Promise(done => {
+    init(({ setState }) => {
+      setState({ counter: 1 });
+      expect(handler).toBeCalled();
 
-    removeStateHandler({ pluginName: 'test', handler });
+      removeStateHandler({ pluginName: 'test', handler });
 
-    setState({ counter: 2 });
-    expect(handler).toBeCalledTimes(1);
+      setState({ counter: 2 });
+      expect(handler).toBeCalledTimes(1);
+      done();
+    });
+
+    loadPlugins();
   });
-
-  loadPlugins();
 });
