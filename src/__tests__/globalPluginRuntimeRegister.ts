@@ -2,7 +2,7 @@ import { loadPlugins, registerPlugin, resetPlugins } from '..';
 
 afterEach(resetPlugins);
 
-it('reloading plugins with previous state', async () => {
+it('reloads plugins with previous state', async () => {
   await new Promise(done => {
     registerPlugin({
       name: 'test1',

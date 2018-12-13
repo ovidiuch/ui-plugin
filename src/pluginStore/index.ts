@@ -1,11 +1,16 @@
-import { EventHandler, InitHandler, IPlugin, MethodHandler } from '../shared';
-import { getGlobalStore } from './global';
-import { ILoadedScope } from './shared';
+import {
+  EventHandler,
+  InitHandler,
+  IPlugin,
+  IPluginScope,
+  MethodHandler,
+} from '../shared';
+import { getGlobalStore, resetGlobalStore } from './global';
 
 // Meant for testing cleanup purposes
 export function resetPlugins() {
   unloadPlugins();
-  getGlobalStore().plugins = {};
+  resetGlobalStore();
 }
 
 export function getPlugins() {
@@ -20,11 +25,11 @@ export function getStateChangeHandlers() {
   return getGlobalStore().stateChangeHandlers;
 }
 
-export function getLoadedScope(): null | ILoadedScope {
+export function getLoadedScope(): null | IPluginScope {
   return getGlobalStore().loadedScope;
 }
 
-export function exposeLoadedScope(scope: ILoadedScope) {
+export function exposeLoadedScope(scope: IPluginScope) {
   const store = getGlobalStore();
   store.loadedScope = scope;
 }
@@ -81,18 +86,24 @@ export function updatePlugin(
   plugins[pluginName] = change(plugin);
 }
 
-export function addInitHandler({
+export function registerInitHandler({
   pluginName,
   handler,
 }: {
   pluginName: string;
   handler: InitHandler<any, any>;
 }) {
+  const { loadedScope } = getGlobalStore();
   const { initHandlers } = getPlugin(pluginName);
+
+  if (loadedScope && loadedScope.plugins[pluginName]) {
+    throw new Error('Registered init handler after plugin loaded');
+  }
+
   initHandlers.push(handler);
 }
 
-export function addMethodHandler({
+export function registerMethodHandler({
   pluginName,
   methodName,
   handler,
@@ -101,11 +112,17 @@ export function addMethodHandler({
   methodName: string;
   handler: MethodHandler<any, any>;
 }) {
+  const { loadedScope } = getGlobalStore();
   const { methodHandlers } = getPlugin(pluginName);
+
+  if (loadedScope && loadedScope.plugins[pluginName]) {
+    throw new Error('Registered method after plugin loaded');
+  }
+
   methodHandlers.push({ methodName, handler });
 }
 
-export function addEventHandler({
+export function registerEventHandler({
   pluginName,
   eventPath,
   handler,
@@ -114,7 +131,13 @@ export function addEventHandler({
   eventPath: string;
   handler: EventHandler<any, any>;
 }) {
+  const { loadedScope } = getGlobalStore();
   const { eventHandlers } = getPlugin(pluginName);
+
+  if (loadedScope && loadedScope.plugins[pluginName]) {
+    throw new Error('Registered event handler after plugin loaded');
+  }
+
   eventHandlers.push({ eventPath, handler });
 }
 

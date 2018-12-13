@@ -17,6 +17,18 @@ export interface IPluginContext<PluginConfig extends object, PluginState> {
   emitEvent: (eventName: string, ...args: Array<unknown>) => void;
 }
 
+type UnloadHandlers = () => unknown;
+
+export interface IPluginScope {
+  plugins: IPlugins;
+  config: IPluginConfigs;
+  state: IPluginStates;
+  unloadHandlers: UnloadHandlers[];
+  unload: () => void;
+  reload: () => void;
+  getPluginContext: (pluginName: string) => IPluginContext<any, any>;
+}
+
 export type InitHandler<PluginConfig extends object, PluginState> = (
   context: IPluginContext<PluginConfig, PluginState>,
 ) => void | (() => unknown);
@@ -30,6 +42,18 @@ export type EventHandler<PluginConfig extends object, PluginState> = (
   context: IPluginContext<PluginConfig, PluginState>,
   ...args: any[]
 ) => void;
+
+export interface IPluginApi<PluginConfig extends object, PluginState> {
+  init: (handler: InitHandler<PluginConfig, PluginState>) => void;
+  method: (
+    methodName: string,
+    handler: MethodHandler<PluginConfig, PluginState>,
+  ) => void;
+  on: (
+    eventPath: string,
+    handler: EventHandler<PluginConfig, PluginState>,
+  ) => void;
+}
 
 export interface IPlugin {
   name: string;
