@@ -5,12 +5,12 @@ import {
   IPluginScope,
   MethodHandler,
 } from '../shared';
-import { getGlobalStore } from './global';
+import { getGlobalStore, resetGlobalStore } from './global';
 
 // Meant for testing cleanup purposes
 export function resetPlugins() {
   unloadPlugins();
-  getGlobalStore().plugins = {};
+  resetGlobalStore();
 }
 
 export function getPlugins() {
