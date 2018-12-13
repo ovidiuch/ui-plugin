@@ -1,12 +1,6 @@
-import {
-  createPlugin,
-  getLoadedScope,
-  registerEventHandler,
-  registerInitHandler,
-  registerMethodHandler,
-  reloadPlugins,
-} from './pluginStore';
-import { IPluginApi, IPluginDef } from './shared';
+import { getPluginApi } from './getPluginApi';
+import { createPlugin, getLoadedScope, reloadPlugins } from './pluginStore';
+import { IPluginDef } from './shared';
 
 export function registerPlugin<PluginConfig extends object, PluginState>(
   pluginDef: IPluginDef<PluginConfig, PluginState>,
@@ -29,20 +23,4 @@ export function registerPlugin<PluginConfig extends object, PluginState>(
   }
 
   return getPluginApi<PluginConfig, PluginState>(name);
-}
-
-export function getPluginApi<PluginConfig extends object, PluginState>(
-  pluginName: string,
-): IPluginApi<PluginConfig, PluginState> {
-  return {
-    init: handler => {
-      registerInitHandler({ pluginName, handler });
-    },
-    method: (methodName, handler) => {
-      registerMethodHandler({ pluginName, methodName, handler });
-    },
-    on: (eventPath, handler) => {
-      registerEventHandler({ pluginName, eventPath, handler });
-    },
-  };
 }

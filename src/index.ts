@@ -1,4 +1,5 @@
 export { enablePlugin } from './enablePlugin';
+export { getPluginApi } from './getPluginApi';
 export { getPluginContext } from './getPluginContext';
 export { loadPlugins } from './loadPlugins';
 export { onPluginChange } from './onPluginChange';

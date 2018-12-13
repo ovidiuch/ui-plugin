@@ -86,6 +86,10 @@ export type IPluginApi<PluginConfig: {}, PluginState> = {
 
 declare export function resetPlugins(): void;
 
+declare export function getPluginApi<PluginConfig: {}, PluginState>(
+  pluginName: string,
+): IPluginApi<PluginConfig, PluginState>;
+
 declare export function registerPlugin<PluginConfig: {}, PluginState>(
   pluginDef: IPluginDef<PluginConfig, PluginState>,
 ): IPluginApi<PluginConfig, PluginState>;
