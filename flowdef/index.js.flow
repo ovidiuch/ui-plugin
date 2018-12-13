@@ -55,6 +55,18 @@ type PluginChangeHandler = (plugins: IPlugins) => mixed;
 
 type StateChangeHandler = () => mixed;
 
+type UnloadHandlers = () => mixed;
+
+type IPluginScope = {
+  plugins: IPlugins,
+  config: IPluginConfigs,
+  state: IPluginStates,
+  unloadHandlers: UnloadHandlers[],
+  unload: () => void,
+  reload: () => void,
+  getPluginContext: (pluginName: string) => IPluginContext<any, any>,
+}
+
 export type IPluginDef<PluginConfig: {}, PluginState> = {
   name: string,
   enabled?: boolean,
@@ -114,3 +126,5 @@ declare export function enablePlugin(
   pluginName: string,
   enabled: boolean,
 ): void;
+
+declare export function getLoadedScope(): null | IPluginScope;
