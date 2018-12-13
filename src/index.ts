@@ -6,10 +6,4 @@ export { onPluginChange } from './onPluginChange';
 export { onStateChange } from './onStateChange';
 export { getPlugins, resetPlugins, unloadPlugins } from './pluginStore';
 export { registerPlugin } from './registerPlugin';
-export {
-  ILoadPluginsOpts,
-  IPlugin,
-  IPluginApi,
-  IPluginContext,
-  IPluginDef,
-} from './shared';
+export { IPlugin, IPluginApi, IPluginContext, IPluginDef } from './shared';
