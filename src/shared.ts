@@ -60,7 +60,7 @@ export interface IPlugin {
 }
 
 export interface IPlugins {
-  [plugiName: string]: IPlugin;
+  [pluginName: string]: IPlugin;
 }
 
 export interface IPluginConfigs {

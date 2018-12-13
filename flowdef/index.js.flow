@@ -48,7 +48,7 @@ export type IPlugin = {
 };
 
 type IPlugins = {
-  [plugiName: string]: IPlugin,
+  [pluginName: string]: IPlugin,
 };
 
 type PluginChangeHandler = (plugins: IPlugins) => mixed;
