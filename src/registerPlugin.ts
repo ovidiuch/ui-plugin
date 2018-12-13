@@ -1,12 +1,12 @@
 import {
-  addEventHandler,
-  addInitHandler,
-  addMethodHandler,
   createPlugin,
   getLoadedScope,
+  registerEventHandler,
+  registerInitHandler,
+  registerMethodHandler,
   reloadPlugins,
 } from './pluginStore';
-import { EventHandler, InitHandler, IPluginDef, MethodHandler } from './shared';
+import { IPluginApi, IPluginDef } from './shared';
 
 export function registerPlugin<PluginConfig extends object, PluginState>(
   pluginDef: IPluginDef<PluginConfig, PluginState>,
@@ -20,24 +20,6 @@ export function registerPlugin<PluginConfig extends object, PluginState>(
     initialState,
   });
 
-  function init(handler: InitHandler<PluginConfig, PluginState>) {
-    addInitHandler({ pluginName: name, handler });
-  }
-
-  function method(
-    methodName: string,
-    handler: MethodHandler<PluginConfig, PluginState>,
-  ) {
-    addMethodHandler({ pluginName: name, methodName, handler });
-  }
-
-  function on(
-    eventPath: string,
-    handler: EventHandler<PluginConfig, PluginState>,
-  ) {
-    addEventHandler({ pluginName: name, eventPath, handler });
-  }
-
   if (getLoadedScope()) {
     // Wait until all the plugin parts have been registered using the API
     // returned by this function (eg. init, method, on, etc). All such calls
@@ -46,9 +28,21 @@ export function registerPlugin<PluginConfig extends object, PluginState>(
     setTimeout(reloadPlugins, 0);
   }
 
+  return getPluginApi(name);
+}
+
+export function getPluginApi<PluginConfig extends object, PluginState>(
+  pluginName: string,
+): IPluginApi<PluginConfig, PluginState> {
   return {
-    init,
-    method,
-    on,
+    init: handler => {
+      registerInitHandler({ pluginName, handler });
+    },
+    method: (methodName, handler) => {
+      registerMethodHandler({ pluginName, methodName, handler });
+    },
+    on: (eventPath, handler) => {
+      registerEventHandler({ pluginName, eventPath, handler });
+    },
   };
 }

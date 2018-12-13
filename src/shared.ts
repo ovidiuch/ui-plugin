@@ -31,6 +31,18 @@ export type EventHandler<PluginConfig extends object, PluginState> = (
   ...args: any[]
 ) => void;
 
+export interface IPluginApi<PluginConfig extends object, PluginState> {
+  init: (handler: InitHandler<PluginConfig, PluginState>) => void;
+  method: (
+    methodName: string,
+    handler: MethodHandler<PluginConfig, PluginState>,
+  ) => void;
+  on: (
+    eventPath: string,
+    handler: EventHandler<PluginConfig, PluginState>,
+  ) => void;
+}
+
 export interface IPlugin {
   name: string;
   enabled: boolean;

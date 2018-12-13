@@ -81,7 +81,7 @@ export function updatePlugin(
   plugins[pluginName] = change(plugin);
 }
 
-export function addInitHandler({
+export function registerInitHandler({
   pluginName,
   handler,
 }: {
@@ -92,7 +92,7 @@ export function addInitHandler({
   initHandlers.push(handler);
 }
 
-export function addMethodHandler({
+export function registerMethodHandler({
   pluginName,
   methodName,
   handler,
@@ -105,7 +105,7 @@ export function addMethodHandler({
   methodHandlers.push({ methodName, handler });
 }
 
-export function addEventHandler({
+export function registerEventHandler({
   pluginName,
   eventPath,
   handler,
