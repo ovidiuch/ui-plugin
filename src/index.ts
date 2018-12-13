@@ -8,6 +8,7 @@ export { registerPlugin } from './registerPlugin';
 export {
   ILoadPluginsOpts,
   IPlugin,
+  IPluginApi,
   IPluginContext,
   IPluginDef,
 } from './shared';
