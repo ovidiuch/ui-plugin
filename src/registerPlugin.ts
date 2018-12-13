@@ -28,7 +28,7 @@ export function registerPlugin<PluginConfig extends object, PluginState>(
     setTimeout(reloadPlugins, 0);
   }
 
-  return getPluginApi(name);
+  return getPluginApi<PluginConfig, PluginState>(name);
 }
 
 export function getPluginApi<PluginConfig extends object, PluginState>(
