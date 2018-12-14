@@ -3,6 +3,23 @@
 
 type StateUpdater<State> = State | ((prevState: State) => State);
 
+export type IPluginDef<PluginConfig: {}, PluginState> = {
+  name: string,
+  enabled?: boolean,
+  defaultConfig?: PluginConfig,
+  initialState?: PluginState,
+};
+
+export type IPluginContext<PluginConfig: {}, PluginState> = {
+  getConfig: () => PluginConfig,
+  getConfigOf: (pluginName: string) => { [attr: string]: any },
+  getState: () => PluginState,
+  getStateOf: (pluginName: string) => any,
+  setState: (change: StateUpdater<PluginState>, cb?: () => mixed) => void,
+  callMethod: (methodPath: string, ...args: Array<any>) => any,
+  emitEvent: (eventName: string, ...args: Array<any>) => void,
+};
+
 type InitHandler<PluginConfig: {}, PluginState> = (
   context: IPluginContext<PluginConfig, PluginState>,
 ) => void | (() => mixed);
@@ -17,19 +34,6 @@ type PluginEventHandler<PluginConfig: {}, PluginState> = (
   context: IPluginContext<PluginConfig, PluginState>,
   ...args: any[]
 ) => void;
-
-type IPluginConfigs = {
-  [pluginName: string]: { [attr: string]: any },
-};
-
-type IPluginStates = {
-  [pluginName: string]: any,
-};
-
-type ILoadPluginsOpts = {
-  config?: IPluginConfigs,
-  state?: IPluginStates,
-};
 
 export type PluginId = number;
 
@@ -58,6 +62,32 @@ export type IPluginsByName = {
   [pluginName: string]: IPlugin,
 };
 
+export type IPluginApi<PluginConfig: {}, PluginState> = {
+  pluginId: PluginId,
+  init: (handler: InitHandler<PluginConfig, PluginState>) => void,
+  method: (
+    methodName: string,
+    handler: MethodHandler<PluginConfig, PluginState>,
+  ) => void,
+  on: (
+    eventPath: string,
+    handler: PluginEventHandler<PluginConfig, PluginState>,
+  ) => void,
+};
+
+type IPluginConfigs = {
+  [pluginName: string]: { [attr: string]: any },
+};
+
+type IPluginStates = {
+  [pluginName: string]: any,
+};
+
+type ILoadPluginsOpts = {
+  config?: IPluginConfigs,
+  state?: IPluginStates,
+};
+
 type PluginChangeHandler = (plugins: IPluginsById) => mixed;
 
 type StateChangeHandler = () => mixed;
@@ -75,36 +105,6 @@ type IPluginScope = {
   unload: () => void,
   reload: () => void,
   getPluginContext: (pluginName: string) => IPluginContext<any, any>,
-};
-
-export type IPluginDef<PluginConfig: {}, PluginState> = {
-  name: string,
-  enabled?: boolean,
-  defaultConfig?: PluginConfig,
-  initialState?: PluginState,
-};
-
-export type IPluginContext<PluginConfig: {}, PluginState> = {
-  getConfig: () => PluginConfig,
-  getConfigOf: (pluginName: string) => { [attr: string]: any },
-  getState: () => PluginState,
-  getStateOf: (pluginName: string) => any,
-  setState: (change: StateUpdater<PluginState>, cb?: () => mixed) => void,
-  callMethod: (methodPath: string, ...args: Array<any>) => any,
-  emitEvent: (eventName: string, ...args: Array<any>) => void,
-};
-
-export type IPluginApi<PluginConfig: {}, PluginState> = {
-  pluginId: PluginId,
-  init: (handler: InitHandler<PluginConfig, PluginState>) => void,
-  method: (
-    methodName: string,
-    handler: MethodHandler<PluginConfig, PluginState>,
-  ) => void,
-  on: (
-    eventPath: string,
-    handler: PluginEventHandler<PluginConfig, PluginState>,
-  ) => void,
 };
 
 declare export function resetPlugins(): void;

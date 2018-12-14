@@ -33,19 +33,6 @@ export type EventHandler<PluginConfig extends object, PluginState> = (
 
 export type PluginId = number;
 
-export interface IPluginApi<PluginConfig extends object, PluginState> {
-  pluginId: PluginId;
-  init: (handler: InitHandler<PluginConfig, PluginState>) => void;
-  method: (
-    methodName: string,
-    handler: MethodHandler<PluginConfig, PluginState>,
-  ) => void;
-  on: (
-    eventPath: string,
-    handler: EventHandler<PluginConfig, PluginState>,
-  ) => void;
-}
-
 export interface IPlugin {
   id: PluginId;
   name: string;
@@ -71,6 +58,19 @@ export interface IPluginsByName {
   [pluginName: string]: IPlugin;
 }
 
+export interface IPluginApi<PluginConfig extends object, PluginState> {
+  pluginId: PluginId;
+  init: (handler: InitHandler<PluginConfig, PluginState>) => void;
+  method: (
+    methodName: string,
+    handler: MethodHandler<PluginConfig, PluginState>,
+  ) => void;
+  on: (
+    eventPath: string,
+    handler: EventHandler<PluginConfig, PluginState>,
+  ) => void;
+}
+
 export interface IPluginConfigs {
   [pluginName: string]: { [attr: string]: any };
 }
@@ -88,14 +88,6 @@ export type PluginChangeHandler = (plugins: IPluginsById) => unknown;
 
 export type StateChangeHandler = () => unknown;
 
-export function removeHandler<H>(handlers: H[], handler: H) {
-  const index = handlers.indexOf(handler);
-
-  if (index !== -1) {
-    handlers.splice(index, 1);
-  }
-}
-
 type UnloadHandlers = () => unknown;
 
 export type PluginScopeId = number;
@@ -109,4 +101,12 @@ export interface IPluginScope {
   unload: () => void;
   reload: () => void;
   getPluginContext: (pluginName: string) => IPluginContext<any, any>;
+}
+
+export function removeHandler<H>(handlers: H[], handler: H) {
+  const index = handlers.indexOf(handler);
+
+  if (index !== -1) {
+    handlers.splice(index, 1);
+  }
 }
