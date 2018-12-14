@@ -1,7 +1,8 @@
 import { reloadPlugins, updatePlugin } from './pluginStore';
+import { PluginId } from './shared';
 
-export function enablePlugin(pluginName: string, enabled: boolean) {
-  updatePlugin(pluginName, plugin => ({
+export function enablePlugin(pluginId: PluginId, enabled: boolean) {
+  updatePlugin(pluginId, plugin => ({
     ...plugin,
     enabled,
   }));

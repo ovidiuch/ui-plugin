@@ -5,6 +5,7 @@ export { loadPlugins } from './loadPlugins';
 export { onPluginChange } from './onPluginChange';
 export { onStateChange } from './onStateChange';
 export {
+  createPlugin,
   getLoadedScope,
   getPlugins,
   resetPlugins,

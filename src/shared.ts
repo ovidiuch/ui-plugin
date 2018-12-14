@@ -31,7 +31,10 @@ export type EventHandler<PluginConfig extends object, PluginState> = (
   ...args: any[]
 ) => void;
 
+export type PluginId = number;
+
 export interface IPluginApi<PluginConfig extends object, PluginState> {
+  pluginId: PluginId;
   init: (handler: InitHandler<PluginConfig, PluginState>) => void;
   method: (
     methodName: string,
@@ -44,6 +47,7 @@ export interface IPluginApi<PluginConfig extends object, PluginState> {
 }
 
 export interface IPlugin {
+  id: PluginId;
   name: string;
   enabled: boolean;
   defaultConfig: object;
@@ -59,7 +63,11 @@ export interface IPlugin {
   }>;
 }
 
-export interface IPlugins {
+export interface IPluginsById {
+  [pluginId: number]: IPlugin;
+}
+
+export interface IPluginsByName {
   [pluginName: string]: IPlugin;
 }
 
@@ -76,7 +84,7 @@ export interface ILoadPluginsOpts {
   state?: IPluginStates;
 }
 
-export type PluginChangeHandler = (plugins: IPlugins) => unknown;
+export type PluginChangeHandler = (plugins: IPluginsById) => unknown;
 
 export type StateChangeHandler = () => unknown;
 
@@ -90,8 +98,11 @@ export function removeHandler<H>(handlers: H[], handler: H) {
 
 type UnloadHandlers = () => unknown;
 
+export type PluginScopeId = number;
+
 export interface IPluginScope {
-  plugins: IPlugins;
+  id: PluginScopeId;
+  plugins: IPluginsByName;
   config: IPluginConfigs;
   state: IPluginStates;
   unloadHandlers: UnloadHandlers[];

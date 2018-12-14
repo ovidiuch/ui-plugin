@@ -2,10 +2,13 @@ import {
   EventHandler,
   InitHandler,
   IPlugin,
+  IPluginDef,
   IPluginScope,
   MethodHandler,
+  PluginId,
 } from '../shared';
 import { getGlobalStore, resetGlobalStore } from './global';
+import { getNextPluginId } from './pluginId';
 
 // Meant for testing cleanup purposes
 export function resetPlugins() {
@@ -54,18 +57,13 @@ export function unloadPlugins() {
 
 export function createPlugin({
   name,
-  enabled,
-  defaultConfig,
+  enabled = true,
+  defaultConfig = {},
   initialState,
-}: {
-  name: string;
-  enabled: boolean;
-  defaultConfig: object;
-  initialState: any;
-}) {
-  const { plugins } = getGlobalStore();
-
-  plugins[name] = {
+}: IPluginDef<any, any>): IPlugin {
+  const id = getNextPluginId();
+  const plugin = {
+    id,
     name,
     enabled,
     defaultConfig,
@@ -74,81 +72,91 @@ export function createPlugin({
     methodHandlers: [],
     eventHandlers: [],
   };
+
+  const { plugins } = getGlobalStore();
+  plugins[id] = plugin;
+
+  if (getLoadedScope()) {
+    // Wait until all the plugin parts have been registered using the plugin
+    // API (init, method, on, etc). All such calls must occur right after this
+    // one (synchronously) for the automatic activation of this plugin to work
+    // properly.
+    setTimeout(reloadPlugins, 0);
+  }
+
+  return plugin;
 }
 
 export function updatePlugin(
-  pluginName: string,
+  pluginId: PluginId,
   change: (plugin: IPlugin) => IPlugin,
 ) {
   const { plugins } = getGlobalStore();
-  const plugin = getPlugin(pluginName);
+  const plugin = getExpectedPlugin(pluginId);
 
-  plugins[pluginName] = change(plugin);
+  plugins[pluginId] = change(plugin);
 }
 
 export function registerInitHandler({
-  pluginName,
+  pluginId,
   handler,
 }: {
-  pluginName: string;
+  pluginId: PluginId;
   handler: InitHandler<any, any>;
 }) {
-  const { loadedScope } = getGlobalStore();
-  const { initHandlers } = getPlugin(pluginName);
+  const plugin = getExpectedPlugin(pluginId);
 
-  if (loadedScope && loadedScope.plugins[pluginName]) {
+  if (isPluginLoaded(plugin)) {
     throw new Error('Registered init handler after plugin loaded');
   }
 
-  initHandlers.push(handler);
+  plugin.initHandlers.push(handler);
 }
 
 export function registerMethodHandler({
-  pluginName,
+  pluginId,
   methodName,
   handler,
 }: {
-  pluginName: string;
+  pluginId: PluginId;
   methodName: string;
   handler: MethodHandler<any, any>;
 }) {
-  const { loadedScope } = getGlobalStore();
-  const { methodHandlers } = getPlugin(pluginName);
+  const plugin = getExpectedPlugin(pluginId);
 
-  if (loadedScope && loadedScope.plugins[pluginName]) {
+  if (isPluginLoaded(plugin)) {
     throw new Error('Registered method after plugin loaded');
   }
 
-  methodHandlers.push({ methodName, handler });
+  plugin.methodHandlers.push({ methodName, handler });
 }
 
 export function registerEventHandler({
-  pluginName,
+  pluginId,
   eventPath,
   handler,
 }: {
-  pluginName: string;
+  pluginId: PluginId;
   eventPath: string;
   handler: EventHandler<any, any>;
 }) {
-  const { loadedScope } = getGlobalStore();
-  const { eventHandlers } = getPlugin(pluginName);
+  const plugin = getExpectedPlugin(pluginId);
 
-  if (loadedScope && loadedScope.plugins[pluginName]) {
+  if (isPluginLoaded(plugin)) {
     throw new Error('Registered event handler after plugin loaded');
   }
 
-  eventHandlers.push({ eventPath, handler });
+  plugin.eventHandlers.push({ eventPath, handler });
 }
 
-function getPlugin(pluginName: string) {
+function getExpectedPlugin(pluginId: PluginId) {
   const { plugins } = getGlobalStore();
 
-  if (!plugins[pluginName]) {
-    throw new Error(`Plugin not found ${pluginName}`);
+  if (!plugins[pluginId]) {
+    throw new Error(`Plugin not found ${pluginId}`);
   }
 
-  return plugins[pluginName];
+  return plugins[pluginId];
 }
 
 function emitPluginChange() {
@@ -157,4 +165,14 @@ function emitPluginChange() {
   pluginChangeHandlers.forEach(handler => {
     handler(getPlugins());
   });
+}
+
+function isPluginLoaded({ id, name }: IPlugin) {
+  const { loadedScope } = getGlobalStore();
+
+  return (
+    loadedScope &&
+    loadedScope.plugins[name] &&
+    loadedScope.plugins[name].id === id
+  );
 }
