@@ -318,7 +318,7 @@ function getListOfAllPlugins(): IPlugin[] {
   return Object.keys(allPlugins).map(
     pluginId =>
       // Even though plugins are mapped by pluginId, which is a number, JS
-      // coerces object keys into strings
+      // stores object keys as strings
       allPlugins[Number(pluginId)],
   );
 }
