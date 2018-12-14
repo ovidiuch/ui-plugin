@@ -1,5 +1,6 @@
 import { find } from 'lodash';
 import {
+  emitPluginChange,
   exposeLoadedScope,
   getPlugins,
   getStateChangeHandlers,
@@ -22,8 +23,8 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
   // execution
   unloadPlugins();
 
-  let loadedScope: null | IPluginScope = null;
-  createScope();
+  let loadedScope: null | IPluginScope = createScope();
+  runInitHandlers(loadedScope);
 
   function unload() {
     if (loadedScope) {
@@ -43,9 +44,13 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
       throw new Error('Trying to reload unloaded plugins');
     }
 
+    // There can only be one active plugin scope at a time
     const prevState = loadedScope.state;
     unload();
-    createScope(prevState);
+
+    loadedScope = createScope(prevState);
+    emitPluginChange();
+    runInitHandlers(loadedScope);
   }
 
   function createScope(prevState?: IPluginStates) {
@@ -65,12 +70,9 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
       reload,
       getPluginContext,
     };
-
-    // There can only be one active plugin scope at a time
-    loadedScope = scope;
     exposeLoadedScope(scope);
 
-    runInitHandlers(scope);
+    return scope;
   }
 
   // TODO: Memoize plugin context per plugin name (bound to this scope)

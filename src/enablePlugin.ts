@@ -1,4 +1,4 @@
-import { emitPluginChange, reloadPlugins, updatePlugin } from './pluginStore';
+import { reloadPlugins, updatePlugin } from './pluginStore';
 import { PluginId } from './shared';
 
 export function enablePlugin(pluginId: PluginId, enabled: boolean) {
@@ -6,6 +6,5 @@ export function enablePlugin(pluginId: PluginId, enabled: boolean) {
     ...plugin,
     enabled,
   }));
-  emitPluginChange();
   reloadPlugins();
 }

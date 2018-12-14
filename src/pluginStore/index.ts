@@ -74,7 +74,6 @@ export function createPlugin({
 
   const { plugins } = getGlobalStore();
   plugins[id] = plugin;
-  emitPluginChange();
 
   if (getLoadedScope()) {
     // Wait until all the plugin parts have been registered using the plugin

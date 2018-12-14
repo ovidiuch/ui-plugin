@@ -1,7 +1,11 @@
 import retry from '@skidding/async-retry';
 import delay from 'delay';
 import { enablePlugin, onPluginChange, resetPlugins } from '..';
+import { loadPlugins } from '../loadPlugins';
 import { registerPlugin } from '../registerPlugin';
+
+// onPluginChange is only fired after plugins loaded
+beforeEach(() => loadPlugins());
 
 afterEach(resetPlugins);
 
