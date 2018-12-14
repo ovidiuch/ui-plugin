@@ -42,7 +42,6 @@ export function reloadPlugins() {
 
   if (store.loadedScope) {
     store.loadedScope.reload();
-    emitPluginChange();
   }
 }
 
@@ -75,6 +74,7 @@ export function createPlugin({
 
   const { plugins } = getGlobalStore();
   plugins[id] = plugin;
+  emitPluginChange();
 
   if (getLoadedScope()) {
     // Wait until all the plugin parts have been registered using the plugin
@@ -149,6 +149,14 @@ export function registerEventHandler({
   plugin.eventHandlers.push({ eventPath, handler });
 }
 
+export function emitPluginChange() {
+  const { pluginChangeHandlers } = getGlobalStore();
+
+  pluginChangeHandlers.forEach(handler => {
+    handler(getPlugins());
+  });
+}
+
 function getExpectedPlugin(pluginId: PluginId) {
   const { plugins } = getGlobalStore();
 
@@ -157,14 +165,6 @@ function getExpectedPlugin(pluginId: PluginId) {
   }
 
   return plugins[pluginId];
-}
-
-function emitPluginChange() {
-  const { pluginChangeHandlers } = getGlobalStore();
-
-  pluginChangeHandlers.forEach(handler => {
-    handler(getPlugins());
-  });
 }
 
 function isPluginLoaded({ id, name }: IPlugin) {
