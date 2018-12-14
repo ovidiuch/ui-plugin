@@ -87,8 +87,12 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
 
     const contextScopeId = loadedScope.id;
 
+    function isScopeActive(scope: null | IPluginScope): scope is IPluginScope {
+      return scope && scope.id === contextScopeId ? true : false;
+    }
+
     function getConfig() {
-      if (!loadedScope || loadedScope.id !== contextScopeId) {
+      if (!isScopeActive(loadedScope)) {
         throw new Error(`Not loaded plugin ${pluginName} called getConfig`);
       }
 
@@ -96,7 +100,7 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
     }
 
     function getConfigOf(otherPluginName: string) {
-      if (!loadedScope || loadedScope.id !== contextScopeId) {
+      if (!isScopeActive(loadedScope)) {
         throw new Error(`Not loaded plugin ${pluginName} called getConfigOf`);
       }
 
@@ -118,7 +122,7 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
     }
 
     function getState() {
-      if (!loadedScope || loadedScope.id !== contextScopeId) {
+      if (!isScopeActive(loadedScope)) {
         throw new Error(`Not loaded plugin ${pluginName} called getState`);
       }
 
@@ -128,7 +132,7 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
     }
 
     function getStateOf(otherPluginName: string) {
-      if (!loadedScope || loadedScope.id !== contextScopeId) {
+      if (!isScopeActive(loadedScope)) {
         throw new Error(`Not loaded plugin ${pluginName} called getStateOf`);
       }
 
@@ -148,7 +152,7 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
     }
 
     function setState(change: StateUpdater<any>, cb?: () => void) {
-      if (!loadedScope || loadedScope.id !== contextScopeId) {
+      if (!isScopeActive(loadedScope)) {
         throw new Error(`Not loaded plugin ${pluginName} called setState`);
       }
 
@@ -167,7 +171,7 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
     }
 
     function callMethod(methodPath: string, ...args: Array<unknown>): any {
-      if (!loadedScope || loadedScope.id !== contextScopeId) {
+      if (!isScopeActive(loadedScope)) {
         throw new Error(
           `Not loaded plugin ${pluginName} called method ${methodPath}`,
         );
@@ -204,7 +208,7 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
     }
 
     function emitEvent(eventName: string, ...args: Array<unknown>) {
-      if (!loadedScope || loadedScope.id !== contextScopeId) {
+      if (!isScopeActive(loadedScope)) {
         throw new Error(
           `Not loaded plugin ${pluginName} emitted event ${eventName}`,
         );
