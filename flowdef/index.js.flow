@@ -141,3 +141,5 @@ declare export function enablePlugin(
 ): void;
 
 declare export function getLoadedScope(): null | IPluginScope;
+
+declare export function isPluginLoaded(plugin: IPlugin): boolean;

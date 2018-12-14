@@ -8,6 +8,7 @@ export {
   createPlugin,
   getLoadedScope,
   getPlugins,
+  isPluginLoaded,
   resetPlugins,
   unloadPlugins,
 } from './pluginStore';

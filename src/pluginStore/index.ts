@@ -156,6 +156,16 @@ export function emitPluginChange() {
   });
 }
 
+export function isPluginLoaded({ id, name }: IPlugin) {
+  const { loadedScope } = getGlobalStore();
+
+  return (
+    loadedScope &&
+    loadedScope.plugins[name] &&
+    loadedScope.plugins[name].id === id
+  );
+}
+
 function getExpectedPlugin(pluginId: PluginId) {
   const { plugins } = getGlobalStore();
 
@@ -164,14 +174,4 @@ function getExpectedPlugin(pluginId: PluginId) {
   }
 
   return plugins[pluginId];
-}
-
-function isPluginLoaded({ id, name }: IPlugin) {
-  const { loadedScope } = getGlobalStore();
-
-  return (
-    loadedScope &&
-    loadedScope.plugins[name] &&
-    loadedScope.plugins[name].id === id
-  );
 }
