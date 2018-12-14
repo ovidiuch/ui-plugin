@@ -2,7 +2,7 @@ Q: How to resolve plugin collisions?
 
 Problem: On one hand we now guard against _late_ plugin registration. Meaning that plugin parts (eg. methods or event handlers) can't be registered for a plugin after that plugin was loaded. On the other hand, we want to allow plugins with colliding names to be registered at run-time and override each other in the order they're registered. Given that we currently store plugins mapped by name, there's no way to tell if a plugin part is being registered for a plugin already loaded or for a new plugin just registered (but with a name equal to that of a loaded plugin).
 
-~~Solution: Store plugins in an array (with meaningful order) instead of a map~~. Be aware that more plugins can have the same name. When loading plugins,make sure only one (the latest) plugin with a name is loaded.~~
+~~Solution: Store plugins in an array (with meaningful order) instead of a map. Be aware that more plugins can have the same name. When loading plugins,make sure only one (the latest) plugin with a name is loaded.~~
 
 Q: How will `getPluginApi`, `getPluginContext` and `enablePlugin` work? They currently receive a plugin name parameter.
 
