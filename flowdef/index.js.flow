@@ -109,6 +109,8 @@ type IPluginScope = {
 
 declare export function resetPlugins(): void;
 
+declare export function createPlugin(pluginDef: IPluginDef<any, any>): IPlugin;
+
 declare export function getPluginApi<PluginConfig: {}, PluginState>(
   pluginName: string,
 ): IPluginApi<PluginConfig, PluginState>;
