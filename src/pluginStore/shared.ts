@@ -1,12 +1,12 @@
 import {
-  IPlugins,
+  IPluginsById,
   IPluginScope,
   PluginChangeHandler,
   StateChangeHandler,
 } from '../shared';
 
 export interface IPluginStore {
-  plugins: IPlugins;
+  plugins: IPluginsById;
   pluginChangeHandlers: PluginChangeHandler[];
   stateChangeHandlers: StateChangeHandler[];
   loadedScope: null | IPluginScope;

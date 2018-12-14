@@ -3,7 +3,7 @@ import { enablePlugin, loadPlugins, registerPlugin, resetPlugins } from '..';
 afterEach(resetPlugins);
 
 it('enables plugin at run-time', async () => {
-  registerPlugin({
+  const { pluginId } = registerPlugin({
     name: 'test1',
     enabled: false,
     initialState: 1,
@@ -18,7 +18,7 @@ it('enables plugin at run-time', async () => {
         expect(err).toEqual(
           new Error('Requested state of disabled plugin test1'),
         );
-        enablePlugin('test1', true);
+        enablePlugin(pluginId, true);
       }
     });
 

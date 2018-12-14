@@ -3,70 +3,6 @@
 
 type StateUpdater<State> = State | ((prevState: State) => State);
 
-type InitHandler<PluginConfig: {}, PluginState> = (
-  context: IPluginContext<PluginConfig, PluginState>,
-) => void | (() => mixed);
-
-type MethodHandler<PluginConfig: {}, PluginState> = (
-  context: IPluginContext<PluginConfig, PluginState>,
-  ...args: any[]
-) => any;
-
-// NOTE: "EventHandler" collides with a global type
-type PluginEventHandler<PluginConfig: {}, PluginState> = (
-  context: IPluginContext<PluginConfig, PluginState>,
-  ...args: any[]
-) => void;
-
-type IPluginConfigs = {
-  [pluginName: string]: { [attr: string]: any },
-};
-
-type IPluginStates = {
-  [pluginName: string]: any,
-};
-
-type ILoadPluginsOpts = {
-  config?: IPluginConfigs,
-  state?: IPluginStates,
-};
-
-export type IPlugin = {
-  name: string,
-  enabled: boolean,
-  defaultConfig: {},
-  initialState: any,
-  initHandlers: Array<InitHandler<any, any>>,
-  methodHandlers: Array<{
-    methodName: string,
-    handler: MethodHandler<any, any>,
-  }>,
-  eventHandlers: Array<{
-    eventPath: string,
-    handler: PluginEventHandler<any, any>,
-  }>,
-};
-
-type IPlugins = {
-  [plugiName: string]: IPlugin,
-};
-
-type PluginChangeHandler = (plugins: IPlugins) => mixed;
-
-type StateChangeHandler = () => mixed;
-
-type UnloadHandlers = () => mixed;
-
-type IPluginScope = {
-  plugins: IPlugins,
-  config: IPluginConfigs,
-  state: IPluginStates,
-  unloadHandlers: UnloadHandlers[],
-  unload: () => void,
-  reload: () => void,
-  getPluginContext: (pluginName: string) => IPluginContext<any, any>,
-}
-
 export type IPluginDef<PluginConfig: {}, PluginState> = {
   name: string,
   enabled?: boolean,
@@ -84,7 +20,50 @@ export type IPluginContext<PluginConfig: {}, PluginState> = {
   emitEvent: (eventName: string, ...args: Array<any>) => void,
 };
 
+type InitHandler<PluginConfig: {}, PluginState> = (
+  context: IPluginContext<PluginConfig, PluginState>,
+) => void | (() => mixed);
+
+type MethodHandler<PluginConfig: {}, PluginState> = (
+  context: IPluginContext<PluginConfig, PluginState>,
+  ...args: any[]
+) => any;
+
+// NOTE: "EventHandler" collides with a global type
+type PluginEventHandler<PluginConfig: {}, PluginState> = (
+  context: IPluginContext<PluginConfig, PluginState>,
+  ...args: any[]
+) => void;
+
+export type PluginId = number;
+
+export type IPlugin = {
+  id: PluginId,
+  name: string,
+  enabled: boolean,
+  defaultConfig: {},
+  initialState: any,
+  initHandlers: Array<InitHandler<any, any>>,
+  methodHandlers: Array<{
+    methodName: string,
+    handler: MethodHandler<any, any>,
+  }>,
+  eventHandlers: Array<{
+    eventPath: string,
+    handler: PluginEventHandler<any, any>,
+  }>,
+};
+
+export type IPluginsById = {
+  [pluginId: number]: IPlugin,
+};
+
+export type IPluginsByName = {
+  [pluginName: string]: IPlugin,
+};
+
 export type IPluginApi<PluginConfig: {}, PluginState> = {
+  pluginId: PluginId,
   init: (handler: InitHandler<PluginConfig, PluginState>) => void,
   method: (
     methodName: string,
@@ -94,6 +73,38 @@ export type IPluginApi<PluginConfig: {}, PluginState> = {
     eventPath: string,
     handler: PluginEventHandler<PluginConfig, PluginState>,
   ) => void,
+};
+
+type IPluginConfigs = {
+  [pluginName: string]: { [attr: string]: any },
+};
+
+type IPluginStates = {
+  [pluginName: string]: any,
+};
+
+type ILoadPluginsOpts = {
+  config?: IPluginConfigs,
+  state?: IPluginStates,
+};
+
+type PluginChangeHandler = (plugins: IPluginsById) => mixed;
+
+type StateChangeHandler = () => mixed;
+
+type UnloadHandlers = () => mixed;
+
+type PluginScopeId = number;
+
+type IPluginScope = {
+  id: PluginScopeId,
+  plugins: IPluginsByName,
+  config: IPluginConfigs,
+  state: IPluginStates,
+  unloadHandlers: UnloadHandlers[],
+  unload: () => void,
+  reload: () => void,
+  getPluginContext: (pluginName: string) => IPluginContext<any, any>,
 };
 
 declare export function resetPlugins(): void;
@@ -110,7 +121,7 @@ declare export function loadPlugins(opts?: ILoadPluginsOpts): void;
 
 declare export function unloadPlugins(): void;
 
-declare export function getPlugins(): IPlugins;
+declare export function getPlugins(): IPluginsById;
 
 declare export function onPluginChange(
   handler: PluginChangeHandler,

@@ -4,16 +4,18 @@ import {
   getPlugins,
   getStateChangeHandlers,
   unloadPlugins,
-} from './pluginStore';
+} from '../pluginStore';
 import {
   ILoadPluginsOpts,
+  IPlugin,
   IPluginConfigs,
   IPluginContext,
-  IPlugins,
+  IPluginsByName,
   IPluginScope,
   IPluginStates,
   StateUpdater,
-} from './shared';
+} from '../shared';
+import { getNextPluginScopeId } from './pluginScopeId';
 
 export function loadPlugins(opts: ILoadPluginsOpts = {}) {
   // Ensure calling loadPlugins more than once doesn't duplicate plugin
@@ -47,8 +49,9 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
   }
 
   function createScope(prevState?: IPluginStates) {
-    const plugins = { ...getPlugins() };
+    const plugins = getLoadablePlugins();
     const scope = {
+      id: getNextPluginScopeId(),
       plugins,
       // The merger of the default config with the optional passed-in config makes
       // up the (immutable) config this scope is bound to
@@ -72,8 +75,24 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
 
   // TODO: Memoize plugin context per plugin name (bound to this scope)
   function getPluginContext(pluginName: string): IPluginContext<object, any> {
+    if (!loadedScope) {
+      throw new Error('Requested plugin context with plugins not loaded');
+    }
+
+    if (!loadedScope.plugins[pluginName]) {
+      throw new Error(
+        `Requested plugin context for missing plugin ${pluginName}`,
+      );
+    }
+
+    const contextScopeId = loadedScope.id;
+
+    function isScopeActive(scope: null | IPluginScope): scope is IPluginScope {
+      return scope && scope.id === contextScopeId ? true : false;
+    }
+
     function getConfig() {
-      if (!loadedScope) {
+      if (!isScopeActive(loadedScope)) {
         throw new Error(`Not loaded plugin ${pluginName} called getConfig`);
       }
 
@@ -81,19 +100,19 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
     }
 
     function getConfigOf(otherPluginName: string) {
-      if (!loadedScope) {
+      if (!isScopeActive(loadedScope)) {
         throw new Error(`Not loaded plugin ${pluginName} called getConfigOf`);
       }
 
       const { plugins, config } = loadedScope;
 
-      if (!plugins[otherPluginName]) {
+      if (!existsPluginWithName(otherPluginName)) {
         throw new Error(
           `Requested config of missing plugin ${otherPluginName}`,
         );
       }
 
-      if (getEnabledPluginNames(plugins).indexOf(otherPluginName) === -1) {
+      if (Object.keys(plugins).indexOf(otherPluginName) === -1) {
         throw new Error(
           `Requested config of disabled plugin ${otherPluginName}`,
         );
@@ -103,7 +122,7 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
     }
 
     function getState() {
-      if (!loadedScope) {
+      if (!isScopeActive(loadedScope)) {
         throw new Error(`Not loaded plugin ${pluginName} called getState`);
       }
 
@@ -113,17 +132,17 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
     }
 
     function getStateOf(otherPluginName: string) {
-      if (!loadedScope) {
+      if (!isScopeActive(loadedScope)) {
         throw new Error(`Not loaded plugin ${pluginName} called getStateOf`);
       }
 
       const { plugins, state } = loadedScope;
 
-      if (!plugins[otherPluginName]) {
+      if (!existsPluginWithName(otherPluginName)) {
         throw new Error(`Requested state of missing plugin ${otherPluginName}`);
       }
 
-      if (getEnabledPluginNames(plugins).indexOf(otherPluginName) === -1) {
+      if (Object.keys(plugins).indexOf(otherPluginName) === -1) {
         throw new Error(
           `Requested state of disabled plugin ${otherPluginName}`,
         );
@@ -133,7 +152,7 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
     }
 
     function setState(change: StateUpdater<any>, cb?: () => void) {
-      if (!loadedScope) {
+      if (!isScopeActive(loadedScope)) {
         throw new Error(`Not loaded plugin ${pluginName} called setState`);
       }
 
@@ -152,7 +171,7 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
     }
 
     function callMethod(methodPath: string, ...args: Array<unknown>): any {
-      if (!loadedScope) {
+      if (!isScopeActive(loadedScope)) {
         throw new Error(
           `Not loaded plugin ${pluginName} called method ${methodPath}`,
         );
@@ -161,13 +180,13 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
       const { plugins } = loadedScope;
       const [otherPluginName, methodName] = methodPath.split('.');
 
-      if (!plugins[otherPluginName]) {
+      if (!existsPluginWithName(otherPluginName)) {
         throw new Error(
           `Called method ${methodName} of missing plugin ${otherPluginName}`,
         );
       }
 
-      if (getEnabledPluginNames(plugins).indexOf(otherPluginName) === -1) {
+      if (Object.keys(plugins).indexOf(otherPluginName) === -1) {
         throw new Error(
           `Called method ${methodName} of disabled plugin ${otherPluginName}`,
         );
@@ -189,14 +208,14 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
     }
 
     function emitEvent(eventName: string, ...args: Array<unknown>) {
-      if (!loadedScope) {
+      if (!isScopeActive(loadedScope)) {
         throw new Error(
           `Not loaded plugin ${pluginName} emitted event ${eventName}`,
         );
       }
 
       const { plugins } = loadedScope;
-      getEnabledPluginNames(plugins).forEach(otherPluginName => {
+      Object.keys(plugins).forEach(otherPluginName => {
         plugins[otherPluginName].eventHandlers.forEach(eventHandler => {
           const { eventPath, handler } = eventHandler;
           const [curEventPluginName, curEventName] = eventPath.split('.');
@@ -222,7 +241,7 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
   function runInitHandlers(scope: IPluginScope) {
     const { plugins, unloadHandlers } = scope;
 
-    getEnabledPluginNames(plugins).forEach(pluginName => {
+    Object.keys(plugins).forEach(pluginName => {
       plugins[pluginName].initHandlers.forEach(handler => {
         const returnCb = handler(getPluginContext(pluginName));
 
@@ -240,11 +259,26 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
   }
 }
 
+function getLoadablePlugins(): IPluginsByName {
+  return getListOfAllPlugins().reduce((byName, plugin) => {
+    if (!plugin.enabled) {
+      return byName;
+    }
+
+    return {
+      ...byName,
+      // Last registered plugins override previous plugins which share their
+      // name. This allows user plugins to override core plugins.
+      [plugin.name]: plugin,
+    };
+  }, {});
+}
+
 function createScopeConfig(
-  plugins: IPlugins,
+  plugins: IPluginsByName,
   customConfig: undefined | IPluginConfigs,
 ): IPluginConfigs {
-  return getEnabledPluginNames(plugins).reduce(
+  return Object.keys(plugins).reduce(
     (acc, pluginName) => ({
       ...acc,
       [pluginName]: Object.assign(
@@ -258,11 +292,11 @@ function createScopeConfig(
 }
 
 function createScopeState(
-  plugins: IPlugins,
+  plugins: IPluginsByName,
   customState: undefined | IPluginStates,
   prevState: undefined | IPluginStates,
 ): IPluginStates {
-  return getEnabledPluginNames(plugins).reduce(
+  return Object.keys(plugins).reduce(
     (acc, pluginName) => ({
       ...acc,
       [pluginName]:
@@ -274,8 +308,19 @@ function createScopeState(
   );
 }
 
-function getEnabledPluginNames(plugins: IPlugins): string[] {
-  return Object.keys(plugins).filter(pluginName => plugins[pluginName].enabled);
+function existsPluginWithName(pluginName: string) {
+  return getListOfAllPlugins().some(plugin => plugin.name === pluginName);
+}
+
+function getListOfAllPlugins(): IPlugin[] {
+  const allPlugins = getPlugins();
+
+  return Object.keys(allPlugins).map(
+    pluginId =>
+      // Even though plugins are mapped by pluginId, which is a number, JS
+      // stores object keys as strings
+      allPlugins[Number(pluginId)],
+  );
 }
 
 interface INotAFunction {

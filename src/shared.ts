@@ -31,19 +31,10 @@ export type EventHandler<PluginConfig extends object, PluginState> = (
   ...args: any[]
 ) => void;
 
-export interface IPluginApi<PluginConfig extends object, PluginState> {
-  init: (handler: InitHandler<PluginConfig, PluginState>) => void;
-  method: (
-    methodName: string,
-    handler: MethodHandler<PluginConfig, PluginState>,
-  ) => void;
-  on: (
-    eventPath: string,
-    handler: EventHandler<PluginConfig, PluginState>,
-  ) => void;
-}
+export type PluginId = number;
 
 export interface IPlugin {
+  id: PluginId;
   name: string;
   enabled: boolean;
   defaultConfig: object;
@@ -59,8 +50,25 @@ export interface IPlugin {
   }>;
 }
 
-export interface IPlugins {
-  [plugiName: string]: IPlugin;
+export interface IPluginsById {
+  [pluginId: number]: IPlugin;
+}
+
+export interface IPluginsByName {
+  [pluginName: string]: IPlugin;
+}
+
+export interface IPluginApi<PluginConfig extends object, PluginState> {
+  pluginId: PluginId;
+  init: (handler: InitHandler<PluginConfig, PluginState>) => void;
+  method: (
+    methodName: string,
+    handler: MethodHandler<PluginConfig, PluginState>,
+  ) => void;
+  on: (
+    eventPath: string,
+    handler: EventHandler<PluginConfig, PluginState>,
+  ) => void;
 }
 
 export interface IPluginConfigs {
@@ -76,9 +84,24 @@ export interface ILoadPluginsOpts {
   state?: IPluginStates;
 }
 
-export type PluginChangeHandler = (plugins: IPlugins) => unknown;
+export type PluginChangeHandler = (plugins: IPluginsById) => unknown;
 
 export type StateChangeHandler = () => unknown;
+
+type UnloadHandlers = () => unknown;
+
+export type PluginScopeId = number;
+
+export interface IPluginScope {
+  id: PluginScopeId;
+  plugins: IPluginsByName;
+  config: IPluginConfigs;
+  state: IPluginStates;
+  unloadHandlers: UnloadHandlers[];
+  unload: () => void;
+  reload: () => void;
+  getPluginContext: (pluginName: string) => IPluginContext<any, any>;
+}
 
 export function removeHandler<H>(handlers: H[], handler: H) {
   const index = handlers.indexOf(handler);
@@ -86,16 +109,4 @@ export function removeHandler<H>(handlers: H[], handler: H) {
   if (index !== -1) {
     handlers.splice(index, 1);
   }
-}
-
-type UnloadHandlers = () => unknown;
-
-export interface IPluginScope {
-  plugins: IPlugins;
-  config: IPluginConfigs;
-  state: IPluginStates;
-  unloadHandlers: UnloadHandlers[];
-  unload: () => void;
-  reload: () => void;
-  getPluginContext: (pluginName: string) => IPluginContext<any, any>;
 }

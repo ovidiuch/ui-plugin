@@ -3,20 +3,21 @@ import {
   registerInitHandler,
   registerMethodHandler,
 } from './pluginStore';
-import { IPluginApi } from './shared';
+import { IPluginApi, PluginId } from './shared';
 
 export function getPluginApi<PluginConfig extends object, PluginState>(
-  pluginName: string,
+  pluginId: PluginId,
 ): IPluginApi<PluginConfig, PluginState> {
   return {
+    pluginId,
     init: handler => {
-      registerInitHandler({ pluginName, handler });
+      registerInitHandler({ pluginId, handler });
     },
     method: (methodName, handler) => {
-      registerMethodHandler({ pluginName, methodName, handler });
+      registerMethodHandler({ pluginId, methodName, handler });
     },
     on: (eventPath, handler) => {
-      registerEventHandler({ pluginName, eventPath, handler });
+      registerEventHandler({ pluginId, eventPath, handler });
     },
   };
 }
