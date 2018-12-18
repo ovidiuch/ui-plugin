@@ -1,4 +1,4 @@
-The following are not yet documented because they are likely to change.
+The following are not yet documented because they are likely to change:
 
 - Plugin id
 - Plugin name
