@@ -9,5 +9,5 @@
 - [x] Publish Flow types
 - [x] Export IPlugin flow type
 - [x] Create global onPluginChange event
-- [ ] Create global onPluginLoad event
+- [ ] Replace `name` with `key` (overridable) and `id` with `name` (unique)
 - [ ] Add logging
