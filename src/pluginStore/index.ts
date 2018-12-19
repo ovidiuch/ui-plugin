@@ -75,12 +75,12 @@ export function createPlugin({
   const { plugins } = getGlobalStore();
   plugins[id] = plugin;
 
-  if (getLoadedScope()) {
+  if (enabled && getLoadedScope()) {
     // Wait until all the plugin parts have been registered using the plugin
     // API (init, method, on, etc). All such calls must occur right after this
     // one (synchronously) for the automatic activation of this plugin to work
     // properly.
-    setTimeout(reloadPlugins, 0);
+    schedulePluginsReload();
   }
 
   return plugin;
@@ -174,4 +174,18 @@ function getExpectedPlugin(pluginId: PluginId) {
   }
 
   return plugins[pluginId];
+}
+
+let reloadTimeoutId: null | number = null;
+
+function schedulePluginsReload() {
+  clearReloadTimeout();
+  reloadTimeoutId = setTimeout(reloadPlugins, 0);
+}
+
+function clearReloadTimeout() {
+  if (reloadTimeoutId !== null) {
+    clearTimeout(reloadTimeoutId);
+    reloadTimeoutId = null;
+  }
 }
