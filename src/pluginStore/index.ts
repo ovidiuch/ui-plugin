@@ -14,6 +14,12 @@ export function resetPlugins() {
   resetGlobalStore();
 }
 
+// Unregisters plugins but preserves global handlers
+export function unregisterPlugins() {
+  unloadPlugins();
+  getGlobalStore().plugins = {};
+}
+
 export function getPlugins() {
   return getGlobalStore().plugins;
 }

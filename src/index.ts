@@ -11,6 +11,7 @@ export {
   isPluginLoaded,
   resetPlugins,
   unloadPlugins,
+  unregisterPlugins,
 } from './pluginStore';
 export { registerPlugin } from './registerPlugin';
 export { IPlugin, IPluginApi, IPluginContext, IPluginDef } from './shared';
