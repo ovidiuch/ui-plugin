@@ -1,3 +1,43 @@
+Q: What happens when a plugin is registered with an existing plugin name?
+
+Should it throw an error or replace the previous plugin?
+
+Throw error. Replacing a (likely loaded) plugin means unloading a single plugin, which will cause all other dependant plugins to crash, so not feasable.
+
+---
+
+Q: Should plugin name be unique?
+
+Yes. It is how npm packages work (which plugins will likely correspond to). Being able to identify a plugin by given name also provides a better dev experience.
+
+---
+
+Q: How will UI plugins fit into a global registry?
+
+> **TBD:** These issue is too complex and far fetched to solve properly at the moment.
+
+A plugin could contain one or more mixed parts, like a UI plugin and a server plugin, or a UI plugin and a fixture decorator.
+
+A plugin config could look like this:
+
+```js
+{
+  name: 'my-plugin',
+  ui: 'ui.js',
+  server: 'server.js',
+};
+```
+
+The plugin config files should be enough to construct a static plugin registry and display the plugin list without running the plugin code.
+
+Q: How will the registered UI plugin be paired with its affiliated config?
+
+It can be done by comparing names. But this requires plugin users to put the same name in two places (in plugin config and in `registerPlugin` call).
+
+Q: How to reuse plugin name from config in `registerPlugin` call?
+
+---
+
 Q: How to resolve plugin name collisions?
 
 Problem: On one hand we now guard against _late_ plugin registration. Meaning that plugin parts (eg. methods or event handlers) can't be registered for a plugin after that plugin was loaded. On the other hand, we want to allow plugins with colliding names to be registered at run-time and override each other in the order they're registered. Given that we currently store plugins mapped by name, there's no way to tell if a plugin part is being registered for a plugin already loaded or for a new plugin just registered (but with a name equal to that of a loaded plugin).

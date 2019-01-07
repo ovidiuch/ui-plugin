@@ -22,11 +22,7 @@ All _registered_ plugins are optionally flagged as enabled.
 
 #### Active
 
-A plugin is active when it is _registered_, _enabled_ and not _shadowed._ Active plugins are the only ones eligible for becoming _loaded_.
-
-#### Shadowed
-
-A plugin is shadowed when another plugin with the same _name_ has been registered (at a later time than the plugin in question), as long as the shadowing plugin is also _enabled_.
+A plugin is active when it is _registered_ and _enabled_. Active plugins are the only ones eligible for becoming _loaded_.
 
 #### Loaded
 
