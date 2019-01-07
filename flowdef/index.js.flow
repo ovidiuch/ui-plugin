@@ -35,10 +35,7 @@ type PluginEventHandler<PluginConfig: {}, PluginState> = (
   ...args: any[]
 ) => void;
 
-export type PluginId = number;
-
 export type IPlugin = {
-  id: PluginId,
   name: string,
   enabled: boolean,
   defaultConfig: {},
@@ -54,16 +51,11 @@ export type IPlugin = {
   }>,
 };
 
-export type IPluginsById = {
-  [pluginId: number]: IPlugin,
-};
-
 export type IPluginsByName = {
   [pluginName: string]: IPlugin,
 };
 
 export type IPluginApi<PluginConfig: {}, PluginState> = {
-  pluginId: PluginId,
   init: (handler: InitHandler<PluginConfig, PluginState>) => void,
   method: (
     methodName: string,
@@ -112,7 +104,7 @@ declare export function resetPlugins(): void;
 declare export function createPlugin(pluginDef: IPluginDef<any, any>): IPlugin;
 
 declare export function getPluginApi<PluginConfig: {}, PluginState>(
-  pluginId: PluginId,
+  pluginName: string,
 ): IPluginApi<PluginConfig, PluginState>;
 
 declare export function registerPlugin<PluginConfig: {}, PluginState>(
@@ -136,7 +128,7 @@ declare export function getPluginContext(
 ): IPluginContext<any, any>;
 
 declare export function enablePlugin(
-  pluginId: PluginId,
+  pluginName: string,
   enabled: boolean,
 ): void;
 
