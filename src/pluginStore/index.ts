@@ -5,10 +5,8 @@ import {
   IPluginDef,
   IPluginScope,
   MethodHandler,
-  PluginId,
 } from '../shared';
 import { getGlobalStore, resetGlobalStore } from './global';
-import { getNextPluginId } from './pluginId';
 
 // Meant for testing cleanup purposes
 export function resetPlugins() {
@@ -60,9 +58,7 @@ export function createPlugin({
   defaultConfig = {},
   initialState,
 }: IPluginDef<any, any>): IPlugin {
-  const id = getNextPluginId();
   const plugin = {
-    id,
     name,
     enabled,
     defaultConfig,
@@ -73,7 +69,7 @@ export function createPlugin({
   };
 
   const { plugins } = getGlobalStore();
-  plugins[id] = plugin;
+  plugins[name] = plugin;
 
   if (enabled && getLoadedScope()) {
     // Wait until all the plugin parts have been registered using the plugin
@@ -87,25 +83,25 @@ export function createPlugin({
 }
 
 export function updatePlugin(
-  pluginId: PluginId,
+  pluginName: string,
   change: (plugin: IPlugin) => IPlugin,
 ) {
   const { plugins } = getGlobalStore();
-  const plugin = getExpectedPlugin(pluginId);
+  const plugin = getExpectedPlugin(pluginName);
 
-  plugins[pluginId] = change(plugin);
+  plugins[pluginName] = change(plugin);
 }
 
 export function registerInitHandler({
-  pluginId,
+  pluginName,
   handler,
 }: {
-  pluginId: PluginId;
+  pluginName: string;
   handler: InitHandler<any, any>;
 }) {
-  const plugin = getExpectedPlugin(pluginId);
+  const plugin = getExpectedPlugin(pluginName);
 
-  if (isPluginLoaded(plugin)) {
+  if (isPluginLoaded(pluginName)) {
     throw new Error('Registered init handler after plugin loaded');
   }
 
@@ -113,17 +109,17 @@ export function registerInitHandler({
 }
 
 export function registerMethodHandler({
-  pluginId,
+  pluginName,
   methodName,
   handler,
 }: {
-  pluginId: PluginId;
+  pluginName: string;
   methodName: string;
   handler: MethodHandler<any, any>;
 }) {
-  const plugin = getExpectedPlugin(pluginId);
+  const plugin = getExpectedPlugin(pluginName);
 
-  if (isPluginLoaded(plugin)) {
+  if (isPluginLoaded(pluginName)) {
     throw new Error('Registered method after plugin loaded');
   }
 
@@ -131,17 +127,17 @@ export function registerMethodHandler({
 }
 
 export function registerEventHandler({
-  pluginId,
+  pluginName,
   eventPath,
   handler,
 }: {
-  pluginId: PluginId;
+  pluginName: string;
   eventPath: string;
   handler: EventHandler<any, any>;
 }) {
-  const plugin = getExpectedPlugin(pluginId);
+  const plugin = getExpectedPlugin(pluginName);
 
-  if (isPluginLoaded(plugin)) {
+  if (isPluginLoaded(pluginName)) {
     throw new Error('Registered event handler after plugin loaded');
   }
 
@@ -156,24 +152,20 @@ export function emitPluginChange() {
   });
 }
 
-export function isPluginLoaded({ id, name }: IPlugin) {
+export function isPluginLoaded(pluginName: string) {
   const { loadedScope } = getGlobalStore();
 
-  return (
-    loadedScope &&
-    loadedScope.plugins[name] &&
-    loadedScope.plugins[name].id === id
-  );
+  return loadedScope && loadedScope.plugins[pluginName];
 }
 
-function getExpectedPlugin(pluginId: PluginId) {
+function getExpectedPlugin(pluginName: string) {
   const { plugins } = getGlobalStore();
 
-  if (!plugins[pluginId]) {
-    throw new Error(`Plugin not found ${pluginId}`);
+  if (!plugins[pluginName]) {
+    throw new Error(`Plugin not found ${pluginName}`);
   }
 
-  return plugins[pluginId];
+  return plugins[pluginName];
 }
 
 let reloadTimeoutId: null | number = null;

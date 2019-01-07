@@ -31,10 +31,7 @@ export type EventHandler<PluginConfig extends object, PluginState> = (
   ...args: any[]
 ) => void;
 
-export type PluginId = number;
-
 export interface IPlugin {
-  id: PluginId;
   name: string;
   enabled: boolean;
   defaultConfig: object;
@@ -50,16 +47,11 @@ export interface IPlugin {
   }>;
 }
 
-export interface IPluginsById {
-  [pluginId: number]: IPlugin;
-}
-
 export interface IPluginsByName {
   [pluginName: string]: IPlugin;
 }
 
 export interface IPluginApi<PluginConfig extends object, PluginState> {
-  pluginId: PluginId;
   init: (handler: InitHandler<PluginConfig, PluginState>) => void;
   method: (
     methodName: string,
@@ -84,7 +76,7 @@ export interface ILoadPluginsOpts {
   state?: IPluginStates;
 }
 
-export type PluginChangeHandler = (plugins: IPluginsById) => unknown;
+export type PluginChangeHandler = (plugins: IPluginsByName) => unknown;
 
 export type StateChangeHandler = () => unknown;
 

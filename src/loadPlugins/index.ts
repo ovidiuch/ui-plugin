@@ -262,7 +262,7 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
 }
 
 function getLoadablePlugins(): IPluginsByName {
-  return getListOfAllPlugins().reduce((byName, plugin) => {
+  return getPluginArray().reduce((byName, plugin) => {
     if (!plugin.enabled) {
       return byName;
     }
@@ -311,18 +311,13 @@ function createScopeState(
 }
 
 function existsPluginWithName(pluginName: string) {
-  return getListOfAllPlugins().some(plugin => plugin.name === pluginName);
+  return getPluginArray().some(plugin => plugin.name === pluginName);
 }
 
-function getListOfAllPlugins(): IPlugin[] {
+function getPluginArray(): IPlugin[] {
   const allPlugins = getPlugins();
 
-  return Object.keys(allPlugins).map(
-    pluginId =>
-      // Even though plugins are mapped by pluginId, which is a number, JS
-      // stores object keys as strings
-      allPlugins[Number(pluginId)],
-  );
+  return Object.keys(allPlugins).map(pluginName => allPlugins[pluginName]);
 }
 
 interface INotAFunction {

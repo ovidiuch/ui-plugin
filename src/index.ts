@@ -13,10 +13,4 @@ export {
   unloadPlugins,
 } from './pluginStore';
 export { registerPlugin } from './registerPlugin';
-export {
-  IPlugin,
-  IPluginApi,
-  IPluginContext,
-  IPluginDef,
-  PluginId,
-} from './shared';
+export { IPlugin, IPluginApi, IPluginContext, IPluginDef } from './shared';
