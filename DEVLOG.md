@@ -1,6 +1,8 @@
 Q: What happens when a plugin is registered with an existing plugin name?
 
-Should it throw an error or replace the previous plugin? When plugin registration will formalize at a higher level, throwing an error is the more sensible approach to avoid confusion. But for now it'll replace the prev plugin. Why? Because this enables us to work on registred plugins and have them reload on HMR (hot module replacement).
+Should it throw an error or replace the previous plugin?
+
+Throw error. Replacing a (likely loaded) plugin means unloading a single plugin, which will cause all other dependant plugins to crash, so not feasable.
 
 ---
 

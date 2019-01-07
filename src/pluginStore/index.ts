@@ -58,6 +58,12 @@ export function createPlugin({
   defaultConfig = {},
   initialState,
 }: IPluginDef<any, any>): IPlugin {
+  const { plugins } = getGlobalStore();
+
+  if (plugins[name]) {
+    throw new Error(`Plugin already registered: ${name}`);
+  }
+
   const plugin = {
     name,
     enabled,
@@ -67,8 +73,6 @@ export function createPlugin({
     methodHandlers: [],
     eventHandlers: [],
   };
-
-  const { plugins } = getGlobalStore();
   plugins[name] = plugin;
 
   if (enabled && getLoadedScope()) {
@@ -162,7 +166,7 @@ function getExpectedPlugin(pluginName: string) {
   const { plugins } = getGlobalStore();
 
   if (!plugins[pluginName]) {
-    throw new Error(`Plugin not found ${pluginName}`);
+    throw new Error(`Plugin not found: ${pluginName}`);
   }
 
   return plugins[pluginName];
