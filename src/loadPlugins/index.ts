@@ -24,6 +24,7 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
   unloadPlugins();
 
   let loadedScope: null | IPluginScope = createScope();
+  emitPluginChange();
   runInitHandlers(loadedScope);
 
   function unload() {
