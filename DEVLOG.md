@@ -12,26 +12,29 @@ Yes. It is how npm packages work (which plugins will likely correspond to). Bein
 
 ---
 
-> **TBD:** These questions are too complex and far fetched to answer properly them at the moment.
+Q: How will UI plugins fit into a global registry?
 
-Q: How will UI plugins fit into a global registry with other types of plugins for the same project?
+> **TBD:** These issue is too complex and far fetched to solve properly at the moment.
 
-There will be a config file for each package. Each plugin `main` file will register the plugin in a global store specific to its type.
+A plugin could contain one or more mixed parts, like a UI plugin and a server plugin, or a UI plugin and a fixture decorator.
+
+A plugin config could look like this:
 
 ```js
-// my-plugin/cosmos.plugin.js
-module.exports = {
-  type: 'ui',
+{
   name: 'my-plugin',
-  // main: 'index.js',
+  ui: 'ui.js',
+  server: 'server.js',
 };
 ```
 
-The plugin config files will be used to construct a static plugin registry and display the plugin list without running plugin code. This is also useful when showing a list of installed non-ui plugins in the ui.
+The plugin config files should be enough to construct a static plugin registry and display the plugin list without running the plugin code.
 
-Q: What about plugins that contain both UI and non-UI (eg. server, decorator) parts?
+Q: How will the registered UI plugin be paired with its affiliated config?
 
-Q: How can a server plugin part be disabled from the UI?
+It can be done by comparing names. But this requires plugin users to put the same name in two places (in plugin config and in `registerPlugin` call).
+
+Q: How to reuse plugin name from config in `registerPlugin` call?
 
 ---
 
