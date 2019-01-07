@@ -1,3 +1,38 @@
+Q: What happens when a plugin is registered with an existing plugin name?
+
+Should it throw an error or replace the previous plugin? When plugin registration will formalize at a higher level, throwing an error is the more sensible approach to avoid confusion. But for now it'll replace the prev plugin. Why? Because this enables us to work on registred plugins and have them reload on HMR (hot module replacement).
+
+---
+
+Q: Should plugin name be unique?
+
+Yes. It is how npm packages work (which plugins will likely correspond to). Being able to identify a plugin by given name also provides a better dev experience.
+
+---
+
+> **TBD:** These questions are too complex and far fetched to answer properly them at the moment.
+
+Q: How will UI plugins fit into a global registry with other types of plugins for the same project?
+
+There will be a config file for each package. Each plugin `main` file will register the plugin in a global store specific to its type.
+
+```js
+// my-plugin/cosmos.plugin.js
+module.exports = {
+  type: 'ui',
+  name: 'my-plugin',
+  // main: 'index.js',
+};
+```
+
+The plugin config files will be used to construct a static plugin registry and display the plugin list without running plugin code. This is also useful when showing a list of installed non-ui plugins in the ui.
+
+Q: What about plugins that contain both UI and non-UI (eg. server, decorator) parts?
+
+Q: How can a server plugin part be disabled from the UI?
+
+---
+
 Q: How to resolve plugin name collisions?
 
 Problem: On one hand we now guard against _late_ plugin registration. Meaning that plugin parts (eg. methods or event handlers) can't be registered for a plugin after that plugin was loaded. On the other hand, we want to allow plugins with colliding names to be registered at run-time and override each other in the order they're registered. Given that we currently store plugins mapped by name, there's no way to tell if a plugin part is being registered for a plugin already loaded or for a new plugin just registered (but with a name equal to that of a loaded plugin).
