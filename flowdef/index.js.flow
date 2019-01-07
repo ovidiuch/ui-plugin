@@ -80,7 +80,7 @@ type ILoadPluginsOpts = {
   state?: IPluginStates,
 };
 
-type PluginChangeHandler = (plugins: IPluginsById) => mixed;
+type PluginChangeHandler = (plugins: IPluginsByName) => mixed;
 
 type StateChangeHandler = () => mixed;
 
@@ -117,7 +117,7 @@ declare export function loadPlugins(opts?: ILoadPluginsOpts): void;
 
 declare export function unloadPlugins(): void;
 
-declare export function getPlugins(): IPluginsById;
+declare export function getPlugins(): IPluginsByName;
 
 declare export function onPluginChange(
   handler: PluginChangeHandler,
