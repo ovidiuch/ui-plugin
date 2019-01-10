@@ -17,9 +17,11 @@ export interface IPluginContext<PluginConfig extends object, PluginState> {
   emitEvent: (eventName: string, ...args: Array<unknown>) => void;
 }
 
+type Callback = () => unknown;
+
 export type InitHandler<PluginConfig extends object, PluginState> = (
   context: IPluginContext<PluginConfig, PluginState>,
-) => void | (() => unknown);
+) => void | Callback | Callback[];
 
 export type MethodHandler<PluginConfig extends object, PluginState> = (
   context: IPluginContext<PluginConfig, PluginState>,
