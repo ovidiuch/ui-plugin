@@ -246,12 +246,19 @@ export function loadPlugins(opts: ILoadPluginsOpts = {}) {
 
     Object.keys(plugins).forEach(pluginName => {
       plugins[pluginName].initHandlers.forEach(handler => {
-        const returnCb = handler(getPluginContext(pluginName));
+        const initReturn = handler(getPluginContext(pluginName));
 
-        if (typeof returnCb === 'function') {
-          // Collect unload handlers from this scope
-          unloadHandlers.push(returnCb);
+        if (!initReturn) {
+          return;
         }
+
+        // Collect unload handlers from this scope
+        const handlers = Array.isArray(initReturn) ? initReturn : [initReturn];
+        handlers.forEach(unloadHandler => {
+          if (typeof unloadHandler === 'function') {
+            unloadHandlers.push(unloadHandler);
+          }
+        });
       });
     });
   }
