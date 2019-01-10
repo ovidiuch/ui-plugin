@@ -24,7 +24,7 @@ type Callback = () => mixed;
 
 type InitHandler<PluginConfig: {}, PluginState> = (
   context: IPluginContext<PluginConfig, PluginState>,
-) => void | Callback | Callback[];
+) => void | Callback | Array<void | Callback>;
 
 type MethodHandler<PluginConfig: {}, PluginState> = (
   context: IPluginContext<PluginConfig, PluginState>,

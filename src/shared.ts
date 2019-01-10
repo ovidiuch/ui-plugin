@@ -21,7 +21,7 @@ type Callback = () => unknown;
 
 export type InitHandler<PluginConfig extends object, PluginState> = (
   context: IPluginContext<PluginConfig, PluginState>,
-) => void | Callback | Callback[];
+) => void | Callback | Array<void | Callback>;
 
 export type MethodHandler<PluginConfig extends object, PluginState> = (
   context: IPluginContext<PluginConfig, PluginState>,
