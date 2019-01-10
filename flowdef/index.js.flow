@@ -20,9 +20,11 @@ export type IPluginContext<PluginConfig: {}, PluginState> = {
   emitEvent: (eventName: string, ...args: Array<any>) => void,
 };
 
+type Callback = () => mixed;
+
 type InitHandler<PluginConfig: {}, PluginState> = (
   context: IPluginContext<PluginConfig, PluginState>,
-) => void | (() => mixed);
+) => void | Callback | Callback[];
 
 type MethodHandler<PluginConfig: {}, PluginState> = (
   context: IPluginContext<PluginConfig, PluginState>,
