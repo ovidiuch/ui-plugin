@@ -2,17 +2,13 @@ export interface IPluginSpec {
   name: string;
   // config: {};
   // state: any;
-  public: IPluginPublicSpec;
+  methods: IPluginMethods;
+  events: IPluginEvents;
 }
 
 export interface IPluginDef {
   name: string;
   methods: IPluginMethods;
-}
-
-export interface IPluginPublicSpec {
-  methods: IPluginMethods;
-  events: IPluginEvents;
 }
 
 export interface IPluginMethods {

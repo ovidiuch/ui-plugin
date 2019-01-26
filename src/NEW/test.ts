@@ -1,7 +1,8 @@
 import { registerPlugin } from './registerPlugin';
 import { getPluginContext } from './getPluginContext';
 
-interface ILarryDavidPublic {
+interface ILarryDavid {
+  name: 'larry';
   methods: {
     getFullName(): string;
     getAge(realAge: boolean): number;
@@ -11,22 +12,13 @@ interface ILarryDavidPublic {
   };
 }
 
-interface ILarryDavid {
-  name: 'larry';
-  public: ILarryDavidPublic;
-}
-
-interface IJerrySeinfeldPublic {
+interface IJerrySeinfeld {
+  name: 'jerry';
   methods: {
     getBillions(): number;
     getEpisodes(): number;
   };
   events: {};
-}
-
-interface IJerrySeinfeld {
-  name: 'jerry';
-  public: IJerrySeinfeldPublic;
 }
 
 registerPlugin<ILarryDavid>({
@@ -53,15 +45,9 @@ registerPlugin<IJerrySeinfeld>({
   },
 });
 
-it('register', () => {
-  // method('getFullName', ctx => 'Larry David');
-  // method('getAge', (ctx, realAge) => (realAge ? 66 : 55));
-  // TODO: Simulate how larry would emit idea event
-});
-
-it('plugin api', () => {
+it('methods', () => {
   const { getMethodsOf } = getPluginContext<IJerrySeinfeld>('jerry');
-  const { getFullName, getAge } = getMethodsOf<ILarryDavidPublic>('larry');
+  const { getFullName, getAge } = getMethodsOf<ILarryDavid>('larry');
 
   const fullName: string = getFullName();
   const age: number = getAge(true);
@@ -69,4 +55,6 @@ it('plugin api', () => {
   expect(age).toBe(66);
 });
 
-// TODO: Emit
+it('events', () => {
+  // const { getMethodsOf } = getPluginContext<ILarryDavid>('larry');
+});
