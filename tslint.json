@@ -5,7 +5,9 @@
   "rules": {
     "quotemark": [true, "single", "jsx-double"],
     "object-literal-sort-keys": false,
-    "arrow-parens": [true, "ban-single-arg-parens"]
+    "arrow-parens": [true, "ban-single-arg-parens"],
+    "no-console": false,
+    "ordered-imports": false
   },
   "jsRules": {}
 }

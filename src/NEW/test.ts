@@ -1,74 +1,72 @@
-type BaseFn = (...args: any[]) => any;
+import { registerPlugin } from './registerPlugin';
+import { getPluginContext } from './getPluginContext';
 
-interface IBasePluginApi {
-  methods: {
-    [methodName: string]: BaseFn;
-  };
-}
-
-function registerPlugin<PluginApi extends IBasePluginApi>() {
-  type Methods = PluginApi['methods'];
-
-  return { method };
-
-  function method<MethodName extends keyof Methods>(
-    methodName: MethodName,
-    handler: (
-      context: {},
-      ...args: Parameters<Methods[MethodName]>
-    ) => ReturnType<Methods[MethodName]>,
-  ) {
-    // console.log('called method', methodName);
-  }
-}
-
-interface IPersonApi {
+interface ILarryDavidPublic {
   methods: {
     getFullName(): string;
     getAge(realAge: boolean): number;
   };
+  events: {
+    idea: [string, number];
+  };
 }
 
-interface IPluginContext {
-  getPluginApi<PluginApi extends IBasePluginApi>(
-    pluginName: 'string',
-  ): PluginApi;
+interface ILarryDavid {
+  name: 'larry';
+  public: ILarryDavidPublic;
 }
 
-const context = {
-  getPluginApi<PluginApi extends IBasePluginApi>(pluginName: string) {
-    type Methods = PluginApi['methods'];
+interface IJerrySeinfeldPublic {
+  methods: {
+    getBillions(): number;
+    getEpisodes(): number;
+  };
+  events: {};
+}
 
-    const methods: Methods = {
-      getFullName() {
-        return 'Larry David';
-      },
-      getAge() {
-        return 3;
-      },
-    };
+interface IJerrySeinfeld {
+  name: 'jerry';
+  public: IJerrySeinfeldPublic;
+}
 
-    return methods;
+registerPlugin<ILarryDavid>({
+  name: 'larry',
+  methods: {
+    getFullName() {
+      return 'Larry David';
+    },
+    getAge() {
+      return 66;
+    },
   },
-};
+});
+
+registerPlugin<IJerrySeinfeld>({
+  name: 'jerry',
+  methods: {
+    getBillions() {
+      return 1;
+    },
+    getEpisodes() {
+      return 154;
+    },
+  },
+});
 
 it('register', () => {
-  const { method } = registerPlugin<IPersonApi>();
-
-  method('getFullName', ctx => 'Larry David');
-  method('getAge', (ctx, realAge) => (realAge ? 66 : 55));
+  // method('getFullName', ctx => 'Larry David');
+  // method('getAge', (ctx, realAge) => (realAge ? 66 : 55));
+  // TODO: Simulate how larry would emit idea event
 });
 
-it('call public api', () => {
-  // TODO: Emit
-  const { getPluginApi } = context;
-  const { getFullName, getAge } = getPluginApi<IPersonApi>('person');
+it('plugin api', () => {
+  const { getMethodsOf } = getPluginContext<IJerrySeinfeld>('jerry');
+  const { getFullName, getAge } = getMethodsOf<ILarryDavidPublic>('larry');
 
-  getFullName();
-  getAge(true);
-
-  // TODO: Add context as first arg
-  // method('getFullName', () => 'Larry David');
-  // method('getAge', () => 55);
-  // on('idea', (idea: string) => console.log('my idea', idea));
+  const fullName: string = getFullName();
+  const age: number = getAge(true);
+  expect(fullName).toBe('Larry David');
+  expect(age).toBe(66);
 });
+
+// TODO: Emit
