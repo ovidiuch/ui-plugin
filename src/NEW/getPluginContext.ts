@@ -10,5 +10,11 @@ export function getPluginContext<PluginSpec extends IPluginSpec>(
     ): OtherPluginSpec['methods'] {
       return getPluginDef(otherPluginName).methods;
     },
+    emit<EventName extends keyof PluginSpec['events']>(
+      eventName: EventName,
+      ...eventArgs: PluginSpec['events'][EventName]
+    ) {
+      console.log('emit', { eventName, eventArgs });
+    },
   };
 }

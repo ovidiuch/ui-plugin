@@ -1,5 +1,6 @@
 import { registerPlugin } from './registerPlugin';
 import { getPluginContext } from './getPluginContext';
+import { getEventsOf } from './getEventsOf';
 
 interface ILarryDavid {
   name: 'larry';
@@ -8,6 +9,8 @@ interface ILarryDavid {
     getAge(realAge: boolean): number;
   };
   events: {
+    // Element names would be nice
+    // https://github.com/Microsoft/TypeScript/issues/28259
     idea: [string, number];
   };
 }
@@ -55,6 +58,15 @@ it('methods', () => {
   expect(age).toBe(66);
 });
 
-it('events', () => {
-  // const { getMethodsOf } = getPluginContext<ILarryDavid>('larry');
+it('emit event', () => {
+  const { emit } = getPluginContext<ILarryDavid>('larry');
+  emit('idea', 'showAboutNothing', 100);
+});
+
+it('on event', () => {
+  // TODO: Bind getEventsOf to plugin context
+  const onLarry = getEventsOf<ILarryDavid>('larry');
+  onLarry('idea', (ideaName: string, ideaCraziness: number) => {
+    console.log({ ideaName, ideaCraziness });
+  });
 });
