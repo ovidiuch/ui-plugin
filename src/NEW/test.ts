@@ -1,6 +1,5 @@
-import { registerPlugin } from './registerPlugin';
+import { registerPlugin, getPluginRegisterApi } from './registerPlugin';
 import { getPluginContext } from './getPluginContext';
-import { getEventsOf } from './getEventsOf';
 
 interface ILarryDavid {
   name: 'larry';
@@ -64,9 +63,10 @@ it('emit event', () => {
 });
 
 it('on event', () => {
-  // TODO: Bind getEventsOf to plugin context
+  const { getEventsOf } = getPluginRegisterApi<IJerrySeinfeld>('jerry');
   const onLarry = getEventsOf<ILarryDavid>('larry');
   onLarry('idea', (ideaName: string, ideaCraziness: number) => {
+    // TODO: Add Jerry's context as first arg in this callback
     console.log({ ideaName, ideaCraziness });
   });
 });
