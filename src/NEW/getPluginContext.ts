@@ -2,7 +2,7 @@ import { IPluginSpec } from './IPluginSpec';
 import { getPluginDef } from './pluginStore';
 
 export function getPluginContext<PluginSpec extends IPluginSpec>(
-  pluginName: string,
+  pluginName: PluginSpec['name'],
 ) {
   return {
     getMethodsOf<OtherPluginSpec extends IPluginSpec>(
