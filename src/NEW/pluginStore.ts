@@ -1,14 +1,23 @@
-import { IPluginDef } from './IPluginSpec';
+import { IPlugin, IPluginSpec } from './types';
 
-let pluginDefs: {
-  [pluginName: string]: IPluginDef;
+let plugins: {
+  [pluginName: string]: IPlugin<any>;
 };
 
-export function addPluginDef(pluginDef: IPluginDef) {
-  pluginDefs = { ...pluginDefs, [pluginDef.name]: pluginDef };
+export function addPlugin(plugin: IPlugin<any>) {
+  plugins = { ...plugins, [plugin.name]: plugin };
 }
 
-export function getPluginDef(pluginName: string): IPluginDef {
-  // TODO: Throw if plugin doesn't exist
-  return pluginDefs[pluginName];
+export function getPlugin<PluginSpec extends IPluginSpec>(
+  pluginName: string,
+): IPlugin<PluginSpec> {
+  if (!plugins[pluginName]) {
+    throw new Error(`Plugin does not exist: ${pluginName}`);
+  }
+
+  return plugins[pluginName];
+}
+
+export function getPlugins() {
+  return plugins;
 }
