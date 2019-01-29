@@ -36,3 +36,6 @@ it('sets state', () => {
   context.setState(20);
   expect(setState).toBeCalledWith('terry', 20);
 });
+
+// TODO 'sets state via updater'
+// context.setState(prevState => prevState * 2)

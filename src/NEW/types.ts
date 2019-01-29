@@ -2,7 +2,7 @@ interface IPluginMethods {
   [methodName: string]: (...args: any[]) => any;
 }
 
-// TODO: Make attributes optional
+// TODO Make attributes optional
 // https://stackoverflow.com/q/54416282/128816
 export interface IPluginSpec<Methods extends IPluginMethods = any> {
   name: string;
