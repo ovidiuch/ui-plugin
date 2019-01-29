@@ -2,11 +2,13 @@ interface IPluginMethods {
   [methodName: string]: (...args: any[]) => any;
 }
 
+// TODO: Make attributes optional
+// https://stackoverflow.com/q/54416282/128816
 export interface IPluginSpec<Methods extends IPluginMethods = any> {
   name: string;
   // TODO
   // config: {};
-  // state: any;
+  state: any;
   methods: Methods;
   events: {
     // Note: All event signatures will have void return type. Users could
@@ -19,6 +21,12 @@ export interface IPluginSpec<Methods extends IPluginMethods = any> {
 
 export interface IPluginContext<PluginSpec extends IPluginSpec> {
   pluginName: PluginSpec['name'];
+
+  getState(): PluginSpec['state'];
+
+  // TODO
+  // setState(change: StateUpdater<PluginSpec['state']>, cb?: () => unknown): void;
+  setState(newState: PluginSpec['state']): void;
 
   getMethodsOf<OtherPluginSpec extends IPluginSpec>(
     otherPluginName: OtherPluginSpec['name'],
@@ -64,6 +72,7 @@ export type EventHandlers<
 
 export interface IPlugin<PluginSpec extends IPluginSpec> {
   name: string;
+  initialState: PluginSpec['state'];
   methodHandlers: MethodHandlers<PluginSpec>;
   eventHandlers: {
     [eventPath: string]: Array<EventHandler<PluginSpec, any>>;

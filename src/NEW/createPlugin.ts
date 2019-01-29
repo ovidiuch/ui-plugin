@@ -2,12 +2,18 @@ import { MethodHandlers, EventHandlers, IPluginSpec, IPlugin } from './types';
 import { addPlugin } from './pluginStore';
 import { getEventKey } from './shared';
 
-export function createPlugin<PluginSpec extends IPluginSpec>(opts: {
+interface IPluginOpts<PluginSpec extends IPluginSpec> {
   name: PluginSpec['name'];
+  initialState: PluginSpec['state'];
   methods: MethodHandlers<PluginSpec>;
-}) {
+}
+
+export function createPlugin<PluginSpec extends IPluginSpec>(
+  opts: IPluginOpts<PluginSpec>,
+) {
   const plugin: IPlugin<PluginSpec> = {
     name: opts.name,
+    initialState: opts.initialState,
     methodHandlers: opts.methods,
     eventHandlers: {},
   };

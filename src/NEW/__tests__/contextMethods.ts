@@ -3,6 +3,7 @@ import { getPluginContext } from '../getPluginContext';
 
 interface ILarry {
   name: 'larry';
+  state: null;
   methods: {
     annoy(reason: string): string;
   };
@@ -11,6 +12,7 @@ interface ILarry {
 
 interface IJerry {
   name: 'jerry';
+  state: null;
   methods: {};
   events: {};
 }
@@ -20,6 +22,7 @@ it('calls method of other plugin', () => {
 
   createPlugin<ILarry>({
     name: 'larry',
+    initialState: null,
     methods: {
       annoy: (context, reason: string) => {
         // Ensure correct context is passed into method handler
@@ -34,10 +37,12 @@ it('calls method of other plugin', () => {
 
   createPlugin<IJerry>({
     name: 'jerry',
+    initialState: null,
     methods: {},
   }).register();
 
-  const { getMethodsOf } = getPluginContext<IJerry>('jerry');
+  const sharedContext = { state: {}, setState: () => undefined };
+  const { getMethodsOf } = getPluginContext<IJerry>('jerry', sharedContext);
   const { annoy } = getMethodsOf<ILarry>('larry');
   const response: string = annoy('tip too much');
 

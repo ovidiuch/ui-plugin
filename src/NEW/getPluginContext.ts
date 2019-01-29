@@ -2,11 +2,27 @@ import { IPluginSpec, IPluginContext } from './types';
 import { getPlugin, getPlugins } from './pluginStore';
 import { getEventKey } from './shared';
 
+interface ISharedPluginContext {
+  // TODO
+  // config: { [pluginName: string]: {} };
+  state: { [pluginName: string]: any };
+  setState(pluginName: string, newState: any): void;
+}
+
 export function getPluginContext<PluginSpec extends IPluginSpec>(
   pluginName: PluginSpec['name'],
+  sharedContext: ISharedPluginContext,
 ): IPluginContext<PluginSpec> {
   return {
     pluginName,
+
+    getState() {
+      return sharedContext.state[pluginName] as PluginSpec['state'];
+    },
+
+    setState(newState: PluginSpec['state']) {
+      sharedContext.setState(pluginName, newState);
+    },
 
     getMethodsOf<OtherPluginSpec extends IPluginSpec>(
       otherPluginName: OtherPluginSpec['name'],
@@ -29,7 +45,7 @@ export function getPluginContext<PluginSpec extends IPluginSpec>(
             ...args: Parameters<Methods[MethodName]>
           ): ReturnType<Methods[MethodName]> =>
             methodHandlers[methodName](
-              getPluginContext(otherPluginName),
+              getPluginContext(otherPluginName, sharedContext),
               ...args,
             ),
         }),
@@ -47,7 +63,10 @@ export function getPluginContext<PluginSpec extends IPluginSpec>(
 
         if (eventHandlers[eventKey]) {
           eventHandlers[eventKey].forEach(handler => {
-            handler(getPluginContext(otherPluginName), ...eventArgs);
+            handler(
+              getPluginContext(otherPluginName, sharedContext),
+              ...eventArgs,
+            );
           });
         }
       });
