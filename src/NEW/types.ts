@@ -8,8 +8,8 @@ export interface IPluginSpec<Methods extends IPluginMethods = any> {
   name: string;
   // TODO
   // config: {};
-  state: any;
-  methods: Methods;
+  state?: any;
+  methods?: Methods;
   events: {
     // Note: All event signatures will have void return type. Users could
     // specify just the event args as a tuple, but the labels would be lost
@@ -72,7 +72,7 @@ export type EventHandlers<
 
 export interface IPlugin<PluginSpec extends IPluginSpec> {
   name: string;
-  initialState: PluginSpec['state'];
+  initialState: PluginSpec extends Record<'state', infer State> ? State : void;
   methodHandlers: MethodHandlers<PluginSpec>;
   eventHandlers: {
     [eventPath: string]: Array<EventHandler<PluginSpec, any>>;

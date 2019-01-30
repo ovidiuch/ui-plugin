@@ -4,7 +4,6 @@ import { getPluginContext } from '../getPluginContext';
 interface ITerry {
   name: 'terry';
   state: number;
-  methods: {};
   events: {};
 }
 
@@ -12,7 +11,6 @@ function createTestPlugin() {
   createPlugin<ITerry>({
     name: 'terry',
     initialState: 5,
-    methods: {},
   }).register();
 }
 

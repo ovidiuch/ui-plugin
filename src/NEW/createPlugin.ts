@@ -2,44 +2,54 @@ import { MethodHandlers, EventHandlers, IPluginSpec, IPlugin } from './types';
 import { addPlugin } from './pluginStore';
 import { getEventKey } from './shared';
 
-interface IPluginOpts<PluginSpec extends IPluginSpec> {
+type PluginOpts<PluginSpec extends IPluginSpec> = {
   name: PluginSpec['name'];
-  initialState: PluginSpec['state'];
-  methods: MethodHandlers<PluginSpec>;
+} & (PluginSpec extends Record<'state', infer State>
+  ? { initialState: State }
+  : {}) &
+  (PluginSpec extends Record<'methods', PluginSpec['methods']>
+    ? { methods: MethodHandlers<PluginSpec> }
+    : {});
+
+interface IPluginCreateApi<PluginSpec extends IPluginSpec> {
+  on<EmitterPluginSpec extends IPluginSpec>(
+    otherPluginName: EmitterPluginSpec['name'],
+    handlers: EventHandlers<PluginSpec, EmitterPluginSpec>,
+  ): void;
+  register(): void;
 }
 
 export function createPlugin<PluginSpec extends IPluginSpec>(
-  opts: IPluginOpts<PluginSpec>,
-) {
+  opts: PluginOpts<PluginSpec>,
+): IPluginCreateApi<PluginSpec>;
+export function createPlugin<PluginSpec extends IPluginSpec>(opts: {
+  name: string;
+  initialState?: PluginSpec['state'];
+  methods?: PluginSpec['methods'];
+}): IPluginCreateApi<PluginSpec> {
   const plugin: IPlugin<PluginSpec> = {
     name: opts.name,
-    initialState: opts.initialState,
-    methodHandlers: opts.methods,
+    initialState: opts.initialState || undefined,
+    methodHandlers: opts.methods || {},
     eventHandlers: {},
   };
 
   return {
-    on,
-    register,
+    on: (otherPluginName, handlers) => {
+      Object.keys(handlers).forEach(eventName => {
+        const handler = handlers[eventName];
+        // https://github.com/Microsoft/TypeScript/pull/12253#issuecomment-263132208
+        if (handler) {
+          const eventKey = getEventKey(otherPluginName, eventName);
+          plugin.eventHandlers[eventKey] = plugin.eventHandlers[eventKey]
+            ? [...plugin.eventHandlers[eventKey], handler]
+            : [handler];
+        }
+      });
+    },
+
+    register: () => {
+      addPlugin(plugin);
+    },
   };
-
-  function on<EmitterPluginSpec extends IPluginSpec>(
-    otherPluginName: EmitterPluginSpec['name'],
-    handlers: EventHandlers<PluginSpec, EmitterPluginSpec>,
-  ) {
-    Object.keys(handlers).forEach(eventName => {
-      const handler = handlers[eventName];
-      // https://github.com/Microsoft/TypeScript/pull/12253#issuecomment-263132208
-      if (handler) {
-        const eventKey = getEventKey(otherPluginName, eventName);
-        plugin.eventHandlers[eventKey] = plugin.eventHandlers[eventKey]
-          ? [...plugin.eventHandlers[eventKey], handler]
-          : [handler];
-      }
-    });
-  }
-
-  function register() {
-    addPlugin(plugin);
-  }
 }

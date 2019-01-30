@@ -3,15 +3,11 @@ import { getPluginContext } from '../getPluginContext';
 
 interface ILarry {
   name: 'larry';
-  state: null;
-  methods: {};
   events: {};
 }
 
 interface IJerry {
   name: 'jerry';
-  state: null;
-  methods: {};
   events: {
     idea(title: string, craziness: number): void;
   };
@@ -20,18 +16,10 @@ interface IJerry {
 it('calls event handler of other plugin', () => {
   const handleIdea = jest.fn();
 
-  const lar = createPlugin<ILarry>({
-    name: 'larry',
-    initialState: null,
-    methods: {},
-  });
+  const lar = createPlugin<ILarry>({ name: 'larry' });
   lar.register();
 
-  createPlugin<IJerry>({
-    name: 'jerry',
-    initialState: null,
-    methods: {},
-  }).register();
+  createPlugin<IJerry>({ name: 'jerry' }).register();
 
   lar.on<IJerry>('jerry', {
     idea: (context, title: string, craziness: number) => {
