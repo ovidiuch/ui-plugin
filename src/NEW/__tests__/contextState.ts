@@ -4,7 +4,6 @@ import { getPluginContext } from '../getPluginContext';
 interface ITerry {
   name: 'terry';
   state: number;
-  events: {};
 }
 
 function createTestPlugin() {

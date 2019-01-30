@@ -3,7 +3,6 @@ import { getPluginContext } from '../getPluginContext';
 
 interface ILarry {
   name: 'larry';
-  events: {};
 }
 
 interface IJerry {

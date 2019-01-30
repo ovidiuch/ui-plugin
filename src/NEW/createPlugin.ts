@@ -1,4 +1,9 @@
-import { MethodHandlers, EventHandlers, IPluginSpec, IPlugin } from './types';
+import {
+  MethodHandlers,
+  IPluginCreateApi,
+  IPluginSpec,
+  IPlugin,
+} from './types';
 import { addPlugin } from './pluginStore';
 import { getEventKey } from './shared';
 
@@ -10,14 +15,6 @@ type PluginOpts<PluginSpec extends IPluginSpec> = {
   (PluginSpec extends Record<'methods', PluginSpec['methods']>
     ? { methods: MethodHandlers<PluginSpec> }
     : {});
-
-interface IPluginCreateApi<PluginSpec extends IPluginSpec> {
-  on<EmitterPluginSpec extends IPluginSpec>(
-    otherPluginName: EmitterPluginSpec['name'],
-    handlers: EventHandlers<PluginSpec, EmitterPluginSpec>,
-  ): void;
-  register(): void;
-}
 
 export function createPlugin<PluginSpec extends IPluginSpec>(
   opts: PluginOpts<PluginSpec>,

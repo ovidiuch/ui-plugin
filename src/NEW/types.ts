@@ -2,21 +2,24 @@ interface IPluginMethods {
   [methodName: string]: (...args: any[]) => any;
 }
 
-// TODO Make attributes optional
-// https://stackoverflow.com/q/54416282/128816
-export interface IPluginSpec<Methods extends IPluginMethods = any> {
+interface IPluginEvents {
+  // Note: All event signatures will have void return type. Users could
+  // specify just the event args as a tuple, but the labels would be lost
+  // because tuple elements don't support labels:
+  // https://github.com/Microsoft/TypeScript/issues/28259
+  [eventName: string]: (...args: any[]) => void;
+}
+
+export interface IPluginSpec<
+  Methods extends IPluginMethods = any,
+  Events extends IPluginEvents = any
+> {
   name: string;
   // TODO
-  // config: {};
+  // config?: {};
   state?: any;
   methods?: Methods;
-  events: {
-    // Note: All event signatures will have void return type. Users could
-    // specify just the event args as a tuple, but the labels would be lost
-    // because tuple elements don't support labels:
-    // https://github.com/Microsoft/TypeScript/issues/28259
-    [eventName: string]: (...args: any[]) => void;
-  };
+  events?: Events;
 }
 
 export interface IPluginContext<PluginSpec extends IPluginSpec> {
@@ -30,7 +33,9 @@ export interface IPluginContext<PluginSpec extends IPluginSpec> {
 
   getMethodsOf<OtherPluginSpec extends IPluginSpec>(
     otherPluginName: OtherPluginSpec['name'],
-  ): OtherPluginSpec['methods'];
+  ): OtherPluginSpec extends Record<'methods', OtherPluginSpec['methods']>
+    ? OtherPluginSpec['methods']
+    : {};
 
   emit<EventName extends Extract<keyof PluginSpec['events'], string>>(
     eventName: EventName,
@@ -61,14 +66,25 @@ export type MethodHandlers<PluginSpec extends IPluginSpec> = {
 // Map public event signature to event handler signature
 export type EventHandlers<
   ListenerPluginSpec extends IPluginSpec,
-  EmitterPluginSpec extends IPluginSpec
+  Events extends IPluginEvents
 > = {
   // Listener can define handlers for a subset of the emitter's events
-  [EventName in keyof EmitterPluginSpec['events']]?: EventHandler<
+  [EventName in keyof Events]?: EventHandler<
     ListenerPluginSpec,
-    Parameters<EmitterPluginSpec['events'][EventName]>
+    Parameters<Events[EventName]>
   >
 };
+
+export interface IPluginCreateApi<PluginSpec extends IPluginSpec> {
+  on<EmitterSpec extends IPluginSpec>(
+    otherPluginName: EmitterSpec['name'],
+    handlers: EmitterSpec extends Record<'events', EmitterSpec['events']>
+      ? EventHandlers<PluginSpec, EmitterSpec['events']>
+      : { [eventName: string]: never },
+  ): void;
+
+  register(): void;
+}
 
 export interface IPlugin<PluginSpec extends IPluginSpec> {
   name: string;

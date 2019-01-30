@@ -3,7 +3,6 @@ import { getPluginContext } from '../getPluginContext';
 
 interface ITerry {
   name: 'terry';
-  events: {};
 }
 
 it('returns plugin name', () => {

@@ -6,12 +6,10 @@ interface ILarry {
   methods: {
     annoy(reason: string): string;
   };
-  events: {};
 }
 
 interface IJerry {
   name: 'jerry';
-  events: {};
 }
 
 it('calls method of other plugin', () => {

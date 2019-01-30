@@ -26,7 +26,7 @@ export function getPluginContext<PluginSpec extends IPluginSpec>(
 
     getMethodsOf<OtherPluginSpec extends IPluginSpec>(
       otherPluginName: OtherPluginSpec['name'],
-    ) {
+    ): OtherPluginSpec['methods'] {
       type Methods = OtherPluginSpec['methods'];
       type ValidMethodName = Extract<keyof Methods, string>;
 
