@@ -1,11 +1,11 @@
-import { IPluginSpec, IPluginContext } from './types';
+import { StateUpdater, IPluginSpec, IPluginContext } from './types';
 import { getPlugin, getPlugins } from './pluginStore';
 import { getEventKey } from './shared';
 
 interface ISharedPluginContext {
   config: { [pluginName: string]: any };
   state: { [pluginName: string]: any };
-  setState(pluginName: string, newState: any): void;
+  setState(pluginName: string, newState: StateUpdater<any>): void;
 }
 
 export function getPluginContext<PluginSpec extends IPluginSpec>(
@@ -23,8 +23,11 @@ export function getPluginContext<PluginSpec extends IPluginSpec>(
       return sharedContext.state[pluginName] as PluginSpec['state'];
     },
 
-    setState(newState: PluginSpec['state']) {
+    setState(newState, cb) {
       sharedContext.setState(pluginName, newState);
+      if (cb) {
+        cb();
+      }
     },
 
     getMethodsOf<OtherPluginSpec extends IPluginSpec>(

@@ -1,3 +1,4 @@
+import { StateUpdater } from '../types';
 import { createPlugin } from '../createPlugin';
 import { getPluginContext } from '../getPluginContext';
 
@@ -38,5 +39,19 @@ it('sets state', () => {
   expect(setState).toBeCalledWith('terry', 20);
 });
 
-// TODO 'sets state via updater'
-// context.setState(prevState => prevState * 2)
+it('sets state via updater', () => {
+  createTestPlugin();
+
+  let terryState = 10;
+  const setState = (pluginName: string, updater: StateUpdater<any>) => {
+    terryState = updater(terryState);
+  };
+  const cb = jest.fn();
+
+  const sharedContext = { config: {}, state: { terry: terryState }, setState };
+  const context = getPluginContext<ITerry>('terry', sharedContext);
+
+  context.setState(prevState => prevState * 2.2, cb);
+  expect(terryState).toBe(22);
+  expect(cb).toBeCalled();
+});

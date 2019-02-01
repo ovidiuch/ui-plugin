@@ -1,3 +1,5 @@
+export type StateUpdater<State> = State | ((prevState: State) => State);
+
 interface IPluginMethods {
   [methodName: string]: (...args: any[]) => any;
 }
@@ -24,13 +26,11 @@ export interface IPluginSpec<
 export interface IPluginContext<PluginSpec extends IPluginSpec> {
   pluginName: PluginSpec['name'];
 
-  getConfig(): PluginSpec extends Record<'config', infer Config> ? Config : void;
+  getConfig(): PluginSpec['config'];
 
-  getState(): PluginSpec extends Record<'state', infer State> ? State : void;
+  getState(): PluginSpec['state'];
 
-  // TODO
-  // setState(change: StateUpdater<PluginSpec['state']>, cb?: () => unknown): void;
-  setState(newState: PluginSpec extends Record<'state', infer State> ? State : never): void;
+  setState(change: StateUpdater<PluginSpec['state']>, cb?: () => unknown): void;
 
   getMethodsOf<OtherPluginSpec extends IPluginSpec>(
     otherPluginName: OtherPluginSpec['name'],
