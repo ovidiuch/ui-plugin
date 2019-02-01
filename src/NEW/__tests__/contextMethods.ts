@@ -31,7 +31,7 @@ it('calls method of other plugin', () => {
 
   createPlugin<IJerry>({ name: 'jerry' }).register();
 
-  const sharedContext = { state: {}, setState: () => undefined };
+  const sharedContext = { config: {}, state: {}, setState: () => undefined };
   const { getMethodsOf } = getPluginContext<IJerry>('jerry', sharedContext);
   const { annoy } = getMethodsOf<ILarry>('larry');
   const response: string = annoy('tip too much');

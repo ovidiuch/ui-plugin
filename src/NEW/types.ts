@@ -15,8 +15,7 @@ export interface IPluginSpec<
   Events extends IPluginEvents = any
 > {
   name: string;
-  // TODO
-  // config?: {};
+  config?: any;
   state?: any;
   methods?: Methods;
   events?: Events;
@@ -25,11 +24,13 @@ export interface IPluginSpec<
 export interface IPluginContext<PluginSpec extends IPluginSpec> {
   pluginName: PluginSpec['name'];
 
-  getState(): PluginSpec['state'];
+  getConfig(): PluginSpec extends Record<'config', infer Config> ? Config : void;
+
+  getState(): PluginSpec extends Record<'state', infer State> ? State : void;
 
   // TODO
   // setState(change: StateUpdater<PluginSpec['state']>, cb?: () => unknown): void;
-  setState(newState: PluginSpec['state']): void;
+  setState(newState: PluginSpec extends Record<'state', infer State> ? State : never): void;
 
   getMethodsOf<OtherPluginSpec extends IPluginSpec>(
     otherPluginName: OtherPluginSpec['name'],
@@ -43,16 +44,16 @@ export interface IPluginContext<PluginSpec extends IPluginSpec> {
   ): void;
 }
 
-type PluginContextHandler<
-  PluginSpec extends IPluginSpec,
-  Args extends any[],
-  Ret
-> = (context: IPluginContext<PluginSpec>, ...args: Args) => Ret;
+type PluginContextHandler<PluginSpec extends IPluginSpec, Args extends any[], Ret> = (
+  context: IPluginContext<PluginSpec>,
+  ...args: Args
+) => Ret;
 
-export type EventHandler<
-  PluginSpec extends IPluginSpec,
-  Args extends any[]
-> = PluginContextHandler<PluginSpec, Args, void>;
+export type EventHandler<PluginSpec extends IPluginSpec, Args extends any[]> = PluginContextHandler<
+  PluginSpec,
+  Args,
+  void
+>;
 
 // Map the public signature of each method to its handler signature
 export type MethodHandlers<PluginSpec extends IPluginSpec> = {
@@ -64,15 +65,9 @@ export type MethodHandlers<PluginSpec extends IPluginSpec> = {
 };
 
 // Map public event signature to event handler signature
-export type EventHandlers<
-  ListenerPluginSpec extends IPluginSpec,
-  Events extends IPluginEvents
-> = {
+export type EventHandlers<ListenerPluginSpec extends IPluginSpec, Events extends IPluginEvents> = {
   // Listener can define handlers for a subset of the emitter's events
-  [EventName in keyof Events]?: EventHandler<
-    ListenerPluginSpec,
-    Parameters<Events[EventName]>
-  >
+  [EventName in keyof Events]?: EventHandler<ListenerPluginSpec, Parameters<Events[EventName]>>
 };
 
 export interface IPluginCreateApi<PluginSpec extends IPluginSpec> {
@@ -88,6 +83,7 @@ export interface IPluginCreateApi<PluginSpec extends IPluginSpec> {
 
 export interface IPlugin<PluginSpec extends IPluginSpec> {
   name: string;
+  defaultConfig: PluginSpec extends Record<'config', infer Config> ? Config : void;
   initialState: PluginSpec extends Record<'state', infer State> ? State : void;
   methodHandlers: MethodHandlers<PluginSpec>;
   eventHandlers: {

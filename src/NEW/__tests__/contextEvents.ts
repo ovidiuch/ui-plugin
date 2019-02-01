@@ -30,7 +30,7 @@ it('calls event handler of other plugin', () => {
     },
   });
 
-  const sharedContext = { state: {}, setState: () => undefined };
+  const sharedContext = { config: {}, state: {}, setState: () => undefined };
   const { emit } = getPluginContext<IJerry>('jerry', sharedContext);
   emit('idea', 'show about nothing', 50);
 

@@ -16,7 +16,11 @@ function createTestPlugin() {
 it('gets state', () => {
   createTestPlugin();
 
-  const sharedContext = { state: { terry: 10 }, setState: () => undefined };
+  const sharedContext = {
+    config: {},
+    state: { terry: 10 },
+    setState: () => undefined,
+  };
   const context = getPluginContext<ITerry>('terry', sharedContext);
 
   const state: number = context.getState();
@@ -27,7 +31,7 @@ it('sets state', () => {
   createTestPlugin();
 
   const setState = jest.fn();
-  const sharedContext = { state: { terry: 10 }, setState };
+  const sharedContext = { config: {}, state: { terry: 10 }, setState };
   const context = getPluginContext<ITerry>('terry', sharedContext);
 
   context.setState(20);
