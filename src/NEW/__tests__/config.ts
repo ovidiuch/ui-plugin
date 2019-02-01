@@ -1,6 +1,6 @@
 import { createPlugin } from '../createPlugin';
 import { getPluginContext } from '../getPluginContext';
-import { initPlugins } from '../initPlugins';
+import { loadPlugins } from '../loadPlugins';
 
 interface ITerry {
   name: 'terry';
@@ -17,7 +17,7 @@ function createTestPlugin() {
 it('gets config', () => {
   createTestPlugin();
 
-  const sharedContext = initPlugins({
+  const sharedContext = loadPlugins({
     config: { terry: { size: 10 } },
   });
   const { getConfig } = getPluginContext<ITerry>('terry', sharedContext);

@@ -2,7 +2,11 @@ import { IPlugin, IPluginSpec } from './types';
 
 let plugins: {
   [pluginName: string]: IPlugin<any>;
-};
+} = {};
+
+export function removeAllPlugins() {
+  plugins = {};
+}
 
 export function addPlugin(plugin: IPlugin<any>) {
   plugins = { ...plugins, [plugin.name]: plugin };

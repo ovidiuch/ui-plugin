@@ -1,6 +1,6 @@
 import { createPlugin } from '../createPlugin';
 import { getPluginContext } from '../getPluginContext';
-import { initPlugins } from '../initPlugins';
+import { loadPlugins } from '../loadPlugins';
 
 interface ILarry {
   name: 'larry';
@@ -29,7 +29,7 @@ it('calls event handler of other plugin', () => {
   });
   register();
 
-  const sharedContext = initPlugins();
+  const sharedContext = loadPlugins();
   const { emit } = getPluginContext<IJerry>('jerry', sharedContext);
   emit('idea', 'show about nothing', 50);
 

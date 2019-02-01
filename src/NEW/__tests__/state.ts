@@ -1,6 +1,6 @@
 import { createPlugin } from '../createPlugin';
 import { getPluginContext } from '../getPluginContext';
-import { initPlugins } from '../initPlugins';
+import { loadPlugins } from '../loadPlugins';
 
 interface ITerry {
   name: 'terry';
@@ -17,7 +17,7 @@ function createTestPlugin() {
 it('gets state', () => {
   createTestPlugin();
 
-  const sharedContext = initPlugins({
+  const sharedContext = loadPlugins({
     state: { terry: 10 },
   });
   const { getState } = getPluginContext<ITerry>('terry', sharedContext);
@@ -29,7 +29,7 @@ it('gets state', () => {
 it('sets state', done => {
   createTestPlugin();
 
-  const sharedContext = initPlugins({
+  const sharedContext = loadPlugins({
     state: { terry: 10 },
   });
   const { getState, setState } = getPluginContext<ITerry>('terry', sharedContext);
@@ -43,7 +43,7 @@ it('sets state', done => {
 it('sets state via updater', done => {
   createTestPlugin();
 
-  const sharedContext = initPlugins({
+  const sharedContext = loadPlugins({
     state: { terry: 10 },
   });
   const { getState, setState } = getPluginContext<ITerry>('terry', sharedContext);

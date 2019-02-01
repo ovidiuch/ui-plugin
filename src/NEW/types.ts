@@ -1,4 +1,4 @@
-type Callback = () => unknown;
+export type Callback = () => unknown;
 
 export type StateUpdater<State> = State | ((prevState: State) => State);
 
