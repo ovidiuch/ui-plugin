@@ -22,8 +22,8 @@ it('calls method of other plugin', () => {
     methods: {
       annoy: (context, reason: string) => {
         // Ensure correct context is passed into method handler
-        const ctxPluginName: 'larry' = context.pluginName;
-        expect(ctxPluginName).toBe('larry');
+        const pluginName: 'larry' = context.pluginName;
+        expect(pluginName).toBe('larry');
 
         handleAnnoyance(reason);
         return 'get outta here';

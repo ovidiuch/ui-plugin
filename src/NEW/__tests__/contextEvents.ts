@@ -21,8 +21,8 @@ it('calls event handler of other plugin', () => {
   on<IJerry>('jerry', {
     idea: (context, title: string, craziness: number) => {
       // Ensure correct context is passed into event handler
-      const ctxPluginName: 'larry' = context.pluginName;
-      expect(ctxPluginName).toBe('larry');
+      const pluginName: 'larry' = context.pluginName;
+      expect(pluginName).toBe('larry');
 
       handleIdea(title, craziness);
     },
