@@ -51,6 +51,12 @@ type PluginContextHandler<PluginSpec extends IPluginSpec, Args extends any[], Re
   ...args: Args
 ) => Ret;
 
+export type LoadHandler<PluginSpec extends IPluginSpec> = PluginContextHandler<
+  PluginSpec,
+  [],
+  void | Callback | Array<void | Callback>
+>;
+
 export type EventHandler<PluginSpec extends IPluginSpec, Args extends any[]> = PluginContextHandler<
   PluginSpec,
   Args,
@@ -73,6 +79,8 @@ export type EventHandlers<ListenerPluginSpec extends IPluginSpec, Events extends
 };
 
 export interface IPluginCreateApi<PluginSpec extends IPluginSpec> {
+  onLoad(handler: LoadHandler<PluginSpec>): void;
+
   on<EmitterSpec extends IPluginSpec>(
     otherPluginName: EmitterSpec['name'],
     handlers: EmitterSpec extends Record<'events', EmitterSpec['events']>
@@ -88,6 +96,7 @@ export interface IPlugin<PluginSpec extends IPluginSpec> {
   defaultConfig: PluginSpec extends Record<'config', infer Config> ? Config : void;
   initialState: PluginSpec extends Record<'state', infer State> ? State : void;
   methodHandlers: MethodHandlers<PluginSpec>;
+  loadHandlers: Array<LoadHandler<PluginSpec>>;
   eventHandlers: {
     [eventPath: string]: Array<EventHandler<PluginSpec, any>>;
   };

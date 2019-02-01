@@ -7,15 +7,11 @@ interface ITerry {
   config: { size: number };
 }
 
-function createTestPlugin() {
+it('gets config', () => {
   createPlugin<ITerry>({
     name: 'terry',
     defaultConfig: { size: 5 },
   }).register();
-}
-
-it('gets config', () => {
-  createTestPlugin();
 
   const sharedContext = loadPlugins({
     config: { terry: { size: 10 } },

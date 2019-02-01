@@ -1,5 +1,6 @@
 import { Callback, IPluginConfigs, IPluginStates, ISharedPluginContext } from '../types';
-import { removeAllPlugins } from '../pluginStore';
+import { getPlugins, removeAllPlugins } from '../pluginStore';
+import { getPluginContext } from '../getPluginContext';
 import { updateState } from './updateState';
 
 interface IOpts {
@@ -9,7 +10,7 @@ interface IOpts {
 
 interface ILoadedPlugins {
   sharedContext: ISharedPluginContext;
-  unloadHandlers: Callback[];
+  unloadCallbacks: Callback[];
 }
 
 let loadedPlugins: null | ILoadedPlugins = null;
@@ -29,12 +30,11 @@ export function loadPlugins(opts: IOpts = {}) {
     },
   };
 
-  const unloadHandlers: Callback[] = [];
-  // TODO: Run load handlers and collect unloadHandlers
+  const unloadCallbacks = collectUnloadCallbacks(sharedContext);
 
   loadedPlugins = {
     sharedContext,
-    unloadHandlers,
+    unloadCallbacks,
   };
 
   return sharedContext;
@@ -42,8 +42,8 @@ export function loadPlugins(opts: IOpts = {}) {
 
 export function unloadPlugins() {
   if (loadedPlugins) {
-    loadedPlugins.unloadHandlers.forEach(handler => handler());
-    loadedPlugins.unloadHandlers = [];
+    loadedPlugins.unloadCallbacks.forEach(handler => handler());
+    loadedPlugins.unloadCallbacks = [];
     loadedPlugins = null;
   }
 }
@@ -51,4 +51,26 @@ export function unloadPlugins() {
 export function resetPlugins() {
   unloadPlugins();
   removeAllPlugins();
+}
+
+function collectUnloadCallbacks(sharedContext: ISharedPluginContext) {
+  const plugins = getPlugins();
+  const unloadCallbacks: Callback[] = [];
+
+  Object.keys(plugins).forEach(pluginName => {
+    plugins[pluginName].loadHandlers.forEach(handler => {
+      const handlerReturn = handler(getPluginContext(pluginName, sharedContext));
+
+      if (handlerReturn) {
+        const callbacks = Array.isArray(handlerReturn) ? handlerReturn : [handlerReturn];
+        callbacks.forEach(callback => {
+          if (typeof callback === 'function') {
+            unloadCallbacks.push(callback);
+          }
+        });
+      }
+    });
+  });
+
+  return unloadCallbacks;
 }

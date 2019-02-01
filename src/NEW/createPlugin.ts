@@ -24,10 +24,15 @@ export function createPlugin<PluginSpec extends IPluginSpec>(opts: {
     defaultConfig: opts.defaultConfig || undefined,
     initialState: opts.initialState || undefined,
     methodHandlers: opts.methods || {},
+    loadHandlers: [],
     eventHandlers: {},
   } as IPlugin<PluginSpec>;
 
   return {
+    onLoad: handler => {
+      plugin.loadHandlers.push(handler);
+    },
+
     on: (otherPluginName, handlers) => {
       Object.keys(handlers).forEach(eventName => {
         const handler = handlers[eventName];
