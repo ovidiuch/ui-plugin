@@ -16,9 +16,9 @@ interface IJerry {
 it('calls event handler of other plugin', () => {
   createPlugin<IJerry>({ name: 'jerry' }).register();
 
-  const lar = createPlugin<ILarry>({ name: 'larry' });
+  const { on, register } = createPlugin<ILarry>({ name: 'larry' });
   const handleIdea = jest.fn();
-  lar.on<IJerry>('jerry', {
+  on<IJerry>('jerry', {
     idea: (context, title: string, craziness: number) => {
       // Ensure correct context is passed into event handler
       const ctxPluginName: 'larry' = context.pluginName;
@@ -27,7 +27,7 @@ it('calls event handler of other plugin', () => {
       handleIdea(title, craziness);
     },
   });
-  lar.register();
+  register();
 
   const sharedContext = initPlugins();
   const { emit } = getPluginContext<IJerry>('jerry', sharedContext);
