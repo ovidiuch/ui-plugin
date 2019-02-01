@@ -1,5 +1,6 @@
 import { createPlugin } from '../createPlugin';
 import { getPluginContext } from '../getPluginContext';
+import { initPlugins } from '../initPlugins';
 
 interface ITerry {
   name: 'terry';
@@ -16,13 +17,11 @@ function createTestPlugin() {
 it('gets config', () => {
   createTestPlugin();
 
-  const sharedContext = {
+  const sharedContext = initPlugins({
     config: { terry: { size: 10 } },
-    state: {},
-    setState: () => undefined,
-  };
-  const context = getPluginContext<ITerry>('terry', sharedContext);
+  });
+  const { getConfig } = getPluginContext<ITerry>('terry', sharedContext);
 
-  const size: number = context.getConfig().size;
+  const size: number = getConfig().size;
   expect(size).toBe(10);
 });

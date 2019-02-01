@@ -1,12 +1,6 @@
-import { StateUpdater, IPluginSpec, IPluginContext } from './types';
+import { IPluginSpec, IPluginContext, ISharedPluginContext } from './types';
 import { getPlugin, getPlugins } from './pluginStore';
 import { getEventKey } from './shared';
-
-interface ISharedPluginContext {
-  config: { [pluginName: string]: any };
-  state: { [pluginName: string]: any };
-  setState(pluginName: string, newState: StateUpdater<any>): void;
-}
 
 export function getPluginContext<PluginSpec extends IPluginSpec>(
   pluginName: PluginSpec['name'],

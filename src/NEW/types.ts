@@ -1,3 +1,5 @@
+type Callback = () => unknown;
+
 export type StateUpdater<State> = State | ((prevState: State) => State);
 
 interface IPluginMethods {
@@ -30,7 +32,7 @@ export interface IPluginContext<PluginSpec extends IPluginSpec> {
 
   getState(): PluginSpec['state'];
 
-  setState(change: StateUpdater<PluginSpec['state']>, cb?: () => unknown): void;
+  setState(change: StateUpdater<PluginSpec['state']>, cb?: Callback): void;
 
   getMethodsOf<OtherPluginSpec extends IPluginSpec>(
     otherPluginName: OtherPluginSpec['name'],
@@ -89,4 +91,18 @@ export interface IPlugin<PluginSpec extends IPluginSpec> {
   eventHandlers: {
     [eventPath: string]: Array<EventHandler<PluginSpec, any>>;
   };
+}
+
+export interface IPluginConfigs {
+  [pluginName: string]: any;
+}
+
+export interface IPluginStates {
+  [pluginName: string]: any;
+}
+
+export interface ISharedPluginContext {
+  config: IPluginConfigs;
+  state: IPluginStates;
+  setState(pluginName: string, newState: StateUpdater<any>, cb?: Callback): void;
 }

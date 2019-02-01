@@ -1,6 +1,6 @@
-import { StateUpdater } from '../types';
 import { createPlugin } from '../createPlugin';
 import { getPluginContext } from '../getPluginContext';
+import { initPlugins } from '../initPlugins';
 
 interface ITerry {
   name: 'terry';
@@ -17,41 +17,42 @@ function createTestPlugin() {
 it('gets state', () => {
   createTestPlugin();
 
-  const sharedContext = {
-    config: {},
+  const sharedContext = initPlugins({
     state: { terry: 10 },
-    setState: () => undefined,
-  };
-  const context = getPluginContext<ITerry>('terry', sharedContext);
+  });
+  const { getState } = getPluginContext<ITerry>('terry', sharedContext);
 
-  const state: number = context.getState();
+  const state: number = getState();
   expect(state).toBe(10);
 });
 
-it('sets state', () => {
+it('sets state', done => {
   createTestPlugin();
 
-  const setState = jest.fn();
-  const sharedContext = { config: {}, state: { terry: 10 }, setState };
-  const context = getPluginContext<ITerry>('terry', sharedContext);
+  const sharedContext = initPlugins({
+    state: { terry: 10 },
+  });
+  const { getState, setState } = getPluginContext<ITerry>('terry', sharedContext);
 
-  context.setState(20);
-  expect(setState).toBeCalledWith('terry', 20);
+  setState(20, () => {
+    expect(getState()).toBe(20);
+    done();
+  });
 });
 
-it('sets state via updater', () => {
+it('sets state via updater', done => {
   createTestPlugin();
 
-  let terryState = 10;
-  const setState = (pluginName: string, updater: StateUpdater<any>) => {
-    terryState = updater(terryState);
-  };
-  const cb = jest.fn();
+  const sharedContext = initPlugins({
+    state: { terry: 10 },
+  });
+  const { getState, setState } = getPluginContext<ITerry>('terry', sharedContext);
 
-  const sharedContext = { config: {}, state: { terry: terryState }, setState };
-  const context = getPluginContext<ITerry>('terry', sharedContext);
-
-  context.setState(prevState => prevState * 2.2, cb);
-  expect(terryState).toBe(22);
-  expect(cb).toBeCalled();
+  setState(
+    prevState => prevState * 2.2,
+    () => {
+      expect(getState()).toBe(22);
+      done();
+    },
+  );
 });

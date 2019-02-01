@@ -1,5 +1,6 @@
 import { createPlugin } from '../createPlugin';
 import { getPluginContext } from '../getPluginContext';
+import { initPlugins } from '../initPlugins';
 
 interface ILarry {
   name: 'larry';
@@ -13,13 +14,10 @@ interface IJerry {
 }
 
 it('calls event handler of other plugin', () => {
-  const handleIdea = jest.fn();
-
-  const lar = createPlugin<ILarry>({ name: 'larry' });
-  lar.register();
-
   createPlugin<IJerry>({ name: 'jerry' }).register();
 
+  const lar = createPlugin<ILarry>({ name: 'larry' });
+  const handleIdea = jest.fn();
   lar.on<IJerry>('jerry', {
     idea: (context, title: string, craziness: number) => {
       // Ensure correct context is passed into event handler
@@ -29,8 +27,9 @@ it('calls event handler of other plugin', () => {
       handleIdea(title, craziness);
     },
   });
+  lar.register();
 
-  const sharedContext = { config: {}, state: {}, setState: () => undefined };
+  const sharedContext = initPlugins();
   const { emit } = getPluginContext<IJerry>('jerry', sharedContext);
   emit('idea', 'show about nothing', 50);
 

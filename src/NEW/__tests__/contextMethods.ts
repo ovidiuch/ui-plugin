@@ -1,5 +1,6 @@
 import { createPlugin } from '../createPlugin';
 import { getPluginContext } from '../getPluginContext';
+import { initPlugins } from '../initPlugins';
 
 interface ILarry {
   name: 'larry';
@@ -13,8 +14,9 @@ interface IJerry {
 }
 
 it('calls method of other plugin', () => {
-  const handleAnnoyance = jest.fn();
+  createPlugin<IJerry>({ name: 'jerry' }).register();
 
+  const handleAnnoyance = jest.fn();
   createPlugin<ILarry>({
     name: 'larry',
     methods: {
@@ -29,9 +31,7 @@ it('calls method of other plugin', () => {
     },
   }).register();
 
-  createPlugin<IJerry>({ name: 'jerry' }).register();
-
-  const sharedContext = { config: {}, state: {}, setState: () => undefined };
+  const sharedContext = initPlugins();
   const { getMethodsOf } = getPluginContext<IJerry>('jerry', sharedContext);
   const { annoy } = getMethodsOf<ILarry>('larry');
   const response: string = annoy('tip too much');
