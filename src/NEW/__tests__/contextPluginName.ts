@@ -1,8 +1,10 @@
-import { createPlugin, loadPlugins, getPluginContext } from '..';
+import { resetPlugins, createPlugin, loadPlugins, getPluginContext } from '..';
 
 interface ITerry {
   name: 'terry';
 }
+
+afterEach(resetPlugins);
 
 it('returns plugin name', () => {
   createPlugin<ITerry>({ name: 'terry' }).register();

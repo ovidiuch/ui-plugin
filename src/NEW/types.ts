@@ -32,7 +32,10 @@ export interface IPluginContext<PluginSpec extends IPluginSpec> {
 
   getState(): PluginSpec['state'];
 
-  setState(change: StateUpdater<PluginSpec['state']>, cb?: Callback): void;
+  setState(
+    change: PluginSpec extends Record<'state', infer State> ? StateUpdater<State> : never,
+    cb?: Callback,
+  ): void;
 
   getMethodsOf<OtherPluginSpec extends IPluginSpec>(
     otherPluginName: OtherPluginSpec['name'],

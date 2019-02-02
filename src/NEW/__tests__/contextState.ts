@@ -1,4 +1,4 @@
-import { createPlugin, loadPlugins, getPluginContext } from '..';
+import { resetPlugins, createPlugin, loadPlugins, getPluginContext } from '..';
 
 interface ITerry {
   name: 'terry';
@@ -11,6 +11,8 @@ function createTestPlugin() {
     initialState: 5,
   }).register();
 }
+
+afterEach(resetPlugins);
 
 it('gets state', () => {
   createTestPlugin();

@@ -5,7 +5,7 @@ import {
   IPluginStates,
   ISharedPluginContext,
 } from '../types';
-import { getPlugins, getPlugin, removeAllPlugins } from '../store';
+import { getPlugins, getPlugin, removeAllPlugins, emitPluginLoad } from '../store';
 import { createPluginContext } from '../createPluginContext';
 import { updateState } from './updateState';
 
@@ -37,12 +37,13 @@ export function loadPlugins(args: ILoadPluginArgs = {}) {
     },
   };
   const unloadCallbacks = runLoadHandlers(sharedContext);
-
   loadedPlugins = {
     args,
     sharedContext,
     unloadCallbacks,
   };
+
+  emitPluginLoad();
 }
 
 export function unloadPlugins() {

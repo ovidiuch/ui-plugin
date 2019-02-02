@@ -1,6 +1,6 @@
 import { IPluginContext } from '../types';
 import { unloadPlugins } from '../loadPlugins';
-import { createPlugin, loadPlugins } from '..';
+import { resetPlugins, createPlugin, loadPlugins } from '..';
 
 interface ITerry {
   name: 'terry';
@@ -9,6 +9,8 @@ interface ITerry {
 function validateContext({ pluginName }: IPluginContext<ITerry>) {
   expect(pluginName).toBe('terry');
 }
+
+afterEach(resetPlugins);
 
 it('calls load callback', () => {
   const handleLoad = jest.fn();

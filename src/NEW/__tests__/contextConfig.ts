@@ -1,9 +1,11 @@
-import { createPlugin, loadPlugins, getPluginContext } from '..';
+import { resetPlugins, createPlugin, loadPlugins, getPluginContext } from '..';
 
 interface ITerry {
   name: 'terry';
   config: { size: number };
 }
+
+afterEach(resetPlugins);
 
 it('gets config', () => {
   createPlugin<ITerry>({

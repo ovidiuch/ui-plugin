@@ -1,11 +1,21 @@
 import { IPlugin, IPluginSpec } from './types';
+import { removeHandler } from './shared';
 
-let plugins: {
+interface IPluginsByName {
   [pluginName: string]: IPlugin<any>;
-} = {};
+}
+
+type PluginLoadHandler = (plugins: IPluginsByName) => unknown;
+type StateChangeHandler = () => unknown;
+
+let plugins: IPluginsByName = {};
+let pluginLoadHandlers: PluginLoadHandler[] = [];
+let stateChangeHandlers: StateChangeHandler[] = [];
 
 export function removeAllPlugins() {
   plugins = {};
+  pluginLoadHandlers = [];
+  stateChangeHandlers = [];
 }
 
 export function getPlugins() {
@@ -32,4 +42,24 @@ export function updatePlugin<PluginSpec extends IPluginSpec>(
   plugins = {
     [pluginName]: change(plugin),
   };
+}
+
+export function onPluginLoad(handler: PluginLoadHandler) {
+  pluginLoadHandlers.push(handler);
+
+  return () => removeHandler(pluginLoadHandlers, handler);
+}
+
+export function onStateChange(handler: StateChangeHandler) {
+  stateChangeHandlers.push(handler);
+
+  return () => removeHandler(stateChangeHandlers, handler);
+}
+
+export function emitPluginLoad() {
+  pluginLoadHandlers.forEach(handler => handler(getPlugins()));
+}
+
+export function emitStateChange() {
+  stateChangeHandlers.forEach(handler => handler());
 }

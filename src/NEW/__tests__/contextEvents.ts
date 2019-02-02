@@ -1,5 +1,5 @@
 import { IPluginContext } from '../types';
-import { createPlugin, loadPlugins, getPluginContext } from '..';
+import { resetPlugins, createPlugin, loadPlugins, getPluginContext } from '..';
 
 interface ILarry {
   name: 'larry';
@@ -15,6 +15,8 @@ interface IJerry {
 function validateContext({ pluginName }: IPluginContext<ILarry>) {
   expect(pluginName).toBe('larry');
 }
+
+afterEach(resetPlugins);
 
 it('calls event handler of other plugin', () => {
   createPlugin<IJerry>({ name: 'jerry' }).register();

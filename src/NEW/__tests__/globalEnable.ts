@@ -1,8 +1,10 @@
-import { createPlugin, loadPlugins, getPluginContext, enablePlugin } from '..';
+import { resetPlugins, createPlugin, loadPlugins, getPluginContext, enablePlugin } from '..';
 
 interface ITerry {
   name: 'terry';
 }
+
+afterEach(resetPlugins);
 
 it('throws when plugin is disabled', () => {
   createPlugin<ITerry>({ name: 'terry' }).register();

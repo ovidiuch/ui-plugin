@@ -1,5 +1,5 @@
 import { IPluginSpec, IPluginContext, ISharedPluginContext } from './types';
-import { getPlugin, getPlugins } from './store';
+import { getPlugin, getPlugins, emitStateChange } from './store';
 import { getEventKey } from './shared';
 
 export function createPluginContext<PluginSpec extends IPluginSpec>(
@@ -19,6 +19,7 @@ export function createPluginContext<PluginSpec extends IPluginSpec>(
 
     setState(newState, cb) {
       sharedContext.setState(pluginName, newState);
+      emitStateChange();
       if (cb) {
         cb();
       }
