@@ -36,7 +36,7 @@ export function loadPlugins(args: ILoadPluginArgs = {}) {
       }
     },
   };
-  const unloadCallbacks = collectUnloadCallbacks(sharedContext);
+  const unloadCallbacks = runLoadHandlers(sharedContext);
 
   loadedPlugins = {
     args,
@@ -77,7 +77,7 @@ export function getPluginContext<PluginSpec extends IPluginSpec>(pluginName: Plu
   return createPluginContext<PluginSpec>(pluginName, loadedPlugins.sharedContext);
 }
 
-function collectUnloadCallbacks(sharedContext: ISharedPluginContext) {
+function runLoadHandlers(sharedContext: ISharedPluginContext) {
   const plugins = getPlugins();
   const unloadCallbacks: Callback[] = [];
 
