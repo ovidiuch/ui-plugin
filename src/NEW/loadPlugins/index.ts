@@ -1,6 +1,7 @@
 import {
   Callback,
   IPluginSpec,
+  IPluginsByName,
   IPluginConfigs,
   IPluginStates,
   ISharedPluginContext,
@@ -23,12 +24,11 @@ interface ILoadedPlugins {
 let loadedPlugins: null | ILoadedPlugins = null;
 
 export function loadPlugins(args: ILoadPluginArgs = {}) {
-  unloadPlugins();
-
+  const plugins = getPlugins();
+  const prevStates = loadedPlugins ? loadedPlugins.sharedContext.state : {};
   const sharedContext: ISharedPluginContext = {
-    config: args.config || {},
-    state: args.state || {},
-
+    config: createDefaultConfigs(plugins, args.config || {}),
+    state: createInitialStates(plugins, args.state || {}, prevStates),
     setState: (pluginName, change, cb) => {
       sharedContext.state[pluginName] = updateState(sharedContext.state[pluginName], change);
       if (cb) {
@@ -36,7 +36,9 @@ export function loadPlugins(args: ILoadPluginArgs = {}) {
       }
     },
   };
-  const unloadCallbacks = runLoadHandlers(sharedContext);
+
+  unloadPlugins();
+  const unloadCallbacks = runLoadHandlers(plugins, sharedContext);
   loadedPlugins = {
     args,
     sharedContext,
@@ -78,8 +80,40 @@ export function getPluginContext<PluginSpec extends IPluginSpec>(pluginName: Plu
   return createPluginContext<PluginSpec>(pluginName, loadedPlugins.sharedContext);
 }
 
-function runLoadHandlers(sharedContext: ISharedPluginContext) {
-  const plugins = getPlugins();
+function createDefaultConfigs(
+  plugins: IPluginsByName,
+  customConfigs: IPluginConfigs,
+): IPluginConfigs {
+  return Object.keys(plugins).reduce(
+    (configs, pluginName) => ({
+      ...configs,
+      [pluginName]: {
+        ...plugins[pluginName].defaultConfig,
+        ...customConfigs[pluginName],
+      },
+    }),
+    {},
+  );
+}
+
+function createInitialStates(
+  plugins: IPluginsByName,
+  customStates: IPluginStates,
+  prevStates: IPluginStates,
+): IPluginStates {
+  return Object.keys(plugins).reduce(
+    (states, pluginName) => ({
+      ...states,
+      [pluginName]:
+        (prevStates && prevStates[pluginName]) ||
+        (customStates && customStates[pluginName]) ||
+        plugins[pluginName].initialState,
+    }),
+    {},
+  );
+}
+
+function runLoadHandlers(plugins: IPluginsByName, sharedContext: ISharedPluginContext) {
   const unloadCallbacks: Callback[] = [];
 
   Object.keys(plugins).forEach(pluginName => {

@@ -14,7 +14,7 @@ export function createPlugin<PluginSpec extends IPluginSpec>(args: {
   const plugin: IPlugin<PluginSpec> = {
     name: args.name,
     enabled: true,
-    defaultConfig: args.defaultConfig || undefined,
+    defaultConfig: args.defaultConfig || {},
     initialState: args.initialState || undefined,
     methodHandlers: args.methods || {},
     loadHandlers: [],

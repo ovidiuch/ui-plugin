@@ -7,15 +7,29 @@ interface ITerry {
 
 afterEach(resetPlugins);
 
-it('gets config', () => {
+function createTestPlugin() {
   createPlugin<ITerry>({
     name: 'terry',
     defaultConfig: { size: 5 },
   }).register();
+}
 
-  loadPlugins({ config: { terry: { size: 10 } } });
+function typeCheckConfig(config: ITerry['config']) {
+  return config.size;
+}
+
+it('gets default config', () => {
+  createTestPlugin();
+  loadPlugins();
+
   const { getConfig } = getPluginContext<ITerry>('terry');
+  expect(typeCheckConfig(getConfig())).toBe(5);
+});
 
-  const size: number = getConfig().size;
-  expect(size).toBe(10);
+it('gets injected config', () => {
+  createTestPlugin();
+  loadPlugins({ config: { terry: { size: 10 } } });
+
+  const { getConfig } = getPluginContext<ITerry>('terry');
+  expect(typeCheckConfig(getConfig())).toBe(10);
 });

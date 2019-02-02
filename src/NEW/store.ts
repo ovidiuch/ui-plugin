@@ -1,9 +1,5 @@
-import { IPlugin, IPluginSpec } from './types';
+import { IPlugin, IPluginsByName, IPluginSpec } from './types';
 import { removeHandler } from './shared';
-
-interface IPluginsByName {
-  [pluginName: string]: IPlugin;
-}
 
 type PluginLoadHandler = (plugins: IPluginsByName) => unknown;
 type StateChangeHandler = () => unknown;

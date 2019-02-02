@@ -2,6 +2,10 @@ export type Callback = () => unknown;
 
 export type StateUpdater<State> = State | ((prevState: State) => State);
 
+interface IPluginConfig {
+  [configProp: string]: any;
+}
+
 interface IPluginMethods {
   [methodName: string]: (...args: any[]) => any;
 }
@@ -15,11 +19,12 @@ interface IPluginEvents {
 }
 
 export interface IPluginSpec<
+  Config extends IPluginConfig = any,
   Methods extends IPluginMethods = any,
   Events extends IPluginEvents = any
 > {
   name: string;
-  config?: any;
+  config?: Config;
   state?: any;
   methods?: Methods;
   events?: Events;
@@ -112,6 +117,10 @@ export interface IPlugin<PluginSpec extends IPluginSpec = any> {
   eventHandlers: {
     [eventPath: string]: Array<EventHandler<PluginSpec, any>>;
   };
+}
+
+export interface IPluginsByName {
+  [pluginName: string]: IPlugin;
 }
 
 export interface IPluginConfigs {
