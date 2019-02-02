@@ -19,14 +19,14 @@ export function createPlugin<PluginSpec extends IPluginSpec>(opts: {
   initialState?: PluginSpec['state'];
   methods?: PluginSpec['methods'];
 }): IPluginCreateApi<PluginSpec> {
-  const plugin = {
+  const plugin: IPlugin<PluginSpec> = {
     name: opts.name,
     defaultConfig: opts.defaultConfig || undefined,
     initialState: opts.initialState || undefined,
     methodHandlers: opts.methods || {},
     loadHandlers: [],
     eventHandlers: {},
-  } as IPlugin<PluginSpec>;
+  };
 
   return {
     onLoad: handler => {
