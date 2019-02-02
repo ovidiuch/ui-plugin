@@ -17,9 +17,7 @@ function createTestPlugin() {
 it('gets state', () => {
   createTestPlugin();
 
-  const sharedContext = loadPlugins({
-    state: { terry: 10 },
-  });
+  const sharedContext = loadPlugins({ state: { terry: 10 } });
   const { getState } = getPluginContext<ITerry>('terry', sharedContext);
 
   const state: number = getState();
@@ -29,9 +27,7 @@ it('gets state', () => {
 it('sets state', done => {
   createTestPlugin();
 
-  const sharedContext = loadPlugins({
-    state: { terry: 10 },
-  });
+  const sharedContext = loadPlugins({ state: { terry: 10 } });
   const { getState, setState } = getPluginContext<ITerry>('terry', sharedContext);
 
   setState(20, () => {
@@ -43,9 +39,7 @@ it('sets state', done => {
 it('sets state via updater', done => {
   createTestPlugin();
 
-  const sharedContext = loadPlugins({
-    state: { terry: 10 },
-  });
+  const sharedContext = loadPlugins({ state: { terry: 10 } });
   const { getState, setState } = getPluginContext<ITerry>('terry', sharedContext);
 
   setState(

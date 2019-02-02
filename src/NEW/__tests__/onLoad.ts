@@ -1,3 +1,4 @@
+import { IPluginContext } from '../types';
 import { createPlugin } from '../createPlugin';
 import { loadPlugins, unloadPlugins } from '../loadPlugins';
 
@@ -5,13 +6,15 @@ interface ITerry {
   name: 'terry';
 }
 
+function validateContext({ pluginName }: IPluginContext<ITerry>) {
+  expect(pluginName).toBe('terry');
+}
+
 it('calls load callback', () => {
   const handleLoad = jest.fn();
   const { onLoad, register } = createPlugin<ITerry>({ name: 'terry' });
   onLoad(context => {
-    const pluginName: 'terry' = context.pluginName;
-    expect(pluginName).toBe('terry');
-
+    validateContext(context);
     handleLoad();
   });
   register();

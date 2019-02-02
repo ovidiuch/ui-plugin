@@ -1,3 +1,4 @@
+import { IPluginContext } from '../types';
 import { createPlugin } from '../createPlugin';
 import { getPluginContext } from '../getPluginContext';
 import { loadPlugins } from '../loadPlugins';
@@ -13,6 +14,10 @@ interface IJerry {
   };
 }
 
+function validateContext({ pluginName }: IPluginContext<ILarry>) {
+  expect(pluginName).toBe('larry');
+}
+
 it('calls event handler of other plugin', () => {
   createPlugin<IJerry>({ name: 'jerry' }).register();
 
@@ -20,10 +25,7 @@ it('calls event handler of other plugin', () => {
   const handleIdea = jest.fn();
   on<IJerry>('jerry', {
     idea: (context, title: string, craziness: number) => {
-      // Ensure correct context is passed into event handler
-      const pluginName: 'larry' = context.pluginName;
-      expect(pluginName).toBe('larry');
-
+      validateContext(context);
       handleIdea(title, craziness);
     },
   });

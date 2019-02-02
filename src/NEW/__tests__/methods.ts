@@ -1,3 +1,4 @@
+import { IPluginContext } from '../types';
 import { createPlugin } from '../createPlugin';
 import { getPluginContext } from '../getPluginContext';
 import { loadPlugins } from '../loadPlugins';
@@ -13,6 +14,10 @@ interface IJerry {
   name: 'jerry';
 }
 
+function validateContext({ pluginName }: IPluginContext<ILarry>) {
+  expect(pluginName).toBe('larry');
+}
+
 it('calls method of other plugin', () => {
   createPlugin<IJerry>({ name: 'jerry' }).register();
 
@@ -21,10 +26,7 @@ it('calls method of other plugin', () => {
     name: 'larry',
     methods: {
       annoy: (context, reason: string) => {
-        // Ensure correct context is passed into method handler
-        const pluginName: 'larry' = context.pluginName;
-        expect(pluginName).toBe('larry');
-
+        validateContext(context);
         handleAnnoyance(reason);
         return 'get outta here';
       },

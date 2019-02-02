@@ -13,9 +13,7 @@ it('gets config', () => {
     defaultConfig: { size: 5 },
   }).register();
 
-  const sharedContext = loadPlugins({
-    config: { terry: { size: 10 } },
-  });
+  const sharedContext = loadPlugins({ config: { terry: { size: 10 } } });
   const { getConfig } = getPluginContext<ITerry>('terry', sharedContext);
 
   const size: number = getConfig().size;
