@@ -10,11 +10,11 @@ export function getPluginContext<PluginSpec extends IPluginSpec>(
     pluginName,
 
     getConfig() {
-      return sharedContext.config[pluginName] as PluginSpec['state'];
+      return sharedContext.config[pluginName];
     },
 
     getState() {
-      return sharedContext.state[pluginName] as PluginSpec['state'];
+      return sharedContext.state[pluginName];
     },
 
     setState(newState, cb) {
