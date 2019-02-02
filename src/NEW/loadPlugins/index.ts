@@ -1,5 +1,5 @@
 import { Callback, IPluginConfigs, IPluginStates, ISharedPluginContext } from '../types';
-import { getPlugins, removeAllPlugins } from '../pluginStore';
+import { getPlugins, removeAllPlugins } from '../store';
 import { getPluginContext } from '../getPluginContext';
 import { updateState } from './updateState';
 

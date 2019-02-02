@@ -1,5 +1,5 @@
 import { IPluginSpec, IPluginContext, ISharedPluginContext } from './types';
-import { getPlugin, getPlugins } from './pluginStore';
+import { getPlugin, getPlugins } from './store';
 import { getEventKey } from './shared';
 
 export function getPluginContext<PluginSpec extends IPluginSpec>(

@@ -1,5 +1,5 @@
 import { MethodHandlers, IPluginCreateApi, IPluginSpec, IPlugin } from './types';
-import { addPlugin } from './pluginStore';
+import { addPlugin } from './store';
 import { getEventKey } from './shared';
 
 type PluginOpts<PluginSpec extends IPluginSpec> = {
