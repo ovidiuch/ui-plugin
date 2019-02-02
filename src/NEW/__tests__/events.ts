@@ -1,7 +1,5 @@
 import { IPluginContext } from '../types';
-import { createPlugin } from '../createPlugin';
-import { getPluginContext } from '../getPluginContext';
-import { loadPlugins } from '../loadPlugins';
+import { createPlugin, loadPlugins, getPluginContext } from '..';
 
 interface ILarry {
   name: 'larry';
@@ -31,8 +29,8 @@ it('calls event handler of other plugin', () => {
   });
   register();
 
-  const sharedContext = loadPlugins();
-  const { emit } = getPluginContext<IJerry>('jerry', sharedContext);
+  loadPlugins();
+  const { emit } = getPluginContext<IJerry>('jerry');
   emit('idea', 'show about nothing', 50);
 
   expect(handleIdea).toHaveBeenCalledWith('show about nothing', 50);

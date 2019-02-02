@@ -8,8 +8,8 @@ export function removeAllPlugins() {
   plugins = {};
 }
 
-export function addPlugin(plugin: IPlugin<any>) {
-  plugins = { ...plugins, [plugin.name]: plugin };
+export function getPlugins() {
+  return plugins;
 }
 
 export function getPlugin<PluginSpec extends IPluginSpec>(pluginName: string): IPlugin<PluginSpec> {
@@ -20,6 +20,16 @@ export function getPlugin<PluginSpec extends IPluginSpec>(pluginName: string): I
   return plugins[pluginName];
 }
 
-export function getPlugins() {
-  return plugins;
+export function addPlugin(plugin: IPlugin<any>) {
+  plugins = { ...plugins, [plugin.name]: plugin };
+}
+
+export function updatePlugin<PluginSpec extends IPluginSpec>(
+  pluginName: string,
+  change: (plugin: IPlugin<PluginSpec>) => IPlugin<PluginSpec>,
+) {
+  const plugin = getPlugin<PluginSpec>(pluginName);
+  plugins = {
+    [pluginName]: change(plugin),
+  };
 }

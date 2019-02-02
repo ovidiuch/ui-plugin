@@ -1,6 +1,4 @@
-import { createPlugin } from '../createPlugin';
-import { getPluginContext } from '../getPluginContext';
-import { loadPlugins } from '../loadPlugins';
+import { createPlugin, loadPlugins, getPluginContext } from '..';
 
 interface ITerry {
   name: 'terry';
@@ -9,8 +7,8 @@ interface ITerry {
 it('returns plugin name', () => {
   createPlugin<ITerry>({ name: 'terry' }).register();
 
-  const sharedContext = loadPlugins();
-  const context = getPluginContext<ITerry>('terry', sharedContext);
+  loadPlugins();
+  const context = getPluginContext<ITerry>('terry');
   const pluginName: 'terry' = context.pluginName;
   expect(pluginName).toBe('terry');
 });

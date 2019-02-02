@@ -1,26 +1,33 @@
-import { Callback, IPluginConfigs, IPluginStates, ISharedPluginContext } from '../types';
-import { getPlugins, removeAllPlugins } from '../store';
-import { getPluginContext } from '../getPluginContext';
+import {
+  Callback,
+  IPluginSpec,
+  IPluginConfigs,
+  IPluginStates,
+  ISharedPluginContext,
+} from '../types';
+import { getPlugins, getPlugin, removeAllPlugins } from '../store';
+import { createPluginContext } from '../createPluginContext';
 import { updateState } from './updateState';
 
-interface IOpts {
+interface ILoadPluginArgs {
   config?: IPluginConfigs;
   state?: IPluginStates;
 }
 
 interface ILoadedPlugins {
+  args: ILoadPluginArgs;
   sharedContext: ISharedPluginContext;
   unloadCallbacks: Callback[];
 }
 
 let loadedPlugins: null | ILoadedPlugins = null;
 
-export function loadPlugins(opts: IOpts = {}) {
+export function loadPlugins(args: ILoadPluginArgs = {}) {
   unloadPlugins();
 
   const sharedContext: ISharedPluginContext = {
-    config: opts.config || {},
-    state: opts.state || {},
+    config: args.config || {},
+    state: args.state || {},
 
     setState: (pluginName, change, cb) => {
       sharedContext.state[pluginName] = updateState(sharedContext.state[pluginName], change);
@@ -29,15 +36,13 @@ export function loadPlugins(opts: IOpts = {}) {
       }
     },
   };
-
   const unloadCallbacks = collectUnloadCallbacks(sharedContext);
 
   loadedPlugins = {
+    args,
     sharedContext,
     unloadCallbacks,
   };
-
-  return sharedContext;
 }
 
 export function unloadPlugins() {
@@ -48,9 +53,28 @@ export function unloadPlugins() {
   }
 }
 
+export function reloadPlugins() {
+  if (loadedPlugins) {
+    loadPlugins(loadedPlugins.args);
+  }
+}
+
 export function resetPlugins() {
   unloadPlugins();
   removeAllPlugins();
+}
+
+export function getPluginContext<PluginSpec extends IPluginSpec>(pluginName: PluginSpec['name']) {
+  if (!loadedPlugins) {
+    throw new Error(`Can't get plugin context because plugins aren't loaded`);
+  }
+
+  const plugin = getPlugin<PluginSpec>(pluginName);
+  if (!plugin.enabled) {
+    throw new Error(`Plugin "terry" is disabled`);
+  }
+
+  return createPluginContext<PluginSpec>(pluginName, loadedPlugins.sharedContext);
 }
 
 function collectUnloadCallbacks(sharedContext: ISharedPluginContext) {
@@ -59,7 +83,7 @@ function collectUnloadCallbacks(sharedContext: ISharedPluginContext) {
 
   Object.keys(plugins).forEach(pluginName => {
     plugins[pluginName].loadHandlers.forEach(handler => {
-      const handlerReturn = handler(getPluginContext(pluginName, sharedContext));
+      const handlerReturn = handler(createPluginContext(pluginName, sharedContext));
 
       if (handlerReturn) {
         const callbacks = Array.isArray(handlerReturn) ? handlerReturn : [handlerReturn];

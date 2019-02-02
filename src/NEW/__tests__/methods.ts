@@ -1,7 +1,5 @@
 import { IPluginContext } from '../types';
-import { createPlugin } from '../createPlugin';
-import { getPluginContext } from '../getPluginContext';
-import { loadPlugins } from '../loadPlugins';
+import { createPlugin, loadPlugins, getPluginContext } from '..';
 
 interface ILarry {
   name: 'larry';
@@ -33,8 +31,8 @@ it('calls method of other plugin', () => {
     },
   }).register();
 
-  const sharedContext = loadPlugins();
-  const { getMethodsOf } = getPluginContext<IJerry>('jerry', sharedContext);
+  loadPlugins();
+  const { getMethodsOf } = getPluginContext<IJerry>('jerry');
   const { annoy } = getMethodsOf<ILarry>('larry');
   const response: string = annoy('tip too much');
 

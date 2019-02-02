@@ -1,6 +1,4 @@
-import { createPlugin } from '../createPlugin';
-import { getPluginContext } from '../getPluginContext';
-import { loadPlugins } from '../loadPlugins';
+import { createPlugin, loadPlugins, getPluginContext } from '..';
 
 interface ITerry {
   name: 'terry';
@@ -13,8 +11,8 @@ it('gets config', () => {
     defaultConfig: { size: 5 },
   }).register();
 
-  const sharedContext = loadPlugins({ config: { terry: { size: 10 } } });
-  const { getConfig } = getPluginContext<ITerry>('terry', sharedContext);
+  loadPlugins({ config: { terry: { size: 10 } } });
+  const { getConfig } = getPluginContext<ITerry>('terry');
 
   const size: number = getConfig().size;
   expect(size).toBe(10);

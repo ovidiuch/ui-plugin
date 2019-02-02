@@ -93,6 +93,7 @@ export interface IPluginCreateApi<PluginSpec extends IPluginSpec> {
 
 export interface IPlugin<PluginSpec extends IPluginSpec> {
   name: string;
+  enabled: boolean;
   defaultConfig: PluginSpec extends Record<'config', infer Config> ? Config : void;
   initialState: PluginSpec extends Record<'state', infer State> ? State : void;
   methodHandlers: MethodHandlers<PluginSpec>;

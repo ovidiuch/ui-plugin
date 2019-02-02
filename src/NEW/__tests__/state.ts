@@ -1,6 +1,4 @@
-import { createPlugin } from '../createPlugin';
-import { getPluginContext } from '../getPluginContext';
-import { loadPlugins } from '../loadPlugins';
+import { createPlugin, loadPlugins, getPluginContext } from '..';
 
 interface ITerry {
   name: 'terry';
@@ -17,8 +15,8 @@ function createTestPlugin() {
 it('gets state', () => {
   createTestPlugin();
 
-  const sharedContext = loadPlugins({ state: { terry: 10 } });
-  const { getState } = getPluginContext<ITerry>('terry', sharedContext);
+  loadPlugins({ state: { terry: 10 } });
+  const { getState } = getPluginContext<ITerry>('terry');
 
   const state: number = getState();
   expect(state).toBe(10);
@@ -27,8 +25,8 @@ it('gets state', () => {
 it('sets state', done => {
   createTestPlugin();
 
-  const sharedContext = loadPlugins({ state: { terry: 10 } });
-  const { getState, setState } = getPluginContext<ITerry>('terry', sharedContext);
+  loadPlugins({ state: { terry: 10 } });
+  const { getState, setState } = getPluginContext<ITerry>('terry');
 
   setState(20, () => {
     expect(getState()).toBe(20);
@@ -39,8 +37,8 @@ it('sets state', done => {
 it('sets state via updater', done => {
   createTestPlugin();
 
-  const sharedContext = loadPlugins({ state: { terry: 10 } });
-  const { getState, setState } = getPluginContext<ITerry>('terry', sharedContext);
+  loadPlugins({ state: { terry: 10 } });
+  const { getState, setState } = getPluginContext<ITerry>('terry');
 
   setState(
     prevState => prevState * 2.2,

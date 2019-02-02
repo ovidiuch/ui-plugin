@@ -1,6 +1,6 @@
 import { IPluginContext } from '../types';
-import { createPlugin } from '../createPlugin';
-import { loadPlugins, unloadPlugins } from '../loadPlugins';
+import { unloadPlugins } from '../loadPlugins';
+import { createPlugin, loadPlugins } from '..';
 
 interface ITerry {
   name: 'terry';

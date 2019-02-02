@@ -2,7 +2,7 @@ import { MethodHandlers, IPluginCreateApi, IPluginSpec, IPlugin } from './types'
 import { addPlugin } from './store';
 import { getEventKey } from './shared';
 
-type PluginOpts<PluginSpec extends IPluginSpec> = {
+type PluginArgs<PluginSpec extends IPluginSpec> = {
   name: PluginSpec['name'];
 } & (PluginSpec extends Record<'config', infer Config> ? { defaultConfig: Config } : {}) &
   (PluginSpec extends Record<'state', infer State> ? { initialState: State } : {}) &
@@ -11,19 +11,20 @@ type PluginOpts<PluginSpec extends IPluginSpec> = {
     : {});
 
 export function createPlugin<PluginSpec extends IPluginSpec>(
-  opts: PluginOpts<PluginSpec>,
+  args: PluginArgs<PluginSpec>,
 ): IPluginCreateApi<PluginSpec>;
-export function createPlugin<PluginSpec extends IPluginSpec>(opts: {
+export function createPlugin<PluginSpec extends IPluginSpec>(args: {
   name: string;
   defaultConfig?: PluginSpec['config'];
   initialState?: PluginSpec['state'];
   methods?: PluginSpec['methods'];
 }): IPluginCreateApi<PluginSpec> {
   const plugin: IPlugin<PluginSpec> = {
-    name: opts.name,
-    defaultConfig: opts.defaultConfig || undefined,
-    initialState: opts.initialState || undefined,
-    methodHandlers: opts.methods || {},
+    name: args.name,
+    enabled: true,
+    defaultConfig: args.defaultConfig || undefined,
+    initialState: args.initialState || undefined,
+    methodHandlers: args.methods || {},
     loadHandlers: [],
     eventHandlers: {},
   };

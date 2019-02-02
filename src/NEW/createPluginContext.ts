@@ -2,7 +2,7 @@ import { IPluginSpec, IPluginContext, ISharedPluginContext } from './types';
 import { getPlugin, getPlugins } from './store';
 import { getEventKey } from './shared';
 
-export function getPluginContext<PluginSpec extends IPluginSpec>(
+export function createPluginContext<PluginSpec extends IPluginSpec>(
   pluginName: PluginSpec['name'],
   sharedContext: ISharedPluginContext,
 ): IPluginContext<PluginSpec> {
@@ -41,7 +41,10 @@ export function getPluginContext<PluginSpec extends IPluginSpec>(
           [methodName]: (
             ...args: Parameters<Methods[MethodName]>
           ): ReturnType<Methods[MethodName]> =>
-            methodHandlers[methodName](getPluginContext(otherPluginName, sharedContext), ...args),
+            methodHandlers[methodName](
+              createPluginContext(otherPluginName, sharedContext),
+              ...args,
+            ),
         }),
         {},
       );
@@ -57,7 +60,7 @@ export function getPluginContext<PluginSpec extends IPluginSpec>(
 
         if (eventHandlers[eventKey]) {
           eventHandlers[eventKey].forEach(handler => {
-            handler(getPluginContext(otherPluginName, sharedContext), ...eventArgs);
+            handler(createPluginContext(otherPluginName, sharedContext), ...eventArgs);
           });
         }
       });
