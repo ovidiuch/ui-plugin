@@ -2,7 +2,7 @@ import { IPlugin, IPluginSpec } from './types';
 import { removeHandler } from './shared';
 
 interface IPluginsByName {
-  [pluginName: string]: IPlugin<any>;
+  [pluginName: string]: IPlugin;
 }
 
 type PluginLoadHandler = (plugins: IPluginsByName) => unknown;
@@ -30,7 +30,7 @@ export function getPlugin<PluginSpec extends IPluginSpec>(pluginName: string): I
   return plugins[pluginName];
 }
 
-export function addPlugin(plugin: IPlugin<any>) {
+export function addPlugin(plugin: IPlugin) {
   plugins = { ...plugins, [plugin.name]: plugin };
 }
 
@@ -40,6 +40,7 @@ export function updatePlugin<PluginSpec extends IPluginSpec>(
 ) {
   const plugin = getPlugin<PluginSpec>(pluginName);
   plugins = {
+    ...plugins,
     [pluginName]: change(plugin),
   };
 }

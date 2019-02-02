@@ -1,17 +1,9 @@
-import { MethodHandlers, IPluginCreateApi, IPluginSpec, IPlugin } from './types';
+import { PluginCreateArgs, IPluginCreateApi, IPluginSpec, IPlugin } from './types';
 import { addPlugin } from './store';
 import { getEventKey } from './shared';
 
-type PluginArgs<PluginSpec extends IPluginSpec> = {
-  name: PluginSpec['name'];
-} & (PluginSpec extends Record<'config', infer Config> ? { defaultConfig: Config } : {}) &
-  (PluginSpec extends Record<'state', infer State> ? { initialState: State } : {}) &
-  (PluginSpec extends Record<'methods', PluginSpec['methods']>
-    ? { methods: MethodHandlers<PluginSpec> }
-    : {});
-
 export function createPlugin<PluginSpec extends IPluginSpec>(
-  args: PluginArgs<PluginSpec>,
+  args: PluginCreateArgs<PluginSpec>,
 ): IPluginCreateApi<PluginSpec>;
 export function createPlugin<PluginSpec extends IPluginSpec>(args: {
   name: string;

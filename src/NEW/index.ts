@@ -1,4 +1,5 @@
+export { IPluginSpec, IPlugin, IPluginContext, PluginCreateArgs, IPluginCreateApi } from './types';
 export { createPlugin } from './createPlugin';
 export { loadPlugins, resetPlugins, getPluginContext } from './loadPlugins';
 export { enablePlugin } from './enablePlugin';
-export { onPluginLoad, onStateChange } from './store';
+export { getPlugin, getPlugins, onPluginLoad, onStateChange } from './store';

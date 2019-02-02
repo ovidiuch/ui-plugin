@@ -81,6 +81,14 @@ export type EventHandlers<ListenerPluginSpec extends IPluginSpec, Events extends
   [EventName in keyof Events]?: EventHandler<ListenerPluginSpec, Parameters<Events[EventName]>>
 };
 
+export type PluginCreateArgs<PluginSpec extends IPluginSpec> = {
+  name: PluginSpec['name'];
+} & (PluginSpec extends Record<'config', infer Config> ? { defaultConfig: Config } : {}) &
+  (PluginSpec extends Record<'state', infer State> ? { initialState: State } : {}) &
+  (PluginSpec extends Record<'methods', PluginSpec['methods']>
+    ? { methods: MethodHandlers<PluginSpec> }
+    : {});
+
 export interface IPluginCreateApi<PluginSpec extends IPluginSpec> {
   onLoad(handler: LoadHandler<PluginSpec>): void;
 
@@ -94,7 +102,7 @@ export interface IPluginCreateApi<PluginSpec extends IPluginSpec> {
   register(): void;
 }
 
-export interface IPlugin<PluginSpec extends IPluginSpec> {
+export interface IPlugin<PluginSpec extends IPluginSpec = any> {
   name: string;
   enabled: boolean;
   defaultConfig: PluginSpec extends Record<'config', infer Config> ? Config : void;
