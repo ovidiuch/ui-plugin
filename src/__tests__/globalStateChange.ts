@@ -1,48 +1,23 @@
 import retry from '@skidding/async-retry';
-import { loadPlugins, onStateChange, registerPlugin, resetPlugins } from '..';
+import { resetPlugins, createPlugin, loadPlugins, getPluginContext, onStateChange } from '..';
+
+interface ITerry {
+  name: 'terry';
+  state: number;
+}
 
 afterEach(resetPlugins);
 
-it('calls state handler', async () => {
-  const handler = jest.fn();
-  onStateChange(handler);
+it('emits state change event', async () => {
+  const handleChange = jest.fn();
+  onStateChange(handleChange);
 
-  const { init } = registerPlugin({
-    name: 'test',
-    initialState: { counter: 0 },
-  });
-
-  init(({ setState }) => {
-    setState({ counter: 1 });
-  });
-
+  createPlugin<ITerry>({ name: 'terry', initialState: 5 }).register();
   loadPlugins();
 
-  await retry(() => expect(handler).toBeCalled());
-});
+  const { getState, setState } = getPluginContext<ITerry>('terry');
+  setState(10);
 
-it('stops calling state handler', async () => {
-  const { init } = registerPlugin({
-    name: 'test',
-    initialState: { counter: 0 },
-  });
-
-  const handler = jest.fn();
-  const removeHandler = onStateChange(handler);
-
-  let removeHandlerAndSetState: () => void;
-  init(({ setState }) => {
-    setState({ counter: 1 });
-
-    removeHandlerAndSetState = () => {
-      removeHandler();
-      setState({ counter: 2 });
-    };
-  });
-
-  loadPlugins();
-
-  await retry(() => expect(handler).toBeCalled());
-  removeHandlerAndSetState!();
-  await retry(() => expect(handler).toBeCalledTimes(1));
+  await retry(() => expect(getState()).toBe(10));
+  expect(handleChange).toBeCalledTimes(1);
 });

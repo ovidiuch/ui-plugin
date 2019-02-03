@@ -1,123 +1,43 @@
-import { loadPlugins, registerPlugin, resetPlugins } from '..';
+import { IPluginContext } from '../types';
+import { resetPlugins, createPlugin, loadPlugins, getPluginContext } from '..';
+
+interface ILarry {
+  name: 'larry';
+  methods: {
+    annoy(reason: string): string;
+  };
+}
+
+interface IJerry {
+  name: 'jerry';
+}
+
+function validateContext({ pluginName }: IPluginContext<ILarry>) {
+  expect(pluginName).toBe('larry');
+}
 
 afterEach(resetPlugins);
 
-it('calls method handler', () => {
-  expect.hasAssertions();
+it('calls method of other plugin', () => {
+  createPlugin<IJerry>({ name: 'jerry' }).register();
 
-  const { method } = registerPlugin({ name: 'test1' });
-  const handleMethod = jest.fn();
-  method('testMethod', handleMethod);
-
-  const { init } = registerPlugin({ name: 'test2' });
-  init(({ callMethod }) => {
-    callMethod('test1.testMethod');
-    expect(handleMethod).toBeCalled();
-  });
-
-  loadPlugins();
-});
-
-it('calls method handler with params', () => {
-  expect.hasAssertions();
-
-  const { method } = registerPlugin({ name: 'test1' });
-  method('testMethod', (context, one, two) => {
-    expect(one).toBe('foo');
-    expect(two).toBe('bar');
-  });
-
-  const { init } = registerPlugin({ name: 'test2' });
-  init(({ callMethod }) => {
-    callMethod('test1.testMethod', 'foo', 'bar');
-  });
+  const handleAnnoyance = jest.fn();
+  createPlugin<ILarry>({
+    name: 'larry',
+    methods: {
+      annoy: (context, reason: string) => {
+        validateContext(context);
+        handleAnnoyance(reason);
+        return 'get outta here';
+      },
+    },
+  }).register();
 
   loadPlugins();
-});
+  const { getMethodsOf } = getPluginContext<IJerry>('jerry');
+  const { annoy } = getMethodsOf<ILarry>('larry');
+  const response: string = annoy('tip too much');
 
-it('returns method handler return value', () => {
-  expect.hasAssertions();
-
-  const { method } = registerPlugin({ name: 'test1' });
-  const returnVal = {};
-  method('testMethod', () => returnVal);
-
-  const { init } = registerPlugin({ name: 'test2' });
-  init(({ callMethod }) => {
-    expect(callMethod('test1.testMethod')).toBe(returnVal);
-  });
-
-  loadPlugins();
-});
-
-it('calls method handler with plugin context', () => {
-  expect.hasAssertions();
-
-  const { method } = registerPlugin({ name: 'test1', initialState: 0 });
-  method('testMethod', context => {
-    expect(context.getState()).toBe(0);
-  });
-
-  const { init } = registerPlugin({ name: 'test2' });
-  init(({ callMethod }) => {
-    callMethod('test1.testMethod');
-  });
-
-  loadPlugins();
-});
-
-it('throws exception on missing plugin', done => {
-  expect.hasAssertions();
-
-  const { init } = registerPlugin({ name: 'test2' });
-  init(({ callMethod }) => {
-    setTimeout(() => {
-      expect(() => {
-        callMethod('test1.testMethod');
-      }).toThrow('Called method testMethod of missing plugin test1');
-      done();
-    });
-  });
-
-  loadPlugins();
-});
-
-it('throws exception on missing method', done => {
-  expect.hasAssertions();
-
-  registerPlugin({ name: 'test1' });
-
-  const { init } = registerPlugin({ name: 'test2' });
-  init(({ callMethod }) => {
-    setTimeout(() => {
-      expect(() => {
-        callMethod('test1.testMethod');
-      }).toThrow('Called missing method testMethod of plugin test1');
-      done();
-    });
-  });
-
-  loadPlugins();
-});
-
-it('throws exception on disabled plugin', done => {
-  expect.hasAssertions();
-
-  const { method } = registerPlugin({
-    name: 'test1',
-    enabled: false,
-  });
-  method('testMethod', () => undefined);
-
-  const { init } = registerPlugin({ name: 'test2' });
-  init(({ callMethod }) => {
-    setTimeout(() => {
-      expect(() => {
-        callMethod('test1.testMethod');
-      }).toThrow('Called method testMethod of disabled plugin test1');
-      done();
-    });
-  });
-
-  loadPlugins();
+  expect(handleAnnoyance).toBeCalledWith('tip too much');
+  expect(response).toBe('get outta here');
 });
