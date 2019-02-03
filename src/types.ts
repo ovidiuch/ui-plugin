@@ -62,7 +62,7 @@ type PluginContextHandler<PluginSpec extends IPluginSpec, Args extends any[], Re
 export type LoadHandler<PluginSpec extends IPluginSpec> = PluginContextHandler<
   PluginSpec,
   [],
-  void | Callback | Array<void | Callback>
+  void | null | Callback | Array<void | null | Callback>
 >;
 
 export type EventHandler<PluginSpec extends IPluginSpec, Args extends any[]> = PluginContextHandler<
