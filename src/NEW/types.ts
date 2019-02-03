@@ -81,10 +81,18 @@ export type MethodHandlers<PluginSpec extends IPluginSpec> = {
 };
 
 // Map public event signature to event handler signature
-export type EventHandlers<ListenerPluginSpec extends IPluginSpec, Events extends IPluginEvents> = {
-  // Listener can define handlers for a subset of the emitter's events
-  [EventName in keyof Events]?: EventHandler<ListenerPluginSpec, Parameters<Events[EventName]>>
-};
+export type EventHandlers<
+  ListenerSpec extends IPluginSpec,
+  EmitterSpec extends IPluginSpec
+> = EmitterSpec extends Record<'events', EmitterSpec['events']>
+  ? {
+      // Listener can define handlers for a subset of the emitter's events
+      [EventName in keyof EmitterSpec['events']]?: EventHandler<
+        ListenerSpec,
+        Parameters<EmitterSpec['events'][EventName]>
+      >
+    }
+  : { [eventName: string]: never };
 
 export type PluginCreateArgs<PluginSpec extends IPluginSpec> = {
   name: PluginSpec['name'];
@@ -99,9 +107,7 @@ export interface IPluginCreateApi<PluginSpec extends IPluginSpec> {
 
   on<EmitterSpec extends IPluginSpec>(
     otherPluginName: EmitterSpec['name'],
-    handlers: EmitterSpec extends Record<'events', EmitterSpec['events']>
-      ? EventHandlers<PluginSpec, EmitterSpec['events']>
-      : { [eventName: string]: never },
+    handlers: EventHandlers<PluginSpec, EmitterSpec>,
   ): void;
 
   register(): void;
