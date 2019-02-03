@@ -2,6 +2,7 @@ export {
   IPluginSpec,
   IPlugin,
   IPluginContext,
+  MethodHandlers,
   EventHandlers,
   PluginCreateArgs,
   IPluginCreateApi,
