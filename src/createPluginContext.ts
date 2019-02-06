@@ -37,7 +37,10 @@ export function createPluginContext<PluginSpec extends IPluginSpec>(
       ) as ValidMethodName[];
 
       return methodNames.reduce(
-        <MethodName extends ValidMethodName>(methods: Methods, methodName: MethodName) => ({
+        <MethodName extends ValidMethodName>(
+          methods: Methods,
+          methodName: MethodName,
+        ) => ({
           ...methods,
           [methodName]: (
             ...args: Parameters<Methods[MethodName]>

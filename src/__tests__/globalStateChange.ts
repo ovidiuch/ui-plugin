@@ -1,5 +1,11 @@
 import retry from '@skidding/async-retry';
-import { resetPlugins, createPlugin, loadPlugins, getPluginContext, onStateChange } from '..';
+import {
+  resetPlugins,
+  createPlugin,
+  loadPlugins,
+  getPluginContext,
+  onStateChange,
+} from '..';
 
 interface ITerry {
   name: 'terry';
@@ -28,7 +34,10 @@ it('makes context available in state change handler', () => {
   // to incorrect initialization order.
   expect.assertions(1);
 
-  const { onLoad, register } = createPlugin<ITerry>({ name: 'terry', initialState: 0 });
+  const { onLoad, register } = createPlugin<ITerry>({
+    name: 'terry',
+    initialState: 0,
+  });
   onLoad(context => {
     context.setState(1);
   });

@@ -4,8 +4,5 @@ declare module '@skidding/async-retry' {
     loopDelay?: number;
   }
 
-  export default function retry(
-    cb: () => unknown,
-    opts?: IOptions,
-  ): Promise<void>;
+  export default function retry(cb: () => unknown, opts?: IOptions): Promise<void>;
 }

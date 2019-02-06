@@ -1,7 +1,10 @@
 import { createPluginContext } from '../createPluginContext';
 import { Callback, IPluginsByName, ISharedPluginContext } from '../types';
 
-export function runLoadHandlers(plugins: IPluginsByName, sharedContext: ISharedPluginContext) {
+export function runLoadHandlers(
+  plugins: IPluginsByName,
+  sharedContext: ISharedPluginContext,
+) {
   const unloadCallbacks: Callback[] = [];
 
   Object.keys(plugins).forEach(pluginName => {

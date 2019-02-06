@@ -65,11 +65,10 @@ export type LoadHandler<PluginSpec extends IPluginSpec> = PluginContextHandler<
   void | null | Callback | Array<void | null | Callback>
 >;
 
-export type EventHandler<PluginSpec extends IPluginSpec, Args extends any[]> = PluginContextHandler<
-  PluginSpec,
-  Args,
-  void
->;
+export type EventHandler<
+  PluginSpec extends IPluginSpec,
+  Args extends any[]
+> = PluginContextHandler<PluginSpec, Args, void>;
 
 // Map the public signature of each method to its handler signature
 export type MethodHandlers<PluginSpec extends IPluginSpec> = {

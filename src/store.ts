@@ -18,7 +18,9 @@ export function getPlugins() {
   return plugins;
 }
 
-export function getPlugin<PluginSpec extends IPluginSpec>(pluginName: string): IPlugin<PluginSpec> {
+export function getPlugin<PluginSpec extends IPluginSpec>(
+  pluginName: string,
+): IPlugin<PluginSpec> {
   if (!plugins[pluginName]) {
     throw new Error(`Plugin does not exist: ${pluginName}`);
   }

@@ -33,7 +33,10 @@ export function loadPlugins(args: ILoadPluginArgs = {}) {
         throw new Error(`Can't set state because plugins aren't loaded`);
       }
 
-      sharedContext.state[pluginName] = updateState(sharedContext.state[pluginName], change);
+      sharedContext.state[pluginName] = updateState(
+        sharedContext.state[pluginName],
+        change,
+      );
       if (cb) {
         cb();
       }
@@ -65,7 +68,9 @@ export function resetPlugins() {
   removeAllPlugins();
 }
 
-export function getPluginContext<PluginSpec extends IPluginSpec>(pluginName: PluginSpec['name']) {
+export function getPluginContext<PluginSpec extends IPluginSpec>(
+  pluginName: PluginSpec['name'],
+) {
   if (!sharedContext) {
     throw new Error(`Can't get plugin context because plugins aren't loaded`);
   }
