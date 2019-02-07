@@ -3,7 +3,7 @@ Not yet documented:
 - Unique plugin name
 - Plugin context
 
-## Plugin loaded states
+## Plugin states
 
 > Not to be confused with a plugin's user state
 
