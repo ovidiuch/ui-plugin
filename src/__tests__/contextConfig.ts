@@ -1,6 +1,6 @@
 import { resetPlugins, createPlugin, loadPlugins, getPluginContext } from '..';
 
-interface ITerry {
+interface Terry {
   name: 'terry';
   config: { size: number };
 }
@@ -8,13 +8,13 @@ interface ITerry {
 afterEach(resetPlugins);
 
 function createTestPlugin() {
-  createPlugin<ITerry>({
+  createPlugin<Terry>({
     name: 'terry',
     defaultConfig: { size: 5 },
   }).register();
 }
 
-function typeCheckConfig(config: ITerry['config']) {
+function typeCheckConfig(config: Terry['config']) {
   return config.size;
 }
 
@@ -22,7 +22,7 @@ it('gets default config', () => {
   createTestPlugin();
   loadPlugins();
 
-  const { getConfig } = getPluginContext<ITerry>('terry');
+  const { getConfig } = getPluginContext<Terry>('terry');
   expect(typeCheckConfig(getConfig())).toBe(5);
 });
 
@@ -30,6 +30,6 @@ it('gets injected config', () => {
   createTestPlugin();
   loadPlugins({ config: { terry: { size: 10 } } });
 
-  const { getConfig } = getPluginContext<ITerry>('terry');
+  const { getConfig } = getPluginContext<Terry>('terry');
   expect(typeCheckConfig(getConfig())).toBe(10);
 });

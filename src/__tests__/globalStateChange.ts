@@ -7,7 +7,7 @@ import {
   onStateChange,
 } from '..';
 
-interface ITerry {
+interface Terry {
   name: 'terry';
   state: number;
 }
@@ -18,10 +18,10 @@ it('emits state change event', async () => {
   const handleChange = jest.fn();
   onStateChange(handleChange);
 
-  createPlugin<ITerry>({ name: 'terry', initialState: 5 }).register();
+  createPlugin<Terry>({ name: 'terry', initialState: 5 }).register();
   loadPlugins();
 
-  const { getState, setState } = getPluginContext<ITerry>('terry');
+  const { getState, setState } = getPluginContext<Terry>('terry');
   setState(10);
 
   await retry(() => expect(getState()).toBe(10));
@@ -34,7 +34,7 @@ it('makes context available in state change handler', () => {
   // to incorrect initialization order.
   expect.assertions(1);
 
-  const { onLoad, register } = createPlugin<ITerry>({
+  const { onLoad, register } = createPlugin<Terry>({
     name: 'terry',
     initialState: 0,
   });

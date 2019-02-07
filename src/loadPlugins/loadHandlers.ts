@@ -1,9 +1,9 @@
 import { createPluginContext } from '../createPluginContext';
-import { Callback, IPluginsByName, ISharedPluginContext } from '../types';
+import { Callback, PluginsByName, SharedPluginContext } from '../types';
 
 export function runLoadHandlers(
-  plugins: IPluginsByName,
-  sharedContext: ISharedPluginContext,
+  plugins: PluginsByName,
+  sharedContext: SharedPluginContext,
 ) {
   const unloadCallbacks: Callback[] = [];
 

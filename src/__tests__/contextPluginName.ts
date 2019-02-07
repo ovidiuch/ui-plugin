@@ -1,16 +1,16 @@
 import { resetPlugins, createPlugin, loadPlugins, getPluginContext } from '..';
 
-interface ITerry {
+interface Terry {
   name: 'terry';
 }
 
 afterEach(resetPlugins);
 
 it('returns plugin name', () => {
-  createPlugin<ITerry>({ name: 'terry' }).register();
+  createPlugin<Terry>({ name: 'terry' }).register();
 
   loadPlugins();
-  const context = getPluginContext<ITerry>('terry');
+  const context = getPluginContext<Terry>('terry');
   const pluginName: 'terry' = context.pluginName;
   expect(pluginName).toBe('terry');
 });

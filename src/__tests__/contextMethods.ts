@@ -1,28 +1,28 @@
-import { IPluginContext } from '../types';
+import { PluginContext } from '../types';
 import { resetPlugins, createPlugin, loadPlugins, getPluginContext } from '..';
 
-interface ILarry {
+interface Larry {
   name: 'larry';
   methods: {
     annoy(reason: string): string;
   };
 }
 
-interface IJerry {
+interface Jerry {
   name: 'jerry';
 }
 
-function validateContext({ pluginName }: IPluginContext<ILarry>) {
+function validateContext({ pluginName }: PluginContext<Larry>) {
   expect(pluginName).toBe('larry');
 }
 
 afterEach(resetPlugins);
 
 it('calls method of other plugin', () => {
-  createPlugin<IJerry>({ name: 'jerry' }).register();
+  createPlugin<Jerry>({ name: 'jerry' }).register();
 
   const handleAnnoyance = jest.fn();
-  createPlugin<ILarry>({
+  createPlugin<Larry>({
     name: 'larry',
     methods: {
       annoy: (context, reason: string) => {
@@ -34,8 +34,8 @@ it('calls method of other plugin', () => {
   }).register();
 
   loadPlugins();
-  const { getMethodsOf } = getPluginContext<IJerry>('jerry');
-  const { annoy } = getMethodsOf<ILarry>('larry');
+  const { getMethodsOf } = getPluginContext<Jerry>('jerry');
+  const { annoy } = getMethodsOf<Larry>('larry');
   const response: string = annoy('tip too much');
 
   expect(handleAnnoyance).toBeCalledWith('tip too much');

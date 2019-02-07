@@ -1,10 +1,10 @@
-import { IPlugin, IPluginsByName, IPluginSpec } from './types';
+import { Plugin, PluginsByName, PluginSpec } from './types';
 import { removeHandler } from './shared';
 
-type PluginLoadHandler = (plugins: IPluginsByName) => unknown;
+type PluginLoadHandler = (plugins: PluginsByName) => unknown;
 type StateChangeHandler = () => unknown;
 
-let plugins: IPluginsByName = {};
+let plugins: PluginsByName = {};
 let pluginLoadHandlers: PluginLoadHandler[] = [];
 let stateChangeHandlers: StateChangeHandler[] = [];
 
@@ -18,9 +18,7 @@ export function getPlugins() {
   return plugins;
 }
 
-export function getPlugin<PluginSpec extends IPluginSpec>(
-  pluginName: string,
-): IPlugin<PluginSpec> {
+export function getPlugin<Spec extends PluginSpec>(pluginName: string): Plugin<Spec> {
   if (!plugins[pluginName]) {
     throw new Error(`Plugin does not exist: ${pluginName}`);
   }
@@ -28,15 +26,15 @@ export function getPlugin<PluginSpec extends IPluginSpec>(
   return plugins[pluginName];
 }
 
-export function addPlugin(plugin: IPlugin) {
+export function addPlugin(plugin: Plugin) {
   plugins = { ...plugins, [plugin.name]: plugin };
 }
 
-export function updatePlugin<PluginSpec extends IPluginSpec>(
+export function updatePlugin<Spec extends PluginSpec>(
   pluginName: string,
-  change: (plugin: IPlugin<PluginSpec>) => IPlugin<PluginSpec>,
+  change: (plugin: Plugin<Spec>) => Plugin<Spec>,
 ) {
-  const plugin = getPlugin<PluginSpec>(pluginName);
+  const plugin = getPlugin<Spec>(pluginName);
   plugins = {
     ...plugins,
     [pluginName]: change(plugin),

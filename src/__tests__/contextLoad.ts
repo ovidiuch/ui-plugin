@@ -1,12 +1,12 @@
-import { IPluginContext } from '../types';
+import { PluginContext } from '../types';
 import { unloadPlugins } from '../loadPlugins';
 import { resetPlugins, createPlugin, loadPlugins } from '..';
 
-interface ITerry {
+interface Terry {
   name: 'terry';
 }
 
-function validateContext({ pluginName }: IPluginContext<ITerry>) {
+function validateContext({ pluginName }: PluginContext<Terry>) {
   expect(pluginName).toBe('terry');
 }
 
@@ -14,7 +14,7 @@ afterEach(resetPlugins);
 
 it('calls load callback', () => {
   const handleLoad = jest.fn();
-  const { onLoad, register } = createPlugin<ITerry>({ name: 'terry' });
+  const { onLoad, register } = createPlugin<Terry>({ name: 'terry' });
   onLoad(context => {
     validateContext(context);
     handleLoad();
@@ -27,7 +27,7 @@ it('calls load callback', () => {
 
 it('calls unload callback', () => {
   const handleUnload = jest.fn();
-  const { onLoad, register } = createPlugin<ITerry>({ name: 'terry' });
+  const { onLoad, register } = createPlugin<Terry>({ name: 'terry' });
   onLoad(() => handleUnload);
   register();
 
@@ -39,7 +39,7 @@ it('calls unload callback', () => {
 it('calls multiple unload callbacks', () => {
   const handleUnload1 = jest.fn();
   const handleUnload2 = jest.fn();
-  const { onLoad, register } = createPlugin<ITerry>({ name: 'terry' });
+  const { onLoad, register } = createPlugin<Terry>({ name: 'terry' });
   onLoad(() => [handleUnload1, undefined, handleUnload2]);
   register();
 

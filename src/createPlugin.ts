@@ -1,17 +1,17 @@
-import { PluginCreateArgs, IPluginCreateApi, IPluginSpec, IPlugin } from './types';
+import { PluginCreateArgs, PluginCreateApi, PluginSpec, Plugin } from './types';
 import { addPlugin } from './store';
 import { getEventKey } from './shared';
 
-export function createPlugin<PluginSpec extends IPluginSpec>(
-  args: PluginCreateArgs<PluginSpec>,
-): IPluginCreateApi<PluginSpec>;
-export function createPlugin<PluginSpec extends IPluginSpec>(args: {
+export function createPlugin<Spec extends PluginSpec>(
+  args: PluginCreateArgs<Spec>,
+): PluginCreateApi<Spec>;
+export function createPlugin<Spec extends PluginSpec>(args: {
   name: string;
-  defaultConfig?: PluginSpec['config'];
-  initialState?: PluginSpec['state'];
-  methods?: PluginSpec['methods'];
-}): IPluginCreateApi<PluginSpec> {
-  const plugin: IPlugin<PluginSpec> = {
+  defaultConfig?: Spec['config'];
+  initialState?: Spec['state'];
+  methods?: Spec['methods'];
+}): PluginCreateApi<Spec> {
+  const plugin: Plugin<Spec> = {
     name: args.name,
     enabled: true,
     defaultConfig: args.defaultConfig || {},

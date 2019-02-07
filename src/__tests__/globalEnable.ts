@@ -6,19 +6,19 @@ import {
   enablePlugin,
 } from '..';
 
-interface ITerry {
+interface Terry {
   name: 'terry';
 }
 
 afterEach(resetPlugins);
 
 it('throws when plugin is disabled', () => {
-  createPlugin<ITerry>({ name: 'terry' }).register();
+  createPlugin<Terry>({ name: 'terry' }).register();
   loadPlugins();
 
   enablePlugin('terry', false);
-  expect(() => getPluginContext<ITerry>('terry')).toThrow(`Plugin "terry" is disabled`);
+  expect(() => getPluginContext<Terry>('terry')).toThrow(`Plugin "terry" is disabled`);
 
   enablePlugin('terry', true);
-  expect(() => getPluginContext<ITerry>('terry')).not.toThrow();
+  expect(() => getPluginContext<Terry>('terry')).not.toThrow();
 });

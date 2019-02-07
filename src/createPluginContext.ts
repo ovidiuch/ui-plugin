@@ -1,11 +1,11 @@
-import { IPluginSpec, IPluginContext, ISharedPluginContext } from './types';
+import { PluginSpec, PluginContext, SharedPluginContext } from './types';
 import { getPlugin, getPlugins, emitStateChange } from './store';
 import { getEventKey } from './shared';
 
-export function createPluginContext<PluginSpec extends IPluginSpec>(
-  pluginName: PluginSpec['name'],
-  sharedContext: ISharedPluginContext,
-): IPluginContext<PluginSpec> {
+export function createPluginContext<Spec extends PluginSpec>(
+  pluginName: Spec['name'],
+  sharedContext: SharedPluginContext,
+): PluginContext<Spec> {
   return {
     pluginName,
 
@@ -25,13 +25,13 @@ export function createPluginContext<PluginSpec extends IPluginSpec>(
       }
     },
 
-    getMethodsOf<OtherPluginSpec extends IPluginSpec>(
-      otherPluginName: OtherPluginSpec['name'],
-    ): OtherPluginSpec['methods'] {
-      type Methods = OtherPluginSpec['methods'];
+    getMethodsOf<OtherSpec extends PluginSpec>(
+      otherPluginName: OtherSpec['name'],
+    ): OtherSpec['methods'] {
+      type Methods = OtherSpec['methods'];
       type ValidMethodName = Extract<keyof Methods, string>;
 
-      const { methodHandlers } = getPlugin<OtherPluginSpec>(otherPluginName);
+      const { methodHandlers } = getPlugin<OtherSpec>(otherPluginName);
       const methodNames = Object.keys(methodHandlers).filter(key =>
         methodHandlers.hasOwnProperty(key),
       ) as ValidMethodName[];

@@ -1,11 +1,11 @@
 export {
-  IPluginSpec,
-  IPlugin,
-  IPluginContext,
+  PluginSpec,
+  Plugin,
+  PluginContext,
   MethodHandlers,
   EventHandlers,
   PluginCreateArgs,
-  IPluginCreateApi,
+  PluginCreateApi,
 } from './types';
 export { createPlugin } from './createPlugin';
 export { loadPlugins, resetPlugins, getPluginContext } from './loadPlugins';

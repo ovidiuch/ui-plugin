@@ -1,26 +1,26 @@
 import {
   Callback,
-  IPluginSpec,
-  IPluginsByName,
-  IPluginConfigs,
-  IPluginStates,
-  ISharedPluginContext,
+  PluginSpec,
+  PluginsByName,
+  PluginConfigs,
+  PluginStates,
+  SharedPluginContext,
 } from '../types';
 import { getPlugins, getPlugin, removeAllPlugins, emitPluginLoad } from '../store';
 import { createPluginContext } from '../createPluginContext';
 import { updateState } from './updateState';
 import { runLoadHandlers } from './loadHandlers';
 
-interface ILoadPluginArgs {
-  config?: IPluginConfigs;
-  state?: IPluginStates;
-}
+type LoadPluginArgs = {
+  config?: PluginConfigs;
+  state?: PluginStates;
+};
 
-let loadedArgs: ILoadPluginArgs = {};
-let sharedContext: null | ISharedPluginContext = null;
+let loadedArgs: LoadPluginArgs = {};
+let sharedContext: null | SharedPluginContext = null;
 let unloadCallbacks: null | Callback[] = null;
 
-export function loadPlugins(args: ILoadPluginArgs = {}) {
+export function loadPlugins(args: LoadPluginArgs = {}) {
   const prevStates = sharedContext ? sharedContext.state : {};
   unloadPlugins();
 
@@ -68,25 +68,23 @@ export function resetPlugins() {
   removeAllPlugins();
 }
 
-export function getPluginContext<PluginSpec extends IPluginSpec>(
-  pluginName: PluginSpec['name'],
-) {
+export function getPluginContext<Spec extends PluginSpec>(pluginName: Spec['name']) {
   if (!sharedContext) {
     throw new Error(`Can't get plugin context because plugins aren't loaded`);
   }
 
-  const plugin = getPlugin<PluginSpec>(pluginName);
+  const plugin = getPlugin<Spec>(pluginName);
   if (!plugin.enabled) {
     throw new Error(`Plugin "terry" is disabled`);
   }
 
-  return createPluginContext<PluginSpec>(pluginName, sharedContext);
+  return createPluginContext<Spec>(pluginName, sharedContext);
 }
 
 function createDefaultConfigs(
-  plugins: IPluginsByName,
-  customConfigs: IPluginConfigs,
-): IPluginConfigs {
+  plugins: PluginsByName,
+  customConfigs: PluginConfigs,
+): PluginConfigs {
   return Object.keys(plugins).reduce(
     (configs, pluginName) => ({
       ...configs,
@@ -100,10 +98,10 @@ function createDefaultConfigs(
 }
 
 function createInitialStates(
-  plugins: IPluginsByName,
-  customStates: IPluginStates,
-  prevStates: IPluginStates,
-): IPluginStates {
+  plugins: PluginsByName,
+  customStates: PluginStates,
+  prevStates: PluginStates,
+): PluginStates {
   return Object.keys(plugins).reduce(
     (states, pluginName) => ({
       ...states,

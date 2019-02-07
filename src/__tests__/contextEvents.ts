@@ -1,29 +1,29 @@
-import { IPluginContext } from '../types';
+import { PluginContext } from '../types';
 import { resetPlugins, createPlugin, loadPlugins, getPluginContext } from '..';
 
-interface ILarry {
+interface Larry {
   name: 'larry';
 }
 
-interface IJerry {
+interface Jerry {
   name: 'jerry';
   events: {
     idea(title: string, craziness: number): void;
   };
 }
 
-function validateContext({ pluginName }: IPluginContext<ILarry>) {
+function validateContext({ pluginName }: PluginContext<Larry>) {
   expect(pluginName).toBe('larry');
 }
 
 afterEach(resetPlugins);
 
 it('calls event handler of other plugin', () => {
-  createPlugin<IJerry>({ name: 'jerry' }).register();
+  createPlugin<Jerry>({ name: 'jerry' }).register();
 
-  const { on, register } = createPlugin<ILarry>({ name: 'larry' });
+  const { on, register } = createPlugin<Larry>({ name: 'larry' });
   const handleIdea = jest.fn();
-  on<IJerry>('jerry', {
+  on<Jerry>('jerry', {
     idea: (context, title: string, craziness: number) => {
       validateContext(context);
       handleIdea(title, craziness);
@@ -32,7 +32,7 @@ it('calls event handler of other plugin', () => {
   register();
 
   loadPlugins();
-  const { emit } = getPluginContext<IJerry>('jerry');
+  const { emit } = getPluginContext<Jerry>('jerry');
   emit('idea', 'show about nothing', 50);
 
   expect(handleIdea).toHaveBeenCalledWith('show about nothing', 50);
