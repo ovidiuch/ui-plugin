@@ -1,48 +1,53 @@
 import retry from '@skidding/async-retry';
-import { loadPlugins, onStateChange, registerPlugin, resetPlugins } from '..';
+import {
+  resetPlugins,
+  createPlugin,
+  loadPlugins,
+  getPluginContext,
+  onStateChange,
+} from '..';
+
+interface Terry {
+  name: 'terry';
+  state: number;
+}
 
 afterEach(resetPlugins);
 
-it('calls state handler', async () => {
-  const handler = jest.fn();
-  onStateChange(handler);
+it('emits state change event', async () => {
+  const handleChange = jest.fn();
+  onStateChange(handleChange);
 
-  const { init } = registerPlugin({
-    name: 'test',
-    initialState: { counter: 0 },
-  });
-
-  init(({ setState }) => {
-    setState({ counter: 1 });
-  });
-
+  createPlugin<Terry>({ name: 'terry', initialState: 5 }).register();
   loadPlugins();
 
-  await retry(() => expect(handler).toBeCalled());
+  const { getState, setState } = getPluginContext<Terry>('terry');
+  setState(10);
+
+  await retry(() => expect(getState()).toBe(10));
+  expect(handleChange).toBeCalledTimes(1);
 });
 
-it('stops calling state handler', async () => {
-  const { init } = registerPlugin({
-    name: 'test',
-    initialState: { counter: 0 },
+it('makes context available in state change handler', () => {
+  // This is a regression test. Before the issues was fixed, global state change
+  // handlers could be called before the plugin context was made available, due
+  // to incorrect initialization order.
+  expect.assertions(1);
+
+  const { onLoad, register } = createPlugin<Terry>({
+    name: 'terry',
+    initialState: 0,
   });
+  onLoad(context => {
+    context.setState(1);
+  });
+  register();
 
-  const handler = jest.fn();
-  const removeHandler = onStateChange(handler);
-
-  let removeHandlerAndSetState: () => void;
-  init(({ setState }) => {
-    setState({ counter: 1 });
-
-    removeHandlerAndSetState = () => {
-      removeHandler();
-      setState({ counter: 2 });
-    };
+  onStateChange(() => {
+    expect(() => {
+      getPluginContext('terry');
+    }).not.toThrowError();
   });
 
   loadPlugins();
-
-  await retry(() => expect(handler).toBeCalled());
-  removeHandlerAndSetState!();
-  await retry(() => expect(handler).toBeCalledTimes(1));
 });

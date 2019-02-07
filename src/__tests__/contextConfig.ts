@@ -1,82 +1,35 @@
-import { loadPlugins, registerPlugin, resetPlugins } from '..';
+import { resetPlugins, createPlugin, loadPlugins, getPluginContext } from '..';
+
+interface Terry {
+  name: 'terry';
+  config: { size: number };
+}
 
 afterEach(resetPlugins);
 
-it('gets default config from context', () => {
-  expect.hasAssertions();
+function createTestPlugin() {
+  createPlugin<Terry>({
+    name: 'terry',
+    defaultConfig: { size: 5 },
+  }).register();
+}
 
-  const { init } = registerPlugin({
-    name: 'test',
-    defaultConfig: { tabSize: 2 },
-  });
-  init(({ getConfig }) => {
-    expect(getConfig().tabSize).toBe(2);
-  });
+function typeCheckConfig(config: Terry['config']) {
+  return config.size;
+}
 
+it('gets default config', () => {
+  createTestPlugin();
   loadPlugins();
+
+  const { getConfig } = getPluginContext<Terry>('terry');
+  expect(typeCheckConfig(getConfig())).toBe(5);
 });
 
-it('gets custom config from context', () => {
-  expect.hasAssertions();
+it('gets injected config', () => {
+  createTestPlugin();
+  loadPlugins({ config: { terry: { size: 10 } } });
 
-  const { init } = registerPlugin({
-    name: 'test',
-    defaultConfig: { tabSize: 2 },
-  });
-  init(({ getConfig }) => {
-    expect(getConfig().tabSize).toBe(4);
-  });
-
-  loadPlugins({
-    config: {
-      test: { tabSize: 4 },
-    },
-  });
-});
-
-it('gets config of other plugin from context', () => {
-  expect.hasAssertions();
-
-  registerPlugin({
-    name: 'test1',
-    defaultConfig: { tabSize: 2 },
-  });
-
-  const { init } = registerPlugin({ name: 'test2' });
-  init(({ getConfigOf }) => {
-    expect(getConfigOf('test1').tabSize).toBe(2);
-  });
-
-  loadPlugins();
-});
-
-it('throws exception on missing plugin', () => {
-  expect.hasAssertions();
-
-  const { init } = registerPlugin({ name: 'test2' });
-  init(({ getConfigOf }) => {
-    expect(() => {
-      getConfigOf('test1');
-    }).toThrow('Requested config of missing plugin test1');
-  });
-
-  loadPlugins();
-});
-
-it('throws exception on disabled plugin', () => {
-  expect.hasAssertions();
-
-  registerPlugin({
-    name: 'test1',
-    enabled: false,
-  });
-
-  const { init } = registerPlugin({ name: 'test2' });
-  init(({ getConfigOf }) => {
-    expect(() => {
-      getConfigOf('test1');
-    }).toThrow('Requested config of disabled plugin test1');
-  });
-
-  loadPlugins();
+  const { getConfig } = getPluginContext<Terry>('terry');
+  expect(typeCheckConfig(getConfig())).toBe(10);
 });

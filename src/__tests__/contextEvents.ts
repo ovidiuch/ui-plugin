@@ -1,71 +1,39 @@
-import { loadPlugins, registerPlugin, resetPlugins } from '..';
+import { PluginContext } from '../types';
+import { resetPlugins, createPlugin, loadPlugins, getPluginContext } from '..';
+
+interface Larry {
+  name: 'larry';
+}
+
+interface Jerry {
+  name: 'jerry';
+  events: {
+    idea(title: string, craziness: number): void;
+  };
+}
+
+function validateContext({ pluginName }: PluginContext<Larry>) {
+  expect(pluginName).toBe('larry');
+}
 
 afterEach(resetPlugins);
 
-it('calls event handler', () => {
-  expect.hasAssertions();
+it('calls event handler of other plugin', () => {
+  createPlugin<Jerry>({ name: 'jerry' }).register();
 
-  const { on } = registerPlugin({ name: 'test1' });
-  const handleEvent = jest.fn();
-  on('test2.testEvent', handleEvent);
-
-  const { init } = registerPlugin({ name: 'test2' });
-  init(({ emitEvent }) => {
-    emitEvent('testEvent');
-    expect(handleEvent).toBeCalled();
+  const { on, register } = createPlugin<Larry>({ name: 'larry' });
+  const handleIdea = jest.fn();
+  on<Jerry>('jerry', {
+    idea: (context, title: string, craziness: number) => {
+      validateContext(context);
+      handleIdea(title, craziness);
+    },
   });
+  register();
 
   loadPlugins();
-});
+  const { emit } = getPluginContext<Jerry>('jerry');
+  emit('idea', 'show about nothing', 50);
 
-it('calls event handler with params', () => {
-  expect.hasAssertions();
-
-  const { on } = registerPlugin({ name: 'test1' });
-  on('test2.testEvent', (context, one, two) => {
-    expect(one).toBe('foo');
-    expect(two).toBe('bar');
-  });
-
-  const { init } = registerPlugin({ name: 'test2' });
-  init(({ emitEvent }) => {
-    emitEvent('testEvent', 'foo', 'bar');
-  });
-
-  loadPlugins();
-});
-
-it('calls event handler with plugin context', () => {
-  expect.hasAssertions();
-
-  const { on } = registerPlugin({ name: 'test1', initialState: 0 });
-  on('test2.testEvent', context => {
-    expect(context.getState()).toBe(0);
-  });
-
-  const { init } = registerPlugin({ name: 'test2' });
-  init(({ emitEvent }) => {
-    emitEvent('testEvent');
-  });
-
-  loadPlugins();
-});
-
-it('calls multiple event handlers', () => {
-  expect.hasAssertions();
-
-  const { on } = registerPlugin({ name: 'test1' });
-  const handleEvent1 = jest.fn();
-  const handleEvent2 = jest.fn();
-  on('test2.testEvent', handleEvent1);
-  on('test2.testEvent', handleEvent2);
-
-  const { init } = registerPlugin({ name: 'test2' });
-  init(({ emitEvent }) => {
-    emitEvent('testEvent');
-    expect(handleEvent1).toBeCalled();
-    expect(handleEvent2).toBeCalled();
-  });
-
-  loadPlugins();
+  expect(handleIdea).toHaveBeenCalledWith('show about nothing', 50);
 });

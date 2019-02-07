@@ -1,14 +1,11 @@
-The following are not yet documented because they are likely to change:
+Not yet documented:
 
-- Plugin id
-- Plugin name
-
-Also not yet documented:
-
+- Unique plugin name
 - Plugin context
-- Plugin scope
 
 ## Plugin states
+
+> Not to be confused with a plugin's user state
 
 A plugin can be identified with one or more of the following states, which are _not_ mutually exclusive.
 
@@ -22,7 +19,7 @@ All _registered_ plugins are optionally flagged as enabled.
 
 #### Active
 
-A plugin is active when it is _registered_ and _enabled_. Active plugins are the only ones eligible for becoming _loaded_.
+A plugin is active when it is both _registered_ and _enabled_. Active plugins are the only ones eligible for becoming _loaded_.
 
 #### Loaded
 

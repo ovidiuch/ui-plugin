@@ -1,17 +1,13 @@
-export { enablePlugin } from './enablePlugin';
-export { getPluginApi } from './getPluginApi';
-export { getPluginContext } from './getPluginContext';
-export { loadPlugins } from './loadPlugins';
-export { onPluginChange } from './onPluginChange';
-export { onStateChange } from './onStateChange';
 export {
-  createPlugin,
-  getLoadedScope,
-  getPlugins,
-  isPluginLoaded,
-  resetPlugins,
-  unloadPlugins,
-  unregisterPlugins,
-} from './pluginStore';
-export { registerPlugin } from './registerPlugin';
-export { IPlugin, IPluginApi, IPluginContext, IPluginDef } from './shared';
+  PluginSpec,
+  Plugin,
+  PluginContext,
+  MethodHandlers,
+  EventHandlers,
+  PluginCreateArgs,
+  PluginCreateApi,
+} from './types';
+export { createPlugin } from './createPlugin';
+export { loadPlugins, resetPlugins, getPluginContext } from './loadPlugins';
+export { enablePlugin } from './enablePlugin';
+export { getPlugin, getPlugins, onPluginLoad, onStateChange } from './store';
