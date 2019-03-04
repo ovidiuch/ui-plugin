@@ -6,7 +6,7 @@ import {
   PluginStates,
   SharedPluginContext,
 } from '../types';
-import { getPlugins, getPlugin, removeAllPlugins, emitPluginLoad } from '../store';
+import { getPlugins, removeAllPlugins, emitPluginLoad } from '../store';
 import { createPluginContext } from '../createPluginContext';
 import { updateState } from './updateState';
 import { runLoadHandlers } from './loadHandlers';
@@ -71,11 +71,6 @@ export function resetPlugins() {
 export function getPluginContext<Spec extends PluginSpec>(pluginName: Spec['name']) {
   if (!sharedContext) {
     throw new Error(`Can't get plugin context because plugins aren't loaded`);
-  }
-
-  const plugin = getPlugin<Spec>(pluginName);
-  if (!plugin.enabled) {
-    throw new Error(`Plugin "terry" is disabled`);
   }
 
   return createPluginContext<Spec>(pluginName, sharedContext);

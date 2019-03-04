@@ -6,6 +6,11 @@ export function createPluginContext<Spec extends PluginSpec>(
   pluginName: Spec['name'],
   sharedContext: SharedPluginContext,
 ): PluginContext<Spec> {
+  const { enabled } = getPlugin<Spec>(pluginName);
+  if (!enabled) {
+    throw new Error(`Plugin "${pluginName}" is disabled`);
+  }
+
   return {
     pluginName,
 
@@ -32,6 +37,7 @@ export function createPluginContext<Spec extends PluginSpec>(
       type ValidMethodName = Extract<keyof Methods, string>;
 
       const { methodHandlers } = getPlugin<OtherSpec>(otherPluginName);
+      const otherPluginContext = createPluginContext(otherPluginName, sharedContext);
       const methodNames = Object.keys(methodHandlers).filter(key =>
         methodHandlers.hasOwnProperty(key),
       ) as ValidMethodName[];
@@ -45,10 +51,7 @@ export function createPluginContext<Spec extends PluginSpec>(
           [methodName]: (
             ...args: Parameters<Methods[MethodName]>
           ): ReturnType<Methods[MethodName]> =>
-            methodHandlers[methodName](
-              createPluginContext(otherPluginName, sharedContext),
-              ...args,
-            ),
+            methodHandlers[methodName](otherPluginContext, ...args),
         }),
         {},
       );
