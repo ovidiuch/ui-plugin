@@ -50,7 +50,6 @@ it('calls method of other plugin', () => {
 
 it('fails to call method of disabled plugin', () => {
   createPlugin<Jerry>({ name: 'jerry' }).register();
-
   createPlugin<Larry>({
     name: 'larry',
     methods: {
