@@ -6,8 +6,8 @@ export function createPluginContext<Spec extends PluginSpec>(
   pluginName: Spec['name'],
   sharedContext: SharedPluginContext,
 ): PluginContext<Spec> {
-  const { enabled } = getPlugin<Spec>(pluginName);
-  if (!enabled) {
+  const plugin = getPlugin<Spec>(pluginName);
+  if (!plugin.enabled) {
     throw new Error(`Plugin "${pluginName}" is disabled`);
   }
 
