@@ -59,10 +59,9 @@ export function createPluginContext<Spec extends PluginSpec>(
       const plugins = getPlugins();
 
       Object.keys(plugins).forEach(otherPluginName => {
-        const plugin = plugins[otherPluginName];
-        const { eventHandlers } = plugin;
+        const { enabled, eventHandlers } = plugins[otherPluginName];
 
-        if (eventHandlers[eventKey]) {
+        if (enabled && eventHandlers[eventKey]) {
           eventHandlers[eventKey].forEach(handler => {
             handler(createPluginContext(otherPluginName, sharedContext), ...eventArgs);
           });
