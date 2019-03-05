@@ -1,6 +1,6 @@
 import { PluginContext } from '../types';
 import { unloadPlugins } from '../loadPlugins';
-import { resetPlugins, createPlugin, loadPlugins } from '..';
+import { resetPlugins, createPlugin, loadPlugins, enablePlugin } from '..';
 
 interface Terry {
   name: 'terry';
@@ -23,6 +23,20 @@ it('calls load callback', () => {
 
   loadPlugins();
   expect(handleLoad).toBeCalled();
+});
+
+it('omits calling load callback of disabled plugin', () => {
+  const handleLoad = jest.fn();
+  const { onLoad, register } = createPlugin<Terry>({ name: 'terry' });
+  onLoad(context => {
+    validateContext(context);
+    handleLoad();
+  });
+  register();
+  enablePlugin('terry', false);
+
+  loadPlugins();
+  expect(handleLoad).not.toBeCalled();
 });
 
 it('calls unload callback', () => {
