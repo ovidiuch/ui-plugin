@@ -48,12 +48,12 @@ export function loadPlugins(args: LoadPluginArgs = {}) {
 }
 
 export function unloadPlugins() {
-  if (sharedContext) {
-    sharedContext = null;
-  }
   if (unloadCallbacks) {
     unloadCallbacks.forEach(handler => handler());
     unloadCallbacks = null;
+  }
+  if (sharedContext) {
+    sharedContext = null;
   }
 }
 
