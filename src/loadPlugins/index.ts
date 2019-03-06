@@ -58,7 +58,7 @@ export function unloadPlugins() {
 }
 
 export function reloadPlugins() {
-  if (loadedArgs) {
+  if (sharedContext) {
     loadPlugins(loadedArgs);
   }
 }
