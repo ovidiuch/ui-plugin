@@ -8,7 +8,12 @@ export function runLoadHandlers(
   const unloadCallbacks: Callback[] = [];
 
   Object.keys(plugins).forEach(pluginName => {
-    plugins[pluginName].loadHandlers.forEach(handler => {
+    const { enabled, loadHandlers } = plugins[pluginName];
+    if (!enabled) {
+      return;
+    }
+
+    loadHandlers.forEach(handler => {
       const handlerReturn = handler(createPluginContext(pluginName, sharedContext));
 
       if (handlerReturn) {

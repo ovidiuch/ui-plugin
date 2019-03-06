@@ -1,5 +1,11 @@
 import { PluginContext } from '../types';
-import { resetPlugins, createPlugin, loadPlugins, getPluginContext } from '..';
+import {
+  resetPlugins,
+  createPlugin,
+  loadPlugins,
+  getPluginContext,
+  enablePlugin,
+} from '..';
 
 interface Larry {
   name: 'larry';
@@ -40,4 +46,22 @@ it('calls method of other plugin', () => {
 
   expect(handleAnnoyance).toBeCalledWith('tip too much');
   expect(response).toBe('get outta here');
+});
+
+it('fails to call method of disabled plugin', () => {
+  createPlugin<Jerry>({ name: 'jerry' }).register();
+  createPlugin<Larry>({
+    name: 'larry',
+    methods: {
+      annoy: (context, reason: string) => 'get outta here',
+    },
+  }).register();
+
+  loadPlugins();
+  enablePlugin('larry', false);
+
+  const { getMethodsOf } = getPluginContext<Jerry>('jerry');
+  expect(() => {
+    getMethodsOf<Larry>('larry');
+  }).toThrow('Plugin "larry" is disabled');
 });
