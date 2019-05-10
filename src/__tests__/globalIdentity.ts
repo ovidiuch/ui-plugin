@@ -26,19 +26,38 @@ function getLarryMethods() {
   return getPluginContext<Jerry>('jerry').getMethodsOf('larry');
 }
 
+function getLarryEmit() {
+  return getPluginContext<Jerry>('jerry').emit;
+}
+
 afterEach(resetPlugins);
 
-it('methods have same reference between calls', () => {
+it('methods share identity between context instances', () => {
   registerPlugins();
   loadPlugins();
   expect(getLarryMethods()).toBe(getLarryMethods());
 });
 
-it('methods reference change after reload', () => {
+it('methods identity changes after reload', () => {
   registerPlugins();
   loadPlugins();
 
   const methods = getLarryMethods();
   reloadPlugins();
   expect(methods).not.toBe(getLarryMethods());
+});
+
+it('emit shares identity between context instances', () => {
+  registerPlugins();
+  loadPlugins();
+  expect(getLarryEmit()).toBe(getLarryEmit());
+});
+
+it('emit identity changes after reload', () => {
+  registerPlugins();
+  loadPlugins();
+
+  const emit = getLarryEmit();
+  reloadPlugins();
+  expect(emit).not.toBe(getLarryEmit());
 });

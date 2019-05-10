@@ -1,6 +1,8 @@
-import { PluginSpec, PluginContext, SharedPluginContext } from './types';
-import { getPlugin, getPlugins, emitStateChange } from './store';
-import { getEventKey } from './shared';
+import { PluginSpec, PluginContext, SharedPluginContext } from '../types';
+import { getEventKey } from '../shared';
+import { getPlugin, getPlugins, emitStateChange } from '../store';
+import { getPluginContextCache, setPluginContextCache } from './pluginContextCache';
+import { getPluginMethodsCache, setPluginMethodsCache } from './pluginMethodsCache';
 
 export function createPluginContext<Spec extends PluginSpec>(
   pluginName: Spec['name'],
@@ -11,7 +13,12 @@ export function createPluginContext<Spec extends PluginSpec>(
     throw new Error(`Plugin "${pluginName}" is disabled`);
   }
 
-  return {
+  const cachedPluginContext = getPluginContextCache(pluginName, sharedContext);
+  if (cachedPluginContext) {
+    return cachedPluginContext;
+  }
+
+  const pluginContext: PluginContext<Spec> = {
     pluginName,
 
     getConfig() {
@@ -33,7 +40,7 @@ export function createPluginContext<Spec extends PluginSpec>(
     getMethodsOf<OtherSpec extends PluginSpec>(
       otherPluginName: OtherSpec['name'],
     ): OtherSpec['methods'] {
-      return getCachedPluginMethods<OtherSpec>(otherPluginName, sharedContext);
+      return createPluginMethods<OtherSpec>(otherPluginName, sharedContext);
     },
 
     emit(eventName, ...eventArgs) {
@@ -51,39 +58,20 @@ export function createPluginContext<Spec extends PluginSpec>(
       });
     },
   };
+
+  setPluginContextCache(pluginName, sharedContext, pluginContext);
+  return pluginContext;
 }
 
-// Why are methods cached? Because plugin method handlers are passed down to
-// components, which use them as dependencies for child callbacks and effects
-// (eg. React Hooks). By reusing methods handlers at the plugin system level,
-// we enable downstream memoization at any level.
-type PluginMethods = ReturnType<PluginContext<any>['getMethodsOf']>;
-type PluginMethodsCache = { [pluginName: string]: PluginMethods };
-const cachedPluginMethods = new WeakMap<SharedPluginContext, PluginMethodsCache>();
-
-function getCachedPluginMethods<Spec extends PluginSpec>(
+function createPluginMethods<Spec extends PluginSpec>(
   pluginName: Spec['name'],
   sharedContext: SharedPluginContext,
 ) {
-  let cachedMethods = cachedPluginMethods.get(sharedContext);
-  if (!cachedMethods) {
-    cachedMethods = {};
-    cachedPluginMethods.set(sharedContext, cachedMethods);
+  const cachedPluginMethods = getPluginMethodsCache(pluginName, sharedContext);
+  if (cachedPluginMethods) {
+    return cachedPluginMethods;
   }
 
-  let pluginMethods = cachedMethods[pluginName];
-  if (!pluginMethods) {
-    pluginMethods = getPluginMethods(pluginName, sharedContext);
-    cachedMethods[pluginName] = pluginMethods;
-  }
-
-  return pluginMethods;
-}
-
-function getPluginMethods<Spec extends PluginSpec>(
-  pluginName: Spec['name'],
-  sharedContext: SharedPluginContext,
-) {
   type Methods = Spec['methods'];
   type ValidMethodName = Extract<keyof Methods, string>;
 
@@ -93,7 +81,7 @@ function getPluginMethods<Spec extends PluginSpec>(
     methodHandlers.hasOwnProperty(key),
   ) as ValidMethodName[];
 
-  return methodNames.reduce(
+  const pluginMethods = methodNames.reduce(
     <MethodName extends ValidMethodName>(methods: Methods, methodName: MethodName) => ({
       ...methods,
       [methodName]: (
@@ -103,4 +91,7 @@ function getPluginMethods<Spec extends PluginSpec>(
     }),
     {},
   );
+
+  setPluginMethodsCache(pluginName, sharedContext, pluginMethods);
+  return pluginMethods;
 }
