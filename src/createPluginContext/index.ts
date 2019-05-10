@@ -4,6 +4,10 @@ import { getPlugin, getPlugins, emitStateChange } from '../store';
 import { getPluginContextCache, setPluginContextCache } from './pluginContextCache';
 import { getPluginMethodsCache, setPluginMethodsCache } from './pluginMethodsCache';
 
+// Why are contexts and methods cached? Because they are passed down to
+// components and used as dependencies for child callbacks and effects (eg.
+// React Hooks). By reusing methods handlers at the plugin system level,
+// we enable downstream memoization at any level.
 export function createPluginContext<Spec extends PluginSpec>(
   pluginName: Spec['name'],
   sharedContext: SharedPluginContext,
