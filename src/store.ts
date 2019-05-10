@@ -43,13 +43,11 @@ export function updatePlugin<Spec extends PluginSpec>(
 
 export function onPluginLoad(handler: PluginLoadHandler) {
   pluginLoadHandlers.push(handler);
-
   return () => removeHandler(pluginLoadHandlers, handler);
 }
 
 export function onStateChange(handler: StateChangeHandler) {
   stateChangeHandlers.push(handler);
-
   return () => removeHandler(stateChangeHandlers, handler);
 }
 
