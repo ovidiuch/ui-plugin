@@ -7,7 +7,7 @@ import {
   SharedPluginContext,
 } from '../types';
 import { getPlugins, removeAllPlugins, emitPluginLoad } from '../store';
-import { getCachedPluginContext } from '../createPluginContext';
+import { createPluginContext } from '../createPluginContext';
 import { updateState } from './updateState';
 import { runLoadHandlers } from './loadHandlers';
 
@@ -73,7 +73,7 @@ export function getPluginContext<Spec extends PluginSpec>(pluginName: Spec['name
     throw new Error(`Can't get plugin context because plugins aren't loaded`);
   }
 
-  return getCachedPluginContext<Spec>(pluginName, sharedContext);
+  return createPluginContext<Spec>(pluginName, sharedContext);
 }
 
 function createDefaultConfigs(
