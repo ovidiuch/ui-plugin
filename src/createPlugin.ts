@@ -15,7 +15,7 @@ export function createPlugin<Spec extends PluginSpec>(args: {
     name: args.name,
     enabled: true,
     defaultConfig: args.defaultConfig || {},
-    initialState: args.initialState || undefined,
+    initialState: 'initialState' in args ? args.initialState : undefined,
     methodHandlers: args.methods || {},
     loadHandlers: [],
     eventHandlers: {},
