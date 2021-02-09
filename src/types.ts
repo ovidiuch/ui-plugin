@@ -38,9 +38,7 @@ export interface PluginContext<Spec extends PluginSpec> {
 
   getMethodsOf<OtherSpec extends PluginSpec>(
     otherPluginName: OtherSpec['name'],
-  ): OtherSpec extends Record<'methods', OtherSpec['methods']>
-    ? OtherSpec['methods']
-    : {};
+  ): OtherSpec extends Record<'methods', OtherSpec['methods']> ? OtherSpec['methods'] : {};
 
   emit<EventName extends Extract<keyof Spec['events'], string>>(
     eventName: EventName,
@@ -59,10 +57,11 @@ export type LoadHandler<Spec extends PluginSpec> = PluginContextHandler<
   void | null | Callback | Array<void | null | Callback>
 >;
 
-export type EventHandler<
-  Spec extends PluginSpec,
-  Args extends any[]
-> = PluginContextHandler<Spec, Args, void>;
+export type EventHandler<Spec extends PluginSpec, Args extends any[]> = PluginContextHandler<
+  Spec,
+  Args,
+  void
+>;
 
 // Map the public signature of each method to its handler signature
 export type MethodHandlers<Spec extends PluginSpec> = {
@@ -70,7 +69,7 @@ export type MethodHandlers<Spec extends PluginSpec> = {
     Spec,
     Parameters<Spec['methods'][MethodName]>,
     ReturnType<Spec['methods'][MethodName]>
-  >
+  >;
 };
 
 // Map public event signature to event handler signature
@@ -83,7 +82,7 @@ export type EventHandlers<
       [EventName in keyof EmitterSpec['events']]?: EventHandler<
         ListenerSpec,
         Parameters<EmitterSpec['events'][EventName]>
-      >
+      >;
     }
   : { [eventName: string]: never };
 
@@ -91,9 +90,7 @@ export type PluginCreateArgs<Spec extends PluginSpec> = {
   name: Spec['name'];
 } & (Spec extends Record<'config', infer Config> ? { defaultConfig: Config } : {}) &
   (Spec extends Record<'state', infer State> ? { initialState: State } : {}) &
-  (Spec extends Record<'methods', Spec['methods']>
-    ? { methods: MethodHandlers<Spec> }
-    : {});
+  (Spec extends Record<'methods', Spec['methods']> ? { methods: MethodHandlers<Spec> } : {});
 
 export interface PluginCreateApi<Spec extends PluginSpec> {
   onLoad(handler: LoadHandler<Spec>): void;

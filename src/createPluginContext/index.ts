@@ -88,9 +88,7 @@ function createPluginMethods<Spec extends PluginSpec>(
   const pluginMethods = methodNames.reduce(
     <MethodName extends ValidMethodName>(methods: Methods, methodName: MethodName) => ({
       ...methods,
-      [methodName]: (
-        ...args: Parameters<Methods[MethodName]>
-      ): ReturnType<Methods[MethodName]> =>
+      [methodName]: (...args: Parameters<Methods[MethodName]>): ReturnType<Methods[MethodName]> =>
         methodHandlers[methodName](otherPluginContext, ...args),
     }),
     {},

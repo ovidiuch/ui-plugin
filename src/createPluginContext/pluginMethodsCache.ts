@@ -5,10 +5,7 @@ type PluginMethodsCache = { [pluginName: string]: PluginMethods };
 
 const pluginMethodsCache = new WeakMap<SharedPluginContext, PluginMethodsCache>();
 
-export function getPluginMethodsCache(
-  pluginName: string,
-  sharedContext: SharedPluginContext,
-) {
+export function getPluginMethodsCache(pluginName: string, sharedContext: SharedPluginContext) {
   const sharedContextCache = pluginMethodsCache.get(sharedContext);
   return sharedContextCache ? sharedContextCache[pluginName] : null;
 }

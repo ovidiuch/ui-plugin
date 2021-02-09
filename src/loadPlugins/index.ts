@@ -33,10 +33,7 @@ export function loadPlugins(args: LoadPluginArgs = {}) {
         throw new Error(`Can't set state because plugins aren't loaded`);
       }
 
-      sharedContext.state[pluginName] = updateState(
-        sharedContext.state[pluginName],
-        change,
-      );
+      sharedContext.state[pluginName] = updateState(sharedContext.state[pluginName], change);
       if (cb) {
         cb();
       }
@@ -76,10 +73,7 @@ export function getPluginContext<Spec extends PluginSpec>(pluginName: Spec['name
   return createPluginContext<Spec>(pluginName, sharedContext);
 }
 
-function createDefaultConfigs(
-  plugins: PluginsByName,
-  customConfigs: PluginConfigs,
-): PluginConfigs {
+function createDefaultConfigs(plugins: PluginsByName, customConfigs: PluginConfigs): PluginConfigs {
   return Object.keys(plugins).reduce(
     (configs, pluginName) => ({
       ...configs,
