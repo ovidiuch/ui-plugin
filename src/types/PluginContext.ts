@@ -1,10 +1,4 @@
-import {
-  PluginSpec,
-  PluginSpecConfig,
-  PluginSpecEvents,
-  PluginSpecMethods,
-  PluginSpecState,
-} from './PluginSpec';
+import { PluginSpec, PluginSpecConfig, PluginSpecEvents, PluginSpecMethods, PluginSpecState } from './PluginSpec';
 import { StateUpdater } from './shared';
 
 type SetState<T extends PluginSpecState> = (change: StateUpdater<T>) => void;

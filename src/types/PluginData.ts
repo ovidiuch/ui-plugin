@@ -1,14 +1,13 @@
 import { PluginContext } from './PluginContext';
 import { PluginSpec, PluginSpecConfig, PluginSpecMethods, PluginSpecState } from './PluginSpec';
-
-type Callback = () => unknown;
+import { Callback } from './shared';
 
 type PluginContextHandler<TSpec extends PluginSpec, TArgs extends any[], TReturn> = (
   context: PluginContext<TSpec>,
   ...args: TArgs
 ) => TReturn;
 
-type MethodHandlers<TSpec extends PluginSpec, TMethods extends PluginSpecMethods> = {
+export type PluginMethodHandlers<TSpec extends PluginSpec, TMethods extends PluginSpecMethods> = {
   // Map the public signature of each method to its handler signature
   [MethodName in keyof TMethods]: PluginContextHandler<
     TSpec,
@@ -17,20 +16,18 @@ type MethodHandlers<TSpec extends PluginSpec, TMethods extends PluginSpecMethods
   >;
 };
 
-type LoaderHandlerReturn = void | null | Callback | Array<void | null | Callback>;
+type LoadHandlerReturn = void | null | Callback | Array<void | null | Callback>;
 
-type LoadHandler<T extends PluginSpec> = PluginContextHandler<T, [], LoaderHandlerReturn>;
+export type PluginLoadHandler<T extends PluginSpec> = PluginContextHandler<T, [], LoadHandlerReturn>;
 
-type EventHandlers<T extends PluginSpec> = {
-  [eventPath: string]: PluginContextHandler<T, any[], void>[];
-};
+export type PluginEventHandler<T extends PluginSpec, Args extends any[]> = PluginContextHandler<T, Args, void>;
 
 export type PluginData<T extends PluginSpec> = {
   name: T['name'];
   enabled: boolean;
-  defaultConfig: T['config'] extends PluginSpecConfig ? T['config'] : void;
-  initialState: T['state'] extends PluginSpecState ? T['state'] : void;
-  methodHandlers: T['methods'] extends PluginSpecMethods ? MethodHandlers<T, T['methods']> : void;
-  loadHandlers: LoadHandler<T>[];
-  eventHandlers: EventHandlers<T>;
+  defaultConfig: T['config'] extends PluginSpecConfig ? T['config'] : undefined;
+  initialState: T['state'] extends PluginSpecState ? T['state'] : undefined;
+  methodHandlers: T['methods'] extends PluginSpecMethods ? PluginMethodHandlers<T, T['methods']> : undefined;
+  loadHandlers: PluginLoadHandler<T>[];
+  eventHandlers: { [eventPath: string]: PluginEventHandler<T, any>[] };
 };
