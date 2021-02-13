@@ -41,9 +41,7 @@ export function createPluginContext<Spec extends PluginSpec>(
       }
     },
 
-    getMethodsOf<OtherSpec extends PluginSpec>(
-      otherPluginName: OtherSpec['name'],
-    ): OtherSpec['methods'] {
+    getMethodsOf<OtherSpec extends PluginSpec>(otherPluginName: OtherSpec['name']): OtherSpec['methods'] {
       return createPluginMethods<OtherSpec>(otherPluginName, sharedContext);
     },
 
@@ -67,10 +65,7 @@ export function createPluginContext<Spec extends PluginSpec>(
   return pluginContext;
 }
 
-function createPluginMethods<Spec extends PluginSpec>(
-  pluginName: Spec['name'],
-  sharedContext: SharedPluginContext,
-) {
+function createPluginMethods<Spec extends PluginSpec>(pluginName: Spec['name'], sharedContext: SharedPluginContext) {
   const cachedPluginMethods = getPluginMethodsCache(pluginName, sharedContext);
   if (cachedPluginMethods) {
     return cachedPluginMethods;

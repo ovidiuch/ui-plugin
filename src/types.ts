@@ -31,10 +31,7 @@ export interface PluginContext<Spec extends PluginSpec> {
 
   getState(): Spec['state'];
 
-  setState(
-    change: Spec extends Record<'state', infer State> ? StateUpdater<State> : never,
-    cb?: Callback,
-  ): void;
+  setState(change: Spec extends Record<'state', infer State> ? StateUpdater<State> : never, cb?: Callback): void;
 
   getMethodsOf<OtherSpec extends PluginSpec>(
     otherPluginName: OtherSpec['name'],
@@ -57,11 +54,7 @@ export type LoadHandler<Spec extends PluginSpec> = PluginContextHandler<
   void | null | Callback | Array<void | null | Callback>
 >;
 
-export type EventHandler<Spec extends PluginSpec, Args extends any[]> = PluginContextHandler<
-  Spec,
-  Args,
-  void
->;
+export type EventHandler<Spec extends PluginSpec, Args extends any[]> = PluginContextHandler<Spec, Args, void>;
 
 // Map the public signature of each method to its handler signature
 export type MethodHandlers<Spec extends PluginSpec> = {
@@ -73,10 +66,10 @@ export type MethodHandlers<Spec extends PluginSpec> = {
 };
 
 // Map public event signature to event handler signature
-export type EventHandlers<
-  ListenerSpec extends PluginSpec,
-  EmitterSpec extends PluginSpec
-> = EmitterSpec extends Record<'events', EmitterSpec['events']>
+export type EventHandlers<ListenerSpec extends PluginSpec, EmitterSpec extends PluginSpec> = EmitterSpec extends Record<
+  'events',
+  EmitterSpec['events']
+>
   ? {
       // Listener can define handlers for a subset of the emitter's events
       [EventName in keyof EmitterSpec['events']]?: EventHandler<
