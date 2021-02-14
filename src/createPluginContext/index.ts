@@ -1,8 +1,14 @@
 import { PluginSpec, PluginContext, SharedPluginContext } from '../types';
 import { getEventKey } from '../shared';
 import { getPlugin, getPlugins, emitStateChange } from '../store';
-import { getPluginContextCache, setPluginContextCache } from './pluginContextCache';
-import { getPluginMethodsCache, setPluginMethodsCache } from './pluginMethodsCache';
+import {
+  getPluginContextCache,
+  setPluginContextCache,
+} from './pluginContextCache';
+import {
+  getPluginMethodsCache,
+  setPluginMethodsCache,
+} from './pluginMethodsCache';
 
 // Why are contexts and methods cached? Because they are passed down to
 // components and used as dependencies for child callbacks and effects (eg.
@@ -41,7 +47,9 @@ export function createPluginContext<Spec extends PluginSpec>(
       }
     },
 
-    getMethodsOf<OtherSpec extends PluginSpec>(otherPluginName: OtherSpec['name']): OtherSpec['methods'] {
+    getMethodsOf<OtherSpec extends PluginSpec>(
+      otherPluginName: OtherSpec['name'],
+    ): OtherSpec['methods'] {
       return createPluginMethods<OtherSpec>(otherPluginName, sharedContext);
     },
 
@@ -54,7 +62,10 @@ export function createPluginContext<Spec extends PluginSpec>(
 
         if (enabled && eventHandlers[eventKey]) {
           eventHandlers[eventKey].forEach(handler => {
-            handler(createPluginContext(otherPluginName, sharedContext), ...eventArgs);
+            handler(
+              createPluginContext(otherPluginName, sharedContext),
+              ...eventArgs,
+            );
           });
         }
       });
@@ -65,7 +76,10 @@ export function createPluginContext<Spec extends PluginSpec>(
   return pluginContext;
 }
 
-function createPluginMethods<Spec extends PluginSpec>(pluginName: Spec['name'], sharedContext: SharedPluginContext) {
+function createPluginMethods<Spec extends PluginSpec>(
+  pluginName: Spec['name'],
+  sharedContext: SharedPluginContext,
+) {
   const cachedPluginMethods = getPluginMethodsCache(pluginName, sharedContext);
   if (cachedPluginMethods) {
     return cachedPluginMethods;
@@ -81,9 +95,14 @@ function createPluginMethods<Spec extends PluginSpec>(pluginName: Spec['name'], 
   ) as ValidMethodName[];
 
   const pluginMethods = methodNames.reduce(
-    <MethodName extends ValidMethodName>(methods: Methods, methodName: MethodName) => ({
+    <MethodName extends ValidMethodName>(
+      methods: Methods,
+      methodName: MethodName,
+    ) => ({
       ...methods,
-      [methodName]: (...args: Parameters<Methods[MethodName]>): ReturnType<Methods[MethodName]> =>
+      [methodName]: (
+        ...args: Parameters<Methods[MethodName]>
+      ): ReturnType<Methods[MethodName]> =>
         methodHandlers[methodName](otherPluginContext, ...args),
     }),
     {},

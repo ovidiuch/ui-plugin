@@ -1,5 +1,11 @@
 import retry from '@skidding/async-retry';
-import { resetPlugins, createPlugin, loadPlugins, getPluginContext, onStateChange } from '..';
+import {
+  resetPlugins,
+  createPlugin,
+  loadPlugins,
+  getPluginContext,
+  onStateChange,
+} from '..';
 
 interface Terry {
   name: 'terry';

@@ -31,11 +31,18 @@ export interface PluginContext<Spec extends PluginSpec> {
 
   getState(): Spec['state'];
 
-  setState(change: Spec extends Record<'state', infer State> ? StateUpdater<State> : never, cb?: Callback): void;
+  setState(
+    change: Spec extends Record<'state', infer State>
+      ? StateUpdater<State>
+      : never,
+    cb?: Callback,
+  ): void;
 
   getMethodsOf<OtherSpec extends PluginSpec>(
     otherPluginName: OtherSpec['name'],
-  ): OtherSpec extends Record<'methods', OtherSpec['methods']> ? OtherSpec['methods'] : {};
+  ): OtherSpec extends Record<'methods', OtherSpec['methods']>
+    ? OtherSpec['methods']
+    : {};
 
   emit<EventName extends Extract<keyof Spec['events'], string>>(
     eventName: EventName,
@@ -54,7 +61,10 @@ export type LoadHandler<Spec extends PluginSpec> = PluginContextHandler<
   void | null | Callback | Array<void | null | Callback>
 >;
 
-export type EventHandler<Spec extends PluginSpec, Args extends any[]> = PluginContextHandler<Spec, Args, void>;
+export type EventHandler<
+  Spec extends PluginSpec,
+  Args extends any[]
+> = PluginContextHandler<Spec, Args, void>;
 
 // Map the public signature of each method to its handler signature
 export type MethodHandlers<Spec extends PluginSpec> = {
@@ -66,10 +76,10 @@ export type MethodHandlers<Spec extends PluginSpec> = {
 };
 
 // Map public event signature to event handler signature
-export type EventHandlers<ListenerSpec extends PluginSpec, EmitterSpec extends PluginSpec> = EmitterSpec extends Record<
-  'events',
-  EmitterSpec['events']
->
+export type EventHandlers<
+  ListenerSpec extends PluginSpec,
+  EmitterSpec extends PluginSpec
+> = EmitterSpec extends Record<'events', EmitterSpec['events']>
   ? {
       // Listener can define handlers for a subset of the emitter's events
       [EventName in keyof EmitterSpec['events']]?: EventHandler<
@@ -81,9 +91,13 @@ export type EventHandlers<ListenerSpec extends PluginSpec, EmitterSpec extends P
 
 export type PluginCreateArgs<Spec extends PluginSpec> = {
   name: Spec['name'];
-} & (Spec extends Record<'config', infer Config> ? { defaultConfig: Config } : {}) &
+} & (Spec extends Record<'config', infer Config>
+  ? { defaultConfig: Config }
+  : {}) &
   (Spec extends Record<'state', infer State> ? { initialState: State } : {}) &
-  (Spec extends Record<'methods', Spec['methods']> ? { methods: MethodHandlers<Spec> } : {});
+  (Spec extends Record<'methods', Spec['methods']>
+    ? { methods: MethodHandlers<Spec> }
+    : {});
 
 export interface PluginCreateApi<Spec extends PluginSpec> {
   onLoad(handler: LoadHandler<Spec>): void;
@@ -117,5 +131,9 @@ export type PluginStates = { [pluginName: string]: any };
 export type SharedPluginContext = {
   config: PluginConfigs;
   state: PluginStates;
-  setState(pluginName: string, newState: StateUpdater<any>, cb?: Callback): void;
+  setState(
+    pluginName: string,
+    newState: StateUpdater<any>,
+    cb?: Callback,
+  ): void;
 };
