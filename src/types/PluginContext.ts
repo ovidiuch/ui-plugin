@@ -31,8 +31,9 @@ export type PluginContext<T extends PluginSpec> = {
 // methods relevant to the plugin spec (eg. getConfig if plugin has config). The
 // implementation actually has a getConfig method for every plugin, but it will
 // throw an error when trying to access the config of a plugin with no config.
-export type PluginContextImpl<T extends PluginSpec> = {
-  pluginName: T['name'];
+export type PluginContextImpl = {
+  pluginName: string;
+  getConfig: () => PluginConfig;
   getState: () => PluginState;
   setState: SetState<PluginState>;
   emit: Emit<PluginEvents>;
