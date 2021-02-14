@@ -1,5 +1,3 @@
-import { addPlugin } from './pluginStore';
-import { getEventKey } from '../shared';
 import { PluginArgs } from '../types/PluginArgs';
 import { PluginCreateApi } from '../types/PluginCreateApi';
 import { PluginRecord } from '../types/PluginRecord';
@@ -9,6 +7,8 @@ import {
   PluginSpec,
   PluginState,
 } from '../types/PluginSpec';
+import { addPlugin } from './pluginStore';
+import { getEventKey } from './shared';
 
 export function createPlugin<T extends PluginSpec>(
   args: PluginArgs<T>,

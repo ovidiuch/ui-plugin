@@ -1,5 +1,3 @@
-import { emitPluginStateChange, getPlugin, getPlugins } from './pluginStore';
-import { getEventKey } from '../shared';
 import { PluginContext } from '../types/PluginContext';
 import { PluginMethods, PluginSpec, PluginState } from '../types/PluginSpec';
 import { StateUpdater } from '../types/shared';
@@ -12,6 +10,8 @@ import {
   cachePluginMethods,
   getCachedPluginMethods,
 } from './pluginMethodsCache';
+import { emitPluginStateChange, getPlugin, getPlugins } from './pluginStore';
+import { getEventKey } from './shared';
 
 // Why are contexts and methods cached? Because they are passed down to
 // components and used as dependencies for child callbacks and effects (eg.
