@@ -25,17 +25,3 @@ export type PluginContext<T extends PluginSpec> = {
   (T['state'] extends PluginConfig ? { getState: () => T['state'] } : {}) &
   (T['state'] extends PluginConfig ? { setState: SetState<T['state']> } : {}) &
   (T['events'] extends PluginEvents ? { emit: Emit<T['events']> } : {});
-
-// The plugin context implementation cannot cannot be constructed to return a
-// value that matches PublicContext type statically. PublicContext only includes
-// methods relevant to the plugin spec (eg. getConfig if plugin has config). The
-// implementation actually has a getConfig method for every plugin, but it will
-// throw an error when trying to access the config of a plugin with no config.
-export type PluginContextImpl = {
-  pluginName: string;
-  getConfig: () => PluginConfig;
-  getState: () => PluginState;
-  setState: SetState<PluginState>;
-  emit: Emit<PluginEvents>;
-  getMethodsOf: GetMethodsOf;
-};
