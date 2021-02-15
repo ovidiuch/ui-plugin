@@ -97,31 +97,26 @@ function createInitialStates(
   );
 }
 
-function runLoadHandlers(sharedContext: SharedPluginContext) {
+function runLoadHandlers(sharedCtx: SharedPluginContext) {
   const plugins = getPlugins();
-  const unloadCallbacks: Callback[] = [];
+  const unloadCbs: Callback[] = [];
 
   Object.keys(plugins).forEach(pluginName => {
     const { enabled, loadHandlers } = plugins[pluginName];
     if (!enabled) return;
 
     loadHandlers.forEach(handler => {
-      const handlerReturn = handler(
-        createPluginContext(pluginName, sharedContext),
-      );
-
+      const handlerReturn = handler(createPluginContext(pluginName, sharedCtx));
       if (handlerReturn) {
         const callbacks = Array.isArray(handlerReturn)
           ? handlerReturn
           : [handlerReturn];
         callbacks.forEach(callback => {
-          if (typeof callback === 'function') {
-            unloadCallbacks.push(callback);
-          }
+          if (typeof callback === 'function') unloadCbs.push(callback);
         });
       }
     });
   });
 
-  return unloadCallbacks;
+  return unloadCbs;
 }

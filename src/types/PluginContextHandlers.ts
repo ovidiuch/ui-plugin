@@ -8,7 +8,7 @@ type PluginContextHandler<
   TReturn
 > = (context: PluginContext<TSpec>, ...args: TArgs) => TReturn;
 
-type LoadHandlerReturn = void | null | Callback | Array<void | null | Callback>;
+type LoadHandlerReturn = void | null | Callback | (void | null | Callback)[];
 
 export type PluginLoadHandler<T extends PluginSpec> = PluginContextHandler<
   T,
