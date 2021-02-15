@@ -1,7 +1,3 @@
-import { PluginContext } from '../types/PluginContext';
-import { PluginMethods, PluginSpec, PluginState } from '../types/PluginSpec';
-import { StateUpdater } from '../types/shared';
-import { SharedPluginContext } from '../types/SharedPluginContext';
 import {
   cachePluginContext,
   getCachedPluginContext,
@@ -12,6 +8,10 @@ import {
 } from './pluginMethodsCache';
 import { emitPluginStateChange, getPlugin, getPlugins } from './pluginStore';
 import { getEventKey } from './shared';
+import { PluginContext } from './types/PluginContext';
+import { PluginMethods, PluginSpec, PluginState } from './types/PluginSpec';
+import { Callback, StateUpdater } from './types/shared';
+import { SharedPluginContext } from './types/SharedPluginContext';
 
 // Why are contexts and methods cached? Because they are passed down to
 // components and used as dependencies for child callbacks and effects (eg.
@@ -45,12 +45,13 @@ export function createPluginContext(
     return sharedContext.state[pluginName];
   }
 
-  function setState(newState: StateUpdater<PluginState>) {
+  function setState(newState: StateUpdater<PluginState>, cb?: Callback) {
     if (plugin.initialState === undefined)
       throw Error(`Plugin does not have state: ${pluginName}`);
 
     sharedContext.setState(pluginName, newState);
     emitPluginStateChange();
+    if (cb) cb();
   }
 
   function emit(eventName: string, ...eventArgs: any[]) {

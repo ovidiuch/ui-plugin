@@ -1,5 +1,5 @@
-import { PluginRecord, PluginRecordsByName } from '../types/PluginRecord';
-import { Callback } from '../types/shared';
+import { PluginRecord, PluginRecordsByName } from './types/PluginRecord';
+import { Callback } from './types/shared';
 
 type LoadHandler = (plugins: PluginRecordsByName) => unknown;
 

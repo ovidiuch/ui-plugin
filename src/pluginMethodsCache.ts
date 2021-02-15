@@ -1,5 +1,5 @@
-import { PluginContext } from '../types/PluginContext';
-import { PluginMethods } from '../types/PluginSpec';
+import { PluginContext } from './types/PluginContext';
+import { PluginMethods } from './types/PluginSpec';
 
 type MethodsByPlugin = { [pluginName: string]: PluginMethods };
 

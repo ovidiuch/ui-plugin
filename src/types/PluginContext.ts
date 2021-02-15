@@ -5,9 +5,12 @@ import {
   PluginSpec,
   PluginState,
 } from './PluginSpec';
-import { StateUpdater } from './shared';
+import { Callback, StateUpdater } from './shared';
 
-type SetState<T extends PluginState> = (newState: StateUpdater<T>) => void;
+type SetState<T extends PluginState> = (
+  newState: StateUpdater<T>,
+  cb?: Callback,
+) => void;
 
 type Emit<T extends PluginEvents> = <EventName extends keyof T>(
   eventName: EventName,

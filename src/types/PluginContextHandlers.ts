@@ -1,5 +1,5 @@
 import { PluginContext } from './PluginContext';
-import { PluginSpec, PluginEvents, PluginMethods } from './PluginSpec';
+import { PluginEvents, PluginMethods, PluginSpec } from './PluginSpec';
 import { Callback } from './shared';
 
 type PluginContextHandler<

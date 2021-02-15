@@ -1,5 +1,5 @@
-import { PluginContext } from '../types/PluginContext';
-import { SharedPluginContext } from '../types/SharedPluginContext';
+import { PluginContext } from './types/PluginContext';
+import { SharedPluginContext } from './types/SharedPluginContext';
 
 type ContextByPlugin = { [pluginName: string]: PluginContext<any> };
 

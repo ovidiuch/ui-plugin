@@ -1,11 +1,7 @@
-import { PluginContext } from '../types';
-import {
-  resetPlugins,
-  createPlugin,
-  loadPlugins,
-  getPluginContext,
-  enablePlugin,
-} from '..';
+import { createPlugin } from '../createPlugin';
+import { enablePlugin } from '../enablePlugin';
+import { getPluginContext, loadPlugins, resetPlugins } from '../loadPlugins';
+import { PluginContext } from '../types/PluginContext';
 
 interface Larry {
   name: 'larry';
@@ -63,5 +59,5 @@ it('fails to call method of disabled plugin', () => {
   const { getMethodsOf } = getPluginContext<Jerry>('jerry');
   expect(() => {
     getMethodsOf<Larry>('larry');
-  }).toThrow('Plugin "larry" is disabled');
+  }).toThrow('Plugin is disabled: larry');
 });

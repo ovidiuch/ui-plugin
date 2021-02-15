@@ -1,6 +1,7 @@
-import { PluginContext } from '../types';
-import { unloadPlugins } from '../loadPlugins';
-import { resetPlugins, createPlugin, loadPlugins, enablePlugin } from '..';
+import { createPlugin } from '../createPlugin';
+import { enablePlugin } from '../enablePlugin';
+import { loadPlugins, resetPlugins, unloadPlugins } from '../loadPlugins';
+import { PluginContext } from '../types/PluginContext';
 
 interface Terry {
   name: 'terry';

@@ -1,10 +1,6 @@
-import {
-  resetPlugins,
-  createPlugin,
-  loadPlugins,
-  getPluginContext,
-  enablePlugin,
-} from '..';
+import { createPlugin } from '../createPlugin';
+import { enablePlugin } from '../enablePlugin';
+import { getPluginContext, loadPlugins, resetPlugins } from '../loadPlugins';
 
 interface Terry {
   name: 'terry';
@@ -18,7 +14,7 @@ it('throws when plugin is disabled', () => {
 
   enablePlugin('terry', false);
   expect(() => getPluginContext<Terry>('terry')).toThrow(
-    `Plugin "terry" is disabled`,
+    `Plugin is disabled: terry`,
   );
 
   enablePlugin('terry', true);

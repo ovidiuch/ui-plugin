@@ -2,7 +2,7 @@ import {
   PluginEventHandlers,
   PluginLoadHandler,
 } from './PluginContextHandlers';
-import { PluginSpec, PluginEvents } from './PluginSpec';
+import { PluginEvents, PluginSpec } from './PluginSpec';
 
 type On<T extends PluginSpec> = <TEmitter extends PluginSpec>(
   otherPluginName: TEmitter['name'],

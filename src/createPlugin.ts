@@ -1,28 +1,36 @@
-import { PluginCreateArgs, PluginCreateApi, PluginSpec, Plugin } from './types';
-import { addPlugin } from './store';
+import { addPlugin } from './pluginStore';
 import { getEventKey } from './shared';
+import { PluginArgs } from './types/PluginArgs';
+import { PluginCreateApi } from './types/PluginCreateApi';
+import { PluginRecord } from './types/PluginRecord';
+import {
+  PluginConfig,
+  PluginMethods,
+  PluginSpec,
+  PluginState,
+} from './types/PluginSpec';
 
-export function createPlugin<Spec extends PluginSpec>(
-  args: PluginCreateArgs<Spec>,
-): PluginCreateApi<Spec>;
-export function createPlugin<Spec extends PluginSpec>(args: {
+export function createPlugin<T extends PluginSpec>(
+  args: PluginArgs<T>,
+): PluginCreateApi<T>;
+export function createPlugin(args: {
   name: string;
-  defaultConfig?: Spec['config'];
-  initialState?: Spec['state'];
-  methods?: Spec['methods'];
-}): PluginCreateApi<Spec> {
-  const plugin: Plugin<Spec> = {
+  defaultConfig?: PluginConfig;
+  initialState?: PluginState;
+  methods?: PluginMethods;
+}): PluginCreateApi<any> {
+  const plugin: PluginRecord = {
     name: args.name,
     enabled: true,
-    defaultConfig: args.defaultConfig || {},
-    initialState: 'initialState' in args ? args.initialState : undefined,
+    defaultConfig: args.defaultConfig,
+    initialState: args.initialState,
     methodHandlers: args.methods || {},
     loadHandlers: [],
     eventHandlers: {},
   };
 
   return {
-    onLoad: handler => {
+    onLoad(handler) {
       plugin.loadHandlers.push(handler);
     },
 
@@ -32,8 +40,9 @@ export function createPlugin<Spec extends PluginSpec>(args: {
         // https://github.com/Microsoft/TypeScript/pull/12253#issuecomment-263132208
         if (handler) {
           const eventKey = getEventKey(otherPluginName, eventName);
-          plugin.eventHandlers[eventKey] = plugin.eventHandlers[eventKey]
-            ? [...plugin.eventHandlers[eventKey], handler]
+          const prevHandlers = plugin.eventHandlers[eventKey];
+          plugin.eventHandlers[eventKey] = prevHandlers
+            ? [...prevHandlers, handler]
             : [handler];
         }
       });

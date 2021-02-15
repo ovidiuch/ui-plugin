@@ -1,10 +1,7 @@
-import {
-  resetPlugins,
-  createPlugin,
-  loadPlugins,
-  enablePlugin,
-  onPluginLoad,
-} from '..';
+import { createPlugin } from '../createPlugin';
+import { enablePlugin } from '../enablePlugin';
+import { loadPlugins, resetPlugins } from '../loadPlugins';
+import { onPluginLoad } from '../pluginStore';
 
 interface Terry {
   name: 'terry';

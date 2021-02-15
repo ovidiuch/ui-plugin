@@ -1,13 +1,13 @@
-import { PluginSpec } from '../types/PluginSpec';
-import { Callback } from '../types/shared';
+import { createPluginContext } from './createPluginContext';
+import { emitPluginLoad, getPlugins, removeAllPlugins } from './pluginStore';
+import { updateState } from './shared';
+import { PluginSpec } from './types/PluginSpec';
+import { Callback } from './types/shared';
 import {
   PluginConfigs,
   PluginStates,
   SharedPluginContext,
-} from '../types/SharedPluginContext';
-import { createPluginContext } from './createPluginContext';
-import { emitPluginLoad, getPlugins, removeAllPlugins } from './pluginStore';
-import { updateState } from './shared';
+} from './types/SharedPluginContext';
 
 type LoadPluginArgs = {
   config?: PluginConfigs;

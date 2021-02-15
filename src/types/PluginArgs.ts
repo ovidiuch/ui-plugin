@@ -1,8 +1,8 @@
 import { PluginMethodHandlers } from './PluginContextHandlers';
 import {
-  PluginSpec,
   PluginConfig,
   PluginMethods,
+  PluginSpec,
   PluginState,
 } from './PluginSpec';
 

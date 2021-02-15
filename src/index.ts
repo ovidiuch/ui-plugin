@@ -1,13 +1,19 @@
-export {
-  PluginSpec,
-  Plugin,
-  PluginContext,
-  MethodHandlers,
-  EventHandlers,
-  PluginCreateArgs,
-  PluginCreateApi,
-} from './types';
 export { createPlugin } from './createPlugin';
-export { loadPlugins, resetPlugins, getPluginContext } from './loadPlugins';
+export { createPluginContext } from './createPluginContext';
 export { enablePlugin } from './enablePlugin';
-export { getPlugin, getPlugins, onPluginLoad, onStateChange } from './store';
+export { getPluginContext, loadPlugins, resetPlugins } from './loadPlugins';
+export {
+  getPlugin,
+  getPlugins,
+  onPluginLoad,
+  onStateChange,
+} from './pluginStore';
+export { PluginArgs } from './types/PluginArgs';
+export { PluginContext } from './types/PluginContext';
+export {
+  PluginEventHandlers,
+  PluginMethodHandlers,
+} from './types/PluginContextHandlers';
+export { PluginCreateApi } from './types/PluginCreateApi';
+export { PluginRecord } from './types/PluginRecord';
+export { PluginSpec } from './types/PluginSpec';
