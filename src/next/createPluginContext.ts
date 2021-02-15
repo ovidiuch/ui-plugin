@@ -26,28 +26,28 @@ export function createPluginContext(
   sharedContext: SharedPluginContext,
 ): PluginContext<any> {
   const plugin = getPlugin(pluginName);
-  if (!plugin.enabled) throw Error(`Plugin "${pluginName}" is disabled`);
+  if (!plugin.enabled) throw Error(`Plugin is disabled: ${pluginName}`);
 
   const cachedContext = getCachedPluginContext(pluginName, sharedContext);
   if (cachedContext) return cachedContext;
 
   function getConfig() {
     if (plugin.defaultConfig === undefined)
-      throw Error(`Plugin "${pluginName}" does not have config`);
+      throw Error(`Plugin does not have config: ${pluginName}`);
 
     return sharedContext.config[pluginName];
   }
 
   function getState() {
     if (plugin.initialState === undefined)
-      throw Error(`Plugin "${pluginName}" does not have state`);
+      throw Error(`Plugin does not have state: ${pluginName}`);
 
     return sharedContext.state[pluginName];
   }
 
   function setState(newState: StateUpdater<PluginState>) {
     if (plugin.initialState === undefined)
-      throw Error(`Plugin "${pluginName}" does not have state`);
+      throw Error(`Plugin does not have state: ${pluginName}`);
 
     sharedContext.setState(pluginName, newState);
     emitPluginStateChange();
