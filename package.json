@@ -1,6 +1,6 @@
 {
   "name": "ui-plugin",
-  "version": "2.0.0-alpha.4",
+  "version": "3.0.0-alpha.0",
   "description": "API for composable 3rd party UI plugins",
   "repository": "https://github.com/skidding/ui-plugin.git",
   "author": "Ovidiu Cherecheș <skidding@gmail.com>",
@@ -13,7 +13,7 @@
   "scripts": {
     "prettify": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "check-types": "tsc --noEmit",
-    "lint": "eslint \"**/*.{ts,tsx}\"",
+    "lint": "eslint 'src/**/*.{ts,tsx}'",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "build": "rm -rf dist && yarn lint && yarn tsc -b tsconfig.build.json"
