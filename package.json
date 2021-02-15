@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "prettify": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
-    "check-types": "tsc",
+    "check-types": "tsc --noEmit",
     "lint": "tslint --project tsconfig.json",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
