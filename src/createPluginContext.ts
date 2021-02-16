@@ -33,19 +33,19 @@ export function createPluginContext(
 
   function getConfig() {
     if (!defaultConfig)
-      throw Error(`Plugin does not have config: ${pluginName}`);
+      throw Error(`Plugin doesn't have config: ${pluginName}`);
 
     return sharedContext.config[pluginName];
   }
 
   function getState() {
-    if (!initialState) throw Error(`Plugin does not have state: ${pluginName}`);
+    if (!initialState) throw Error(`Plugin doesn't have state: ${pluginName}`);
 
     return sharedContext.state[pluginName];
   }
 
   function setState(newState: StateUpdater<PluginState>, cb?: Callback) {
-    if (!initialState) throw Error(`Plugin does not have state: ${pluginName}`);
+    if (!initialState) throw Error(`Plugin doesn't have state: ${pluginName}`);
 
     sharedContext.setState(pluginName, newState);
     emitPluginStateChange();

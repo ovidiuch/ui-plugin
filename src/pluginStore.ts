@@ -19,7 +19,7 @@ export function getPlugins(): PluginRecordsByName {
 
 export function getPlugin(pluginName: string): PluginRecord {
   if (!plugins[pluginName])
-    throw new Error(`Plugin does not exist: ${pluginName}`);
+    throw new Error(`Plugin doesn't exist: ${pluginName}`);
 
   return plugins[pluginName];
 }
