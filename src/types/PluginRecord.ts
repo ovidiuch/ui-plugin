@@ -14,5 +14,3 @@ export type PluginRecord = {
   loadHandlers: PluginLoadHandler<any>[];
   eventHandlers: { [eventPath: string]: PluginEventHandler<any, any>[] };
 };
-
-export type PluginRecordsByName = { [pluginName: string]: PluginRecord };

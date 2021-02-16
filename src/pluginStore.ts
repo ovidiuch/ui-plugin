@@ -1,6 +1,7 @@
-import { PluginRecord, PluginRecordsByName } from './types/PluginRecord';
+import { PluginRecord } from './types/PluginRecord';
 import { Callback } from './types/shared';
 
+type PluginRecordsByName = { [pluginName: string]: PluginRecord };
 type LoadHandler = (plugins: PluginRecordsByName) => unknown;
 
 let plugins: PluginRecordsByName = {};
