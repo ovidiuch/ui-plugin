@@ -52,7 +52,7 @@ export function createPluginContext(
     if (cb) cb();
   }
 
-  function emit(eventName: string, ...eventArgs: any[]) {
+  function emit(eventName: string, ...eventArgs: any) {
     const eventKey = getEventKey(pluginName, eventName);
     const plugins = getPlugins();
     Object.keys(plugins).forEach(otherPluginName => {
@@ -90,13 +90,13 @@ function createPluginMethods<T extends PluginSpec>(
 function createPluginMethods(
   pluginName: string,
   sharedContext: SharedPluginContext,
-): PluginMethods {
+) {
   const context = createPluginContext(pluginName, sharedContext);
   const cachedMethods = getCachedPluginMethods(pluginName, context);
   if (cachedMethods) return cachedMethods;
 
   const { methodHandlers } = getPlugin(pluginName);
-  const methods = Object.keys(methodHandlers).reduce(
+  const methods: PluginMethods = Object.keys(methodHandlers).reduce(
     (acc, methodName) => ({
       ...acc,
       [methodName]: (...args: any): unknown =>
