@@ -15,3 +15,11 @@ export interface PluginSpec {
   methods?: PluginMethods;
   events?: PluginEvents;
 }
+
+export interface PluginWithEvents extends PluginSpec {
+  events: PluginEvents;
+}
+
+export interface PluginWithMethods extends PluginSpec {
+  methods: PluginMethods;
+}

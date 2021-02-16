@@ -10,7 +10,7 @@ export type PluginRecord = {
   enabled: boolean;
   defaultConfig: PluginConfig | undefined;
   initialState: PluginState | undefined;
-  methodHandlers: PluginMethodHandlers<any, any>;
+  methodHandlers: PluginMethodHandlers<any>;
   loadHandlers: PluginLoadHandler<any>[];
   eventHandlers: { [eventPath: string]: PluginEventHandler<any, any>[] };
 };

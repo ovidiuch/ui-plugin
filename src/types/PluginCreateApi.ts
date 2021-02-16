@@ -2,13 +2,11 @@ import {
   PluginEventHandlers,
   PluginLoadHandler,
 } from './PluginContextHandlers';
-import { PluginEvents, PluginSpec } from './PluginSpec';
+import { PluginSpec, PluginWithEvents } from './PluginSpec';
 
-type On<T extends PluginSpec> = <TEmitter extends PluginSpec>(
+type On<T extends PluginSpec> = <TEmitter extends PluginWithEvents>(
   otherPluginName: TEmitter['name'],
-  handlers: TEmitter['events'] extends PluginEvents
-    ? PluginEventHandlers<T, TEmitter['events']>
-    : never,
+  handlers: PluginEventHandlers<T, TEmitter['events']>,
 ) => void;
 
 export interface PluginCreateApi<T extends PluginSpec> {

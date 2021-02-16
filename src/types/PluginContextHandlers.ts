@@ -1,5 +1,5 @@
 import { PluginContext } from './PluginContext';
-import { PluginEvents, PluginMethods, PluginSpec } from './PluginSpec';
+import { PluginEvents, PluginSpec, PluginWithMethods } from './PluginSpec';
 import { Callback } from './shared';
 
 type PluginContextHandler<
@@ -16,16 +16,13 @@ export type PluginLoadHandler<T extends PluginSpec> = PluginContextHandler<
   LoadHandlerReturn
 >;
 
-export type PluginMethodHandlers<
-  TSpec extends PluginSpec,
-  TMethods extends PluginMethods
-> = {
+export type PluginMethodHandlers<T extends PluginWithMethods> = {
   // Map the public signature of each method to the handler signature.
   // All methods need to be defined.
-  [MethodName in keyof TMethods]: PluginContextHandler<
-    TSpec,
-    Parameters<TMethods[MethodName]>,
-    ReturnType<TMethods[MethodName]>
+  [MethodName in keyof T['methods']]: PluginContextHandler<
+    T,
+    Parameters<T['methods'][MethodName]>,
+    ReturnType<T['methods'][MethodName]>
   >;
 };
 

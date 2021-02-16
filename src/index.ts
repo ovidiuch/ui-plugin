@@ -16,4 +16,8 @@ export {
 } from './types/PluginContextHandlers';
 export { PluginCreateApi } from './types/PluginCreateApi';
 export { PluginRecord } from './types/PluginRecord';
-export { PluginSpec } from './types/PluginSpec';
+export {
+  PluginSpec,
+  PluginWithEvents,
+  PluginWithMethods,
+} from './types/PluginSpec';

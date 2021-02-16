@@ -11,5 +11,5 @@ export type PluginArgs<T extends PluginSpec> = {
 } & (T['config'] extends PluginConfig ? { defaultConfig: T['config'] } : {}) &
   (T['state'] extends PluginState ? { initialState: T['state'] } : {}) &
   (T['methods'] extends PluginMethods
-    ? { methods: PluginMethodHandlers<T, T['methods']> }
+    ? { methods: PluginMethodHandlers<T & { methods: T['methods'] }> }
     : {});
