@@ -30,7 +30,7 @@ export function createPlugin(args: {
   };
 
   return {
-    onLoad(handler) {
+    onLoad: handler => {
       plugin.loadHandlers.push(handler);
     },
 
