@@ -25,29 +25,27 @@ export function createPluginContext(
   pluginName: string,
   sharedContext: SharedPluginContext,
 ): PluginContext<any> {
-  const plugin = getPlugin(pluginName);
-  if (!plugin.enabled) throw Error(`Plugin is disabled: ${pluginName}`);
+  const { enabled, defaultConfig, initialState } = getPlugin(pluginName);
+  if (!enabled) throw Error(`Plugin is disabled: ${pluginName}`);
 
   const cachedContext = getCachedPluginContext(pluginName, sharedContext);
   if (cachedContext) return cachedContext;
 
   function getConfig() {
-    if (plugin.defaultConfig === undefined)
+    if (!defaultConfig)
       throw Error(`Plugin does not have config: ${pluginName}`);
 
     return sharedContext.config[pluginName];
   }
 
   function getState() {
-    if (plugin.initialState === undefined)
-      throw Error(`Plugin does not have state: ${pluginName}`);
+    if (!initialState) throw Error(`Plugin does not have state: ${pluginName}`);
 
     return sharedContext.state[pluginName];
   }
 
   function setState(newState: StateUpdater<PluginState>, cb?: Callback) {
-    if (plugin.initialState === undefined)
-      throw Error(`Plugin does not have state: ${pluginName}`);
+    if (!initialState) throw Error(`Plugin does not have state: ${pluginName}`);
 
     sharedContext.setState(pluginName, newState);
     emitPluginStateChange();
@@ -57,11 +55,10 @@ export function createPluginContext(
   function emit(eventName: string, ...eventArgs: any[]) {
     const eventKey = getEventKey(pluginName, eventName);
     const plugins = getPlugins();
-
     Object.keys(plugins).forEach(otherPluginName => {
-      const { enabled, eventHandlers } = plugins[otherPluginName];
-      if (enabled && eventHandlers[eventKey])
-        eventHandlers[eventKey].forEach(handler => {
+      const listener = plugins[otherPluginName];
+      if (listener.enabled && listener.eventHandlers[eventKey])
+        listener.eventHandlers[eventKey].forEach(handler => {
           handler(
             createPluginContext(otherPluginName, sharedContext),
             ...eventArgs,
