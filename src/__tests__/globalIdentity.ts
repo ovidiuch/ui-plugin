@@ -1,5 +1,10 @@
-import { resetPlugins, createPlugin, loadPlugins, getPluginContext } from '..';
-import { reloadPlugins } from '../loadPlugins';
+import { createPlugin } from '../createPlugin';
+import {
+  getPluginContext,
+  loadPlugins,
+  reloadPlugins,
+  resetPlugins,
+} from '../loadPlugins';
 
 interface Larry {
   name: 'larry';
@@ -10,6 +15,9 @@ interface Larry {
 
 interface Jerry {
   name: 'jerry';
+  events: {
+    idea(): void;
+  };
 }
 
 function registerPlugins() {
@@ -26,7 +34,7 @@ function getLarryMethods() {
   return getPluginContext<Jerry>('jerry').getMethodsOf('larry');
 }
 
-function getLarryEmit() {
+function getJerryEmit() {
   return getPluginContext<Jerry>('jerry').emit;
 }
 
@@ -50,14 +58,14 @@ it('methods identity changes after reload', () => {
 it('emit shares identity between context instances', () => {
   registerPlugins();
   loadPlugins();
-  expect(getLarryEmit()).toBe(getLarryEmit());
+  expect(getJerryEmit()).toBe(getJerryEmit());
 });
 
 it('emit identity changes after reload', () => {
   registerPlugins();
   loadPlugins();
 
-  const emit = getLarryEmit();
+  const emit = getJerryEmit();
   reloadPlugins();
-  expect(emit).not.toBe(getLarryEmit());
+  expect(emit).not.toBe(getJerryEmit());
 });

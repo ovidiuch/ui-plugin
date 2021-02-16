@@ -1,15 +1,11 @@
 import retry from '@skidding/async-retry';
-import {
-  resetPlugins,
-  createPlugin,
-  loadPlugins,
-  getPluginContext,
-  onStateChange,
-} from '..';
+import { createPlugin } from '../createPlugin';
+import { getPluginContext, loadPlugins, resetPlugins } from '../loadPlugins';
+import { onStateChange } from '../pluginStore';
 
 interface Terry {
   name: 'terry';
-  state: number;
+  state: { size: number };
 }
 
 afterEach(resetPlugins);
@@ -18,13 +14,16 @@ it('emits state change event', async () => {
   const handleChange = jest.fn();
   onStateChange(handleChange);
 
-  createPlugin<Terry>({ name: 'terry', initialState: 5 }).register();
+  createPlugin<Terry>({
+    name: 'terry',
+    initialState: { size: 5 },
+  }).register();
   loadPlugins();
 
   const { getState, setState } = getPluginContext<Terry>('terry');
-  setState(10);
+  setState({ size: 10 });
 
-  await retry(() => expect(getState()).toBe(10));
+  await retry(() => expect(getState()).toEqual({ size: 10 }));
   expect(handleChange).toBeCalledTimes(1);
 });
 
@@ -36,17 +35,15 @@ it('makes context available in state change handler', () => {
 
   const { onLoad, register } = createPlugin<Terry>({
     name: 'terry',
-    initialState: 0,
+    initialState: { size: 0 },
   });
   onLoad(context => {
-    context.setState(1);
+    context.setState({ size: 1 });
   });
   register();
 
   onStateChange(() => {
-    expect(() => {
-      getPluginContext('terry');
-    }).not.toThrowError();
+    expect(() => getPluginContext('terry')).not.toThrowError();
   });
 
   loadPlugins();
