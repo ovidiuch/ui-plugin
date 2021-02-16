@@ -1,16 +1,17 @@
 import { PluginContext } from './types/PluginContext';
 import { SharedPluginContext } from './types/SharedPluginContext';
 
-type ContextByPlugin = { [pluginName: string]: PluginContext<any> };
-
-const cache = new WeakMap<SharedPluginContext, ContextByPlugin>();
+const cache = new WeakMap<
+  SharedPluginContext,
+  { [pluginName: string]: PluginContext<any> }
+>();
 
 export function getCachedPluginContext(
   pluginName: string,
   sharedContext: SharedPluginContext,
 ) {
-  const contextByPlugin = cache.get(sharedContext);
-  return contextByPlugin ? contextByPlugin[pluginName] : null;
+  const contexts = cache.get(sharedContext);
+  return contexts ? contexts[pluginName] : null;
 }
 
 export function cachePluginContext(
@@ -18,10 +19,10 @@ export function cachePluginContext(
   sharedContext: SharedPluginContext,
   context: PluginContext<any>,
 ) {
-  let contextByPlugin = cache.get(sharedContext);
-  if (!contextByPlugin) {
-    contextByPlugin = {};
-    cache.set(sharedContext, contextByPlugin);
+  let contexts = cache.get(sharedContext);
+  if (!contexts) {
+    contexts = {};
+    cache.set(sharedContext, contexts);
   }
-  contextByPlugin[pluginName] = context;
+  contexts[pluginName] = context;
 }

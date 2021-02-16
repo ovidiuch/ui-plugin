@@ -1,16 +1,17 @@
 import { PluginContext } from './types/PluginContext';
 import { PluginMethods } from './types/PluginSpec';
 
-type MethodsByPlugin = { [pluginName: string]: PluginMethods };
-
-const cache = new WeakMap<PluginContext<any>, MethodsByPlugin>();
+const cache = new WeakMap<
+  PluginContext<any>,
+  { [pluginName: string]: PluginMethods }
+>();
 
 export function getCachedPluginMethods(
   pluginName: string,
   context: PluginContext<any>,
 ) {
-  const methodsByPlugin = cache.get(context);
-  return methodsByPlugin ? methodsByPlugin[pluginName] : null;
+  const methods = cache.get(context);
+  return methods ? methods[pluginName] : null;
 }
 
 export function cachePluginMethods(
@@ -18,10 +19,10 @@ export function cachePluginMethods(
   context: PluginContext<any>,
   pluginMethods: PluginMethods,
 ) {
-  let methodsByPlugin = cache.get(context);
-  if (!methodsByPlugin) {
-    methodsByPlugin = {};
-    cache.set(context, methodsByPlugin);
+  let methods = cache.get(context);
+  if (!methods) {
+    methods = {};
+    cache.set(context, methods);
   }
-  methodsByPlugin[pluginName] = pluginMethods;
+  methods[pluginName] = pluginMethods;
 }
