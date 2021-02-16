@@ -1,5 +1,5 @@
 import { PluginContext } from './PluginContext';
-import { PluginEvents, PluginSpec, PluginWithMethods } from './PluginSpec';
+import { PluginSpec, PluginWithEvents, PluginWithMethods } from './PluginSpec';
 import { Callback } from './shared';
 
 type PluginContextHandler<
@@ -33,12 +33,12 @@ export type PluginEventHandler<
 
 export type PluginEventHandlers<
   T extends PluginSpec,
-  TEmitterEvents extends PluginEvents
+  TEmitter extends PluginWithEvents
 > = {
   // Map the public signature of each event to the listener handler signature.
   // Listener can define handlers for a subset of the emitter's events.
-  [EventName in keyof TEmitterEvents]?: PluginEventHandler<
+  [EventName in keyof TEmitter['events']]?: PluginEventHandler<
     T,
-    Parameters<TEmitterEvents[EventName]>
+    Parameters<TEmitter['events'][EventName]>
   >;
 };

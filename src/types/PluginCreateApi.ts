@@ -6,7 +6,7 @@ import { PluginSpec, PluginWithEvents } from './PluginSpec';
 
 type On<T extends PluginSpec> = <TEmitter extends PluginWithEvents>(
   otherPluginName: TEmitter['name'],
-  handlers: PluginEventHandlers<T, TEmitter['events']>,
+  handlers: PluginEventHandlers<T, TEmitter>,
 ) => void;
 
 export interface PluginCreateApi<T extends PluginSpec> {
