@@ -1,8 +1,8 @@
-import { Json } from './shared';
+import { UnknownRecord } from './shared';
 
-export type PluginConfig = Record<string, Json>;
+export type PluginConfig = UnknownRecord;
 
-export type PluginState = Record<string, Json>;
+export type PluginState = UnknownRecord;
 
 export type PluginMethods = Record<string, (...args: any) => unknown>;
 

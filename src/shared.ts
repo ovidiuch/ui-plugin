@@ -1,10 +1,10 @@
-import { Json, StateUpdater } from './types/shared';
+import { UnknownRecord, StateUpdater } from './types/shared';
 
 export function getEventKey(pluginName: string, eventName: string) {
   return `${pluginName}.${eventName}`;
 }
 
-export function updateState<T extends Json>(
+export function updateState<T extends UnknownRecord>(
   prevState: T,
   newState: StateUpdater<T>,
 ): T {
