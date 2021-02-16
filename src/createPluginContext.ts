@@ -24,7 +24,7 @@ export function createPluginContext<T extends PluginSpec>(
 export function createPluginContext(
   pluginName: string,
   sharedContext: SharedPluginContext,
-): PluginContext<any> {
+) {
   const { enabled, defaultConfig, initialState } = getPlugin(pluginName);
   if (!enabled) throw Error(`Plugin is disabled: ${pluginName}`);
 
@@ -70,7 +70,7 @@ export function createPluginContext(
   const getMethodsOf = (otherPluginName: string) =>
     createPluginMethods(otherPluginName, sharedContext);
 
-  const context = {
+  const context: PluginContext<any> = {
     pluginName,
     getConfig,
     getState,

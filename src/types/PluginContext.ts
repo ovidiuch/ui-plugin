@@ -12,7 +12,9 @@ type SetState<T extends PluginState> = (
   cb?: Callback,
 ) => void;
 
-type Emit<T extends PluginEvents> = <EventName extends keyof T>(
+type Emit<T extends PluginEvents> = <
+  EventName extends Extract<keyof T, string>
+>(
   eventName: EventName,
   ...eventArgs: Parameters<T[EventName]>
 ) => void;
