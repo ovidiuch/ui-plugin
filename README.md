@@ -1,5 +1,8 @@
 # ui-plugin
 
+[![ci status](https://github.com/skidding/ui-plugin/actions/workflows/test.yml/badge.svg)](https://github.com/skidding/ui-plugin/actions/workflows/test.yml)
+[![coverage status](https://codecov.io/gh/skidding/ui-plugin/graph/badge.svg)](https://codecov.io/gh/skidding/ui-plugin)
+
 API for composable 3rd party UI plugins
 
 ## Goal
